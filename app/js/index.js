@@ -1,3 +1,6 @@
+var cardLength;
+// var cardHeight;
+
 var onAuthorize = function() {
     updateLoggedIn();
     $("#singleCard").hide();
@@ -21,6 +24,13 @@ var onAuthorize = function() {
                 .appendTo($cards)
                 .click(function () {
                   $('#listSelect').remove();
+                  // cardLength = card.name.length;
+                  // if (cardLength > 32) {
+                  //   window.resizeTo(266, 88);
+                  // }
+                  // else {
+                  //   console.log("no resize");
+                  // };
                   cardSelected(card.id);
                 });
             });
@@ -28,6 +38,26 @@ var onAuthorize = function() {
     });
 
 };
+
+
+// var checkLength = function(cardLength) {
+//   if (cardLength < 32) {
+//     console.log("card is one line " + cardLength );
+//     cardHeight = 58;
+//     }
+//   else if (cardLength >= 32 && cardLength < 63 ) {
+//     console.log("card is two lines");
+//     cardHeight = 76;
+//   }
+//   else if (cardLength >= 63 && cardLength < 94 ) {
+//     console.log("card is three lines")
+//     cardHeight = 94;
+//   }
+//   else {
+//     console.log("card is over 4 lines")
+//     cardHeight = 112;
+//   }
+// };
 
 var cardSelected = function(selectedCard) {
 
@@ -51,8 +81,8 @@ var cardSelected = function(selectedCard) {
               .text(card.name)
               .appendTo($cards);
 
-              var cardLink = card.url
-              console.log(cardLink);
+              // var cardLink = card.url
+              // console.log(cardLink);
 
               $(".toggle").click(function(event) {
               event.preventDefault();
