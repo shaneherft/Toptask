@@ -102,19 +102,63 @@ var cardSelected = function(selectedCard) {
 
               //Displays correct color label
               var cardLabel;
-              console.log(card.labels.length);
-
+              var labelSort = [0,1,2,3,4,5,6,7,8,9];
               var labelLength = card.labels.length;
-
-              // for (var i = 0; i < labelLength; i++) {
-              //   cardLabel.push(card.labels[i].color);
-              //   console.log(cardLabel);
-              // }
 
               for (var i = 0; i < labelLength; i++) {
                 cardLabel = card.labels[i].color;
-                console.log(cardLabel);
 
+                switch (cardLabel) {
+
+                  case "green":
+                    labelSort.splice(0,1,'green');
+                    break;
+
+                  case "red":
+                    labelSort.splice(3,1,'red');
+                    break;
+
+                  case "sky":
+                    labelSort.splice(6,1,'sky');
+                    break;
+
+                  case "orange":
+                    labelSort.splice(2,1,'orange');
+                    break;
+
+                  case "yellow":
+                    labelSort.splice(1,1,'yellow');
+                    break;
+
+                  case "blue":
+                    labelSort.splice(5,1,'blue');
+                    break;
+
+                  case "pink":
+                    labelSort.splice(8,1,'pink');
+                    break;
+
+                  case "lime":
+                    labelSort.splice(7,1,'lime');
+                    break;
+
+                  case "purple":
+                    labelSort.splice(4,1,'purple');
+                    break;
+
+                  case "black":
+                    labelSort.splice(9,1,'black');
+                    break;
+
+                  default:
+                    console.log("No label");
+                };
+
+              };
+              console.log(labelSort);
+
+              for (var i = 0; i < labelSort.length; i++) {
+                cardLabel = labelSort[i];
 
                 switch (cardLabel) {
 
@@ -179,7 +223,7 @@ var cardSelected = function(selectedCard) {
                     break;
 
                   default:
-                    console.log(cardLabel + " does not work :(");
+                    console.log("No label");
                 };
 
               };

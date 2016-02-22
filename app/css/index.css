@@ -28,7 +28,7 @@ a {
       font-weight: 400;
       font-size: 14px;
       line-height: 18px;
-      margin: 0 0 4px;
+      margin: 0px 0 4px;
       overflow: hidden;
       text-decoration: none;
       word-wrap: break-word;
@@ -57,9 +57,8 @@ a {
     cursor: pointer !important;
 }
 
-.card {
-    display: block;
-    /*padding: 2px;*/
+.cardName {
+    margin-top: 17px;
 }
 
 .cardContainer {
@@ -86,14 +85,10 @@ a {
   background-color: #cccccc;
   display: block;
   height: 8px;
-  margin: 4px 4px 4px 0;
-  padding: 0;
+  margin: 4px 4px 0px 0;
   width: 42px;
   line-height: 75pt;
   border-radius: 3px;
-  .green {
-    background-color: black;
-  }
 }
 
 .cardChecklist {
