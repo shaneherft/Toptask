@@ -21,6 +21,7 @@ body {
 }
 
 a {
+      clear: both;
       display: block;
       font-family: 'Helvetica Neue', Helvetica, Arial;
       color: #4d4d4d;
@@ -80,21 +81,26 @@ a {
 }
 
 .cardLabel {
+  display: inline-block;
+  float: left;
   background-color: #cccccc;
   display: block;
   height: 8px;
-  margin: 0 3px 3px 0;
+  margin: 4px 4px 4px 0;
   padding: 0;
   width: 42px;
   line-height: 75pt;
   border-radius: 3px;
+  .green {
+    background-color: black;
+  }
 }
 
 .cardChecklist {
   display: inline-block;
   font-size: 9pt;
   color: #8c8c8c;
-  margin: 0 3px 3px 0;
+  margin: 0 4px 4px 4px;
 }
 
 #checklistOutput > span {
@@ -161,8 +167,8 @@ a {
 .checklistIcon {
   /*float: left;*/
   display: inline-block;
-  width: 9.5px;
-  height: 9.5px;
+  width: 10.5px;
+  height: 10.5px;
   margin: 0 2px 0px 0;
   background-image: url('../images/checkbox.png');
 }
@@ -171,4 +177,8 @@ a {
   /*margin: 4px 4px 0px 4px;*/
   /*padding: 0 0 0 0;*/
   margin-bottom: -3px !important;
+}
+
+#connectLink {
+  cursor: pointer;
 }

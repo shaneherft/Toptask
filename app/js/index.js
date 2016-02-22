@@ -68,8 +68,8 @@ var cardSelected = function(selectedCard) {
           .text("Loading card...")
           .appendTo("#cardOutput");
 
-      var $labels = $("<div>")
-          .appendTo("#label");
+      // var $labels = $("<div>")
+      //     .appendTo("#labels");
 
       var $checklists = $("<span>")
           .appendTo("#checklistOutput");
@@ -101,62 +101,87 @@ var cardSelected = function(selectedCard) {
               // console.log(checklistNum[0]+"/"+checklistNum[1]);
 
               //Displays correct color label
-              var cardLabel = card.labels[0].color;
-              console.log(cardLabel);
+              var cardLabel;
+              console.log(card.labels.length);
 
-              switch (cardLabel) {
-                case "red":
-                  $(".cardLabel")
-                  .css("background-color", "#eb5a46");
-                  break;
+              var labelLength = card.labels.length;
 
-                case "sky":
-                  $(".cardLabel")
-                  .css("background-color", "#00c2e0");
-                  break;
+              // for (var i = 0; i < labelLength; i++) {
+              //   cardLabel.push(card.labels[i].color);
+              //   console.log(cardLabel);
+              // }
 
-                case "green":
-                  $(".cardLabel")
-                  .css("background-color", "#61bd4f");
-                  break;
+              for (var i = 0; i < labelLength; i++) {
+                cardLabel = card.labels[i].color;
+                console.log(cardLabel);
 
-                case "orange":
-                  $(".cardLabel")
-                  .css("background-color", "#ffab4a");
-                  break;
 
-                case "yellow":
-                  $(".cardLabel")
-                  .css("background-color", "#f2d600");
-                  break;
+                switch (cardLabel) {
 
-                case "blue":
-                  $(".cardLabel")
-                  .css("background-color", "#0079bf");
-                  break;
+                  case "green":
+                    $("<div class=cardLabel></div>")
+                    .css("background-color", "#61bd4f")
+                    .appendTo("#labels");
+                    break;
 
-                case "pink":
-                  $(".cardLabel")
-                  .css("background-color", "#ff80ce");
-                  break;
+                  case "red":
+                    $("<div class=cardLabel></div>")
+                    .css("background-color", "#eb5a46")
+                    .appendTo("#labels");
+                    break;
 
-                case "lime":
-                  $(".cardLabel")
-                  .css("background-color", "#51e898");
-                  break;
+                  case "sky":
+                    $("<div class=cardLabel></div>")
+                    .css("background-color", "#00c2e0")
+                    .appendTo("#labels");
+                    break;
 
-                case "purple":
-                  $(".cardLabel")
-                  .css("background-color", "#c377e0");
-                  break;
+                  case "orange":
+                    $("<div class=cardLabel></div>")
+                    .css("background-color", "#ffab4a")
+                    .appendTo("#labels");
+                    break;
 
-                case "black":
-                  $(".cardLabel")
-                  .css("background-color", "#4d4d4d");
-                  break;
+                  case "yellow":
+                    $("<div class=cardLabel></div>")
+                    .css("background-color", "#f2d600")
+                    .appendTo("#labels");
+                    break;
 
-                default:
-                  console.log(cardLabel + " does not work :(");
+                  case "blue":
+                    $("<div class=cardLabel></div>")
+                    .css("background-color", "#0079bf")
+                    .appendTo("#labels");
+                    break;
+
+                  case "pink":
+                    $("<div class=cardLabel></div>")
+                    .css("background-color", "#ff80ce")
+                    .appendTo("#labels");
+                    break;
+
+                  case "lime":
+                    $("<div class=cardLabel></div>")
+                    .css("background-color", "#51e898")
+                    .appendTo("#labels");
+                    break;
+
+                  case "purple":
+                    $("<div class=cardLabel></div>")
+                    .css("background-color", "#c377e0")
+                    .appendTo("#labels");
+                    break;
+
+                  case "black":
+                    $("<div class=cardLabel></div>")
+                    .css("background-color", "#4d4d4d")
+                    .appendTo("#labels");
+                    break;
+
+                  default:
+                    console.log(cardLabel + " does not work :(");
+                };
+
               };
 
               $(".toggle").click(function(event) {
