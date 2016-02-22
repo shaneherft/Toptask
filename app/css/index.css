@@ -15,7 +15,7 @@ body {
     font-family: 'Helvetica Neue', Helvetica, Arial;
     font-size: 14px;
     background-color: #e2e4e6;
-     -webkit-app-region: drag;
+    -webkit-app-region: drag;
     cursor: move;
 
 }
@@ -51,9 +51,10 @@ a {
     background: #eee;
 }*/
 
-/*#output {
-    padding: 4px;
-}*/
+#output {
+    padding: 8px;
+    cursor: pointer !important;
+}
 
 .card {
     display: block;
@@ -62,7 +63,7 @@ a {
 
 .cardContainer {
     overflow: auto;
-    padding: 6px 6px 2px 6px;
+    padding: 6px 6px 4px 6px;
     position: relative;
     z-index: 10;
 }
@@ -87,6 +88,18 @@ a {
   width: 42px;
   line-height: 75pt;
   border-radius: 3px;
+}
+
+.cardChecklist {
+  display: inline-block;
+  font-size: 9pt;
+  color: #8c8c8c;
+  margin: 0 3px 3px 0;
+}
+
+#checklistOutput > span {
+  line-height: 9px;
+  margin: 0 auto;
 }
 
 .toggle {
@@ -143,4 +156,19 @@ a {
   margin: 0 10px auto;
   background-image: url('../images/settings.png');
   cursor: pointer;
+}
+
+.checklistIcon {
+  /*float: left;*/
+  display: inline-block;
+  width: 9.5px;
+  height: 9.5px;
+  margin: 0 2px 0px 0;
+  background-image: url('../images/checkbox.png');
+}
+
+#cardOutput {
+  /*margin: 4px 4px 0px 4px;*/
+  /*padding: 0 0 0 0;*/
+  margin-bottom: -3px !important;
 }

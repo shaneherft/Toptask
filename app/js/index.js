@@ -71,6 +71,9 @@ var cardSelected = function(selectedCard) {
       var $labels = $("<div>")
           .appendTo("#label");
 
+      var $checklists = $("<span>")
+          .appendTo("#checklistOutput");
+
       Trello.get("cards/" + selectedCard, function(card) {
           // window.resizeTo(266,58);
 
@@ -81,27 +84,25 @@ var cardSelected = function(selectedCard) {
               .text(card.name)
               .appendTo($cards);
 
-              // var cardLink = card.url
-              // console.log(cardLink);
 
-              $(".toggle").click(function(event) {
-              event.preventDefault();
-              $("div.overlay").fadeToggle("fast");
+              if (card.badges.checkItems > 0) {
+              $('<span>')
+              .text(card.badges.checkItemsChecked+"/"+card.badges.checkItems)
+              .appendTo($checklists);
+              }
+              else {
+                $('.checklistIcon').remove();
+                $('.cardChecklist').remove();
+              }
 
-              });
+              var cardLink = card.url
 
-              $(".toggle")
-              .mouseover(function() {
-                $('.icons').show();
-                // $('a.trello').attr('href','www.google.com');
-                  })
-              .mouseout(function() {
-                $('.icons').hide();
-                  });
-
+              // var checklistNum = [card.badges.checkItemsChecked,card.badges.checkItems];
+              // console.log(checklistNum[0]+"/"+checklistNum[1]);
 
               //Displays correct color label
               var cardLabel = card.labels[0].color;
+              console.log(cardLabel);
 
               switch (cardLabel) {
                 case "red":
@@ -157,6 +158,21 @@ var cardSelected = function(selectedCard) {
                 default:
                   console.log(cardLabel + " does not work :(");
               };
+
+              $(".toggle").click(function(event) {
+              event.preventDefault();
+              $("div.overlay").fadeToggle("fast");
+
+              });
+
+              $(".toggle")
+              .mouseover(function() {
+                $('.icons').show();
+                // $('a.trello').attr('href','www.google.com');
+                  })
+              .mouseout(function() {
+                $('.icons').hide();
+                  });
 
               $(".trello")
               .click(function(){
