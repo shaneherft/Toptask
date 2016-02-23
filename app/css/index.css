@@ -28,7 +28,7 @@ a {
       font-weight: 400;
       font-size: 14px;
       line-height: 18px;
-      margin: 0px 0 4px;
+      margin: 0px 0 8px;
       overflow: hidden;
       text-decoration: none;
       word-wrap: break-word;
@@ -58,7 +58,7 @@ a {
 }
 
 .cardName {
-    margin-top: 17px;
+    margin-top: 15px;
 }
 
 .cardContainer {
@@ -85,7 +85,7 @@ a {
   background-color: #cccccc;
   display: block;
   height: 8px;
-  margin: 4px 4px 0px 0;
+  margin: 2px 4px 0px 0;
   width: 42px;
   line-height: 75pt;
   border-radius: 3px;
@@ -95,7 +95,7 @@ a {
   display: inline-block;
   font-size: 9pt;
   color: #8c8c8c;
-  margin: 0 4px 4px 4px;
+  margin: 0 4px 8px 4px;
 }
 
 #checklistOutput > span {

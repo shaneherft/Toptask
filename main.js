@@ -3,7 +3,7 @@ var electron = require('electron'),
     app = electron.app,
     BrowserWindow = electron.BrowserWindow;
 
-// const ipcMain = require('electron').ipcMain;
+
 
 // Config
 var mainWindow;
@@ -17,6 +17,8 @@ function createWindow () {
       alwaysOnTop: true,
       webPreferences: {
           "node-integration": false,
+          // "preload": "file:///Users/shaneherft/Google%20Drive/Development/Toptask/app/js/preload.js"
+          // "preload": path.join(__dirname, 'preload.js')
       }
   });
 
