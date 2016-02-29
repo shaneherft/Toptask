@@ -4,7 +4,9 @@
   "description": "A minimal Electron application",
   "main": "main.js",
   "scripts": {
-    "start": "electron main.js"
+    "start": "electron --js-flags='--es_staging' main.js",
+    "dev": "cross-env NODE_ENV=development DEBUG=*,-babel electron --js-flags='--es_staging' ./",
+    "prod": "cross-env NODE_ENV=production electron --js-flags='--es_staging' ./"
   },
   "repository": {
     "type": "git",
@@ -23,6 +25,7 @@
   },
   "homepage": "https://github.com/atom/electron-quick-start#readme",
   "devDependencies": {
-    "electron-prebuilt": "^0.36.0"
+    "cross-env": "^1.0.7",
+    "electron-prebuilt": "^0.36.9"
   }
 }
