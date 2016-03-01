@@ -21,7 +21,7 @@ function createWindow() {
       height: 600,
       frame: 1,
       alwaysOnTop: 0,
-      webPreferences: {"node-integration": false,}
+      webPreferences: {"node-integration": true,}
     });
     // Open the DevTools.
     mainWindow.webContents.openDevTools({detach: true});
@@ -37,7 +37,7 @@ function createWindow() {
       frame: false,
       alwaysOnTop: true,
       webPreferences: {
-        "node-integration": false,
+        "node-integration": true,
         // "preload": "file:///Users/shaneherft/Google%20Drive/Development/Toptask/app/js/preload.js"
         // "preload": path.join(__dirname, 'preload.js')
       }
