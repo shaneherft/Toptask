@@ -2,13 +2,12 @@
 var electron = require('electron'),
   app = electron.app,
   BrowserWindow = electron.BrowserWindow;
-  const ipcMain = require('electron').ipcMain;
+
+const ipcMain = require('electron').ipcMain;
 
 var __DEV__ = (process.env['NODE_ENV'] === 'development');
 
 console.log(`NODE_ENV=[${process.env['NODE_ENV']}]`);
-
-
 
 // Config
 var mainWindow;
@@ -20,8 +19,10 @@ function createWindow() {
 
     // Create the browser window.
     mainWindow = new BrowserWindow({
-      width: 800,
-      height: 600,
+      width: 266,
+      height: 266,
+      x: 1050,
+      y: 50,
       frame: 1,
       alwaysOnTop: 0,
       webPreferences: {"node-integration": true,}
@@ -36,7 +37,9 @@ function createWindow() {
     // Create the browser window.
     mainWindow = new BrowserWindow({
       width: 266,
-      height: 58,
+      height: 266,
+      x: 1050,
+      y: 50,
       frame: false,
       alwaysOnTop: true,
       webPreferences: {
@@ -82,7 +85,7 @@ app.on('activate', function () {
   }
 });
 
-ipcMain.on('asynchronous-message', function(event, arg) {
-  console.log(arg);  // prints "ping"
-  event.sender.send('asynchronous-reply', 'pong');
+ipcMain.on('set-size', function(event, width, height) {
+  // mainWindow.setSize(100,100);
+  mainWindow.setSize(width,height); // prints "ping"
 });
