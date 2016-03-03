@@ -11,6 +11,8 @@ console.log(`NODE_ENV=[${process.env['NODE_ENV']}]`);
 
 // Config
 var mainWindow;
+var trelloWindow;
+var cardUrl;
 
 function createWindow() {
 
@@ -64,6 +66,33 @@ function createWindow() {
   });
 }
 
+function createTrelloWindow(cardUrl) {
+
+  trelloWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+    frame: true,
+    // alwaysOnTop: true,
+    webPreferences: {
+      "node-integration": false
+      // "preload": "file:///Users/shaneherft/Google%20Drive/Development/Toptask/app/js/preload.js"
+      // "preload": path.join(__dirname, 'preload.js')
+    }
+  });
+
+  trelloWindow.loadURL(cardUrl);
+
+  trelloWindow.on('closed', function () {
+    // Dereference the window object, usually you would store windows
+    // in an array if your app supports multi windows, this is the time
+    // when you should delete the corresponding element.
+    mainWindow.webContents.send('refresh-card');
+    trelloWindow = null;
+
+    });
+
+}
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 app.on('ready', createWindow);
@@ -86,6 +115,13 @@ app.on('activate', function () {
 });
 
 ipcMain.on('set-size', function(event, width, height) {
-  // mainWindow.setSize(100,100);
   mainWindow.setSize(width,height); // prints "ping"
 });
+
+ipcMain.on('trello-open', function(event, cardUrl, linkName) {
+  createTrelloWindow(cardUrl);
+});
+
+// mainWindow.BrowserWindowProxy.closed(function() {
+// console.log("Window close detected");
+// });

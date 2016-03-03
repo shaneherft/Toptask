@@ -137,9 +137,9 @@ a {
 
 .tick {
   display: inline-block;
-  width: 30px;
+  width: 34px;
   height: 30px;
-  margin: 0 10px auto;
+  margin: 0 15px auto;
   background-image: url('../images/tick.png');
   cursor: pointer;
 }
@@ -153,12 +153,12 @@ a {
   cursor: pointer;
 }
 
-.settings {
+.back {
   display: inline-block;
-  width: 30px;
+  width: 40px;
   height: 30px;
-  margin: 0 10px auto;
-  background-image: url('../images/settings.png');
+  margin: 0 -5px auto;
+  background-image: url('../images/back.png');
   cursor: pointer;
 }
 

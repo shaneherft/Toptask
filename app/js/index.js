@@ -1,7 +1,7 @@
 
 const ipcRenderer = require('electron').ipcRenderer;
+const remote = require('electron').remote;
 // fix for node integration
-// var actions = require('actions.js');
 window.$ = window.jQuery = require('./lib/jquery-2.2.1');
 
 // patch window.open so it will not have nodeIntegration in opened windows
@@ -27,72 +27,80 @@ var opts = {
 var Trello = require('./lib/client-enode')(window, jQuery, opts);
 
 var cardHeight;
-var getCardHeight = function () {  //define a function with the code you want to call
-      cardHeight = $('.container').outerHeight();
-  };
 var currentCard;
+var cardLength;
+var nextCardId;
+var cardsInList = [];
+var $cards;
+var $checklists;
+var trelloWindow;
 
 jQuery(document).ready(function ($) {
   //do jQuery stuff when DOM is ready
   $(".toggle").hide();
-  var checkAuth = Trello.authorized();
-  if (checkAuth === true) {
-    console.log(checkAuth);
-    onAuthorize();
-  }
-
-  var cardLength;
-  var nextCardId;
-  var cardsInList = [];
-  var $cards;
-  var $checklists;
+  // var checkAuth = Trello.authorized();
+  // if (checkAuth === true) {
+  //   console.log(checkAuth);
+  //   onAuthorize();
+  // }
 
   var onAuthorize = function () {
     updateLoggedIn();
     $('#loggedout').remove();
     $("#singleCard").hide();
     $("#listOutput").empty();
+    getList();
+    };
 
-    Trello.members.get("me", (member)=> {
+    //TRELLO FUNCTIONS
 
-      $("#fullName").text(member.fullName);
+    var getList = function() {
 
-      $cards = $("<div>")
-        .text("Loading list...")
-        .appendTo("#listOutput");
+      $('#listSelect').show();
+      $('#listOutput').show();
+      $('.toggle').hide();
 
-      // get first list from first board and get its cards
-      Trello.get("members/me/boards", (boards)=> {
-        Trello.get("boards/52a964092424e6632f0d6921/lists", (lists)=> {
-          Trello.get("lists/55d26f54726fb67f022db618/cards", (cards)=> {
-            // console.debug(boards, lists, cards)
 
-            $cards.empty();
-            $.each(cards, function (ix, card) {
+      Trello.members.get("me", (member)=> {
 
-              cardsInList.push(card.id);
+        $("#fullName").text(member.fullName);
 
-              $("<a>")
-                .addClass("card")
-                .text(card.name)
-                .click(function () {
+        $cards = $("<div>")
+          .text("Loading list...")
+          .appendTo("#listOutput");
 
-                  $('#listSelect').remove();
-                  cardSelected(card.id);
-                })
-                .appendTo($cards);
+        // get first list from first board and get its cards
 
-              window.resizeTo(266, 58 + $cards.outerHeight());
+        Trello.get("members/me/boards", (boards)=> {
+          Trello.get("boards/52a964092424e6632f0d6921/lists", (lists)=> {
+            Trello.get("lists/55d26f54726fb67f022db618/cards", (cards)=> {
+              // console.debug(boards, lists, cards)
+              $cards.empty();
+              $.each(cards, function (ix, card) {
 
-            });
+                cardsInList.push(card.id);
 
+                $("<a>")
+                  .addClass("card")
+                  .text(card.name)
+                  .click(function () {
+                    $('#listSelect').hide();
+                    $('#labels').empty();
+                    $('#checklistOutput').empty();
+                    $('#cardOutput').empty();
+                    cardSelected(card.id);
+                  })
+                  .appendTo($cards);
+
+                window.resizeTo(266, 58 + $cards.outerHeight());
+
+              });
+
+            })
           })
         })
       });
-
-
-    });
-  };
+    };
 
 
   var cardSelected = function (selectedCard) {
@@ -274,7 +282,14 @@ jQuery(document).ready(function ($) {
 
       $(".trello")
         .click(function () {
-          window.open(cardLink, "Card Link", "width=760,height=660,titlebar=yes,scrollbars=no,status=yes,frame=yes");
+          currentCard = card.id
+          ipcRenderer.send('trello-open', cardLink);
+
+        });
+
+      $(".back")
+        .click(function () {
+          getList();
         });
 
       $(".tick")
@@ -289,13 +304,30 @@ jQuery(document).ready(function ($) {
 
   };
 
-//ACTIONS
+ipcRenderer.on("refresh-card", function() {
+  clearOutCard();
+  cardSelected(currentCard);
+});
 
 var completeCard = function (cardId) {
   Trello.put("cards/" + cardId + "/idList", {value: "5403bf2888d0ac13dcc52c4a"});
   $cards.empty();
   $checklists.empty();
 }
+
+var getCardHeight = function () {  //define a function with the code you want to call
+      cardHeight = $('.container').outerHeight();
+  };
+
+var clearOutCard = function() {
+  $('#labels').empty();
+  $('#checklistOutput').empty();
+  $('#cardOutput').empty();
+};
+
+// trelloWindow.closed(function () {
+//   console.log("Closure detected");
+// });
 
 //TRELLO AUTH
 
