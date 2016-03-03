@@ -1,7 +1,7 @@
 
 const ipcRenderer = require('electron').ipcRenderer;
 const remote = require('electron').remote;
-
+// fix for node integration
 window.$ = window.jQuery = require('./lib/jquery-2.2.1');
 
 // patch window.open so it will not have nodeIntegration in opened windows
@@ -38,7 +38,6 @@ var trelloWindow;
 jQuery(document).ready(function ($) {
   //do jQuery stuff when DOM is ready
   $(".toggle").hide();
-  $(".container").hide();
   // var checkAuth = Trello.authorized();
   // if (checkAuth === true) {
   //   console.log(checkAuth);
@@ -48,7 +47,6 @@ jQuery(document).ready(function ($) {
   var onAuthorize = function () {
     updateLoggedIn();
     $('#loggedout').remove();
-    $('.container').show();
     $("#singleCard").hide();
     $("#listOutput").empty();
     getList();
@@ -297,7 +295,6 @@ jQuery(document).ready(function ($) {
       $(".tick")
         .click(function () {
           completeCard(card.id);
-          // clearOutCard();
           nextCardId = cardsInList[cardsInList.indexOf(card.id)+1];
           cardSelected(nextCardId);
 
@@ -316,7 +313,6 @@ var completeCard = function (cardId) {
   Trello.put("cards/" + cardId + "/idList", {value: "5403bf2888d0ac13dcc52c4a"});
   $cards.empty();
   $checklists.empty();
-  $('#labels').empty();
 }
 
 var getCardHeight = function () {  //define a function with the code you want to call

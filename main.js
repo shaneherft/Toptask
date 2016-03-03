@@ -4,6 +4,26 @@ var electron = require('electron'),
   BrowserWindow = electron.BrowserWindow;
 
 const ipcMain = require('electron').ipcMain;
+var Tray = require('tray');
+var Menu = require('menu');
+var path = require('path');
+
+var trayIcon = null;
+
+
+var trayMenuTemplate = [
+    {
+        label: 'Toptask',
+        enabled: false
+    },
+    {
+        label: 'Quit',
+        click: function () {
+            // ipcRenderer.send('close-main-window');
+            app.quit();
+        }
+    }
+];
 
 var __DEV__ = (process.env['NODE_ENV'] === 'development');
 
@@ -53,6 +73,15 @@ function createWindow() {
   }
 
   mainWindow.loadURL('file://' + __dirname + '/index.html');
+
+  if (process.platform === 'darwin') {
+      trayIcon = new Tray(path.join(__dirname, 'app/images/tray-iconTemplate.png'));
+  }
+  else {
+      trayIcon = new Tray(path.join(__dirname, 'app/images/tray-icon-alt.png'));
+  }
+  var trayMenu = Menu.buildFromTemplate(trayMenuTemplate);
+  trayIcon.setContextMenu(trayMenu);
 
   mainWindow.on('closed', () => {
     mainWindow = null;
@@ -121,6 +150,7 @@ ipcMain.on('set-size', function(event, width, height) {
 ipcMain.on('trello-open', function(event, cardUrl, linkName) {
   createTrelloWindow(cardUrl);
 });
+
 
 // mainWindow.BrowserWindowProxy.closed(function() {
 // console.log("Window close detected");
