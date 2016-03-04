@@ -21,7 +21,8 @@
 
 </div> -->
 <div class="login" id="loggedout">
-  <a id="connectLink" href="#">Connect To Trello</a>
+  <div class="logo"></div>
+  <a class="login-button" id="connectLink" href="#">Connect to Trello</a>
 </div>
 
 <div class="container">
@@ -30,12 +31,12 @@
 
     <div id="loggedin">
 
-      <div id="listOutput"></div>
-
       <div id="header">
         Logged in as <span id="fullName"></span>
         <a id="disconnect" href="#">Log Out</a>
       </div>
+
+      <div id="listOutput"></div>
 
     </div>
 
@@ -58,8 +59,14 @@
 
         <div id="labels"></div>
         <div class="cardName" id="cardOutput"></div>
-        <div class="checklistIcon"></div>
-        <div class="cardChecklist" id="checklistOutput"></div>
+
+        <div id="badges">
+          <!-- <div class="badge-group"><span class="icon-sm icon-description"/></div>
+          <div class="badge-group"><span class="icon-sm icon-comment"/><span id="commentOutput"></span></div> -->
+          <!-- <div><span id="checklistOutput"></span></div> -->
+
+        </div>
+
       </div>
     </div>
 

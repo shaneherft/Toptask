@@ -11,10 +11,26 @@
 
 }
 
+  @font-face {
+      font-family: 'tticons';
+      src: url('../fonts/tticons.eot');
+      src: url('../fonts/tticons.eot?#iefix') format('embedded-opentype'),
+           url('../fonts/tticons.woff') format('woff'),
+           url('../fonts/tticons.ttf') format('truetype'),
+           url('../fonts/tticons.svg#webfontregular') format('svg');
+      font-weight: normal;
+      font-style: normal;
+}
+
+.icon-lg, .icon-sm { color: #b3b3b3; display: inline-block; font-family: "tticons"; -webkit-font-smoothing: antialiased; /* For more detail on this property, see Tim Van Damme's blog post. */ font-style: normal; font-weight: normal; line-height: 1; } .icon-sm { height: 18px; font-size: 12px; line-height: 18px; width: 18px; } .icon-lg { height: 30px; font-size: 20px; line-height: 30px; width: 30px; }
+.icon-org:before { content: "\f000"; } .icon-member:before { content: "\f001"; } .icon-board:before { content: "\f002"; } .icon-comment:before {content: "\e910";} .icon-attachment:before {content: "\f010";} .icon-description:before {content: "\e911";} .icon-checklist:before {content: "\e90d";}
+
 body {
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-size: 14px;
-  background-color: #e2e4e6;
+  /*font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 14px;*/
+  /*background-color: #e2e4e6;*/
+  /*background-color: #CB2F2F;*/
+  background-color: #A42127;
   -webkit-app-region: drag;
   cursor: move;
 
@@ -28,12 +44,18 @@ a {
   font-weight: 400;
   font-size: 14px;
   line-height: 18px;
-  margin: 0px 0 8px;
+  margin: 0px 0 6px;
   overflow: hidden;
   text-decoration: none;
   word-wrap: break-word;
   -webkit-user-select: none;
   -webkit-app-region: no-drag;
+}
+
+span {
+  font-family: 'Helvetica Neue', arial, sans-serif;
+  font-size: 9pt;
+  color: #8c8c8c;
 }
 
 .container {
@@ -49,11 +71,33 @@ a {
   display: none;
 }
 
-/*#header {
-    padding: 4px;
-    border-bottom: 1px solid #000;
-    background: #eee;
-}*/
+.login {
+  height: 266px;
+}
+
+.logo {
+  background-image: url('../images/tt-logo.png');
+  background-repeat:no-repeat;
+  height: 75px;
+  width: 84px;
+  margin: 30px auto;
+  margin-bottom: 25px;
+  /*background-position: 50%, 0%;*/
+}
+
+.login-button {
+  background-color: #e2e4e6;
+  width: 150px;
+  padding: 10px 10px 10px 10px;
+  margin: 0 auto;
+  margin-bottom: 30px;
+  border-radius: 3px;
+  color: #4d4d4d;
+  font-weight: 500;
+  font-size: 18px;
+  box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.15);
+
+}
 
 #output {
   padding: 8px;
@@ -66,7 +110,7 @@ a {
 
 .cardContainer {
   overflow: auto;
-  padding: 6px 6px 4px 6px;
+  padding: 7px 8px 0px 8px;
   position: relative;
   z-index: 10;
 }
@@ -94,17 +138,35 @@ a {
   border-radius: 3px;
 }
 
-.cardChecklist {
-  display: inline-block;
-  font-size: 9pt;
+
+#badges {
+  margin: 0px 0px 10px 4px;
+  font-family: 'Helvetica Neue', arial, sans-serif;
+  font-size: 9.5pt;
   color: #8c8c8c;
-  margin: 0 4px 8px 4px;
 }
 
-#checklistOutput > span {
-  line-height: 9px;
-  margin: 0 auto;
+.badge-group {
+  display: inline-block;
+  /*padding-right: 4px;*/
 }
+
+.badge-spacer {
+  margin-left: 8px;
+}
+
+.badge-text {
+  padding: 0 2px 0 0px;
+}
+
+#checklistOutput {
+  /*padding-left: 4px;*/
+}
+
+#commentOutput {
+  /*padding-left: 4px;*/
+}
+
 
 .toggle {
   position: fixed;
@@ -162,14 +224,6 @@ a {
   cursor: pointer;
 }
 
-.checklistIcon {
-  /*float: left;*/
-  display: inline-block;
-  width: 10.5px;
-  height: 10.5px;
-  margin: 0 2px 0px 0;
-  background-image: url('../images/checkbox.png');
-}
 
 #cardOutput {
   /*margin: 4px 4px 0px 4px;*/

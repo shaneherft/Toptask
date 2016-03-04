@@ -33,8 +33,11 @@ console.log(`NODE_ENV=[${process.env['NODE_ENV']}]`);
 var mainWindow;
 var trelloWindow;
 var cardUrl;
+var displaySize;
+// var xpos = displaySize.width;
+// console.log(xpos);
 
-function createWindow() {
+function createWindow(rightAligned) {
 
   if (__DEV__) {
     // DEBUG run, developer helper features enabled
@@ -42,11 +45,11 @@ function createWindow() {
     // Create the browser window.
     mainWindow = new BrowserWindow({
       width: 266,
-      height: 266,
-      x: 1050,
-      y: 50,
+      height: 206,
+      x: rightAligned,
+      y: 80,
       frame: 1,
-      alwaysOnTop: 0,
+      alwaysOnTop: true,
       webPreferences: {"node-integration": true,}
     });
     // Open the DevTools.
@@ -59,9 +62,9 @@ function createWindow() {
     // Create the browser window.
     mainWindow = new BrowserWindow({
       width: 266,
-      height: 266,
-      x: 1050,
-      y: 50,
+      height: 206,
+      x: rightAligned,
+      y: 80,
       frame: false,
       alwaysOnTop: true,
       webPreferences: {
@@ -124,7 +127,11 @@ function createTrelloWindow(cardUrl) {
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
-app.on('ready', createWindow);
+app.on('ready', function() {
+  app.dock.hide();
+  var displaySize = electron.screen.getPrimaryDisplay().workAreaSize;
+  createWindow(displaySize.width - 346);
+});
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
