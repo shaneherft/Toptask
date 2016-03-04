@@ -27,6 +27,7 @@ var opts = {
 var Trello = require('./lib/client-enode')(window, jQuery, opts);
 
 var cardHeight;
+var listHeight;
 var currentCard;
 var cardLength;
 var nextCardId;
@@ -60,6 +61,7 @@ jQuery(document).ready(function ($) {
     var getList = function() {
 
       $('#listSelect').show();
+      $('#listOutput').empty();
       $('#listOutput').show();
       $('.toggle').hide();
 
@@ -72,7 +74,6 @@ jQuery(document).ready(function ($) {
           .text("Loading list...")
           .appendTo("#listOutput");
 
-        // get first list from first board and get its cards
 
         Trello.get("members/me/boards", (boards)=> {
           Trello.get("boards/52a964092424e6632f0d6921/lists", (lists)=> {
@@ -88,15 +89,14 @@ jQuery(document).ready(function ($) {
                   .text(card.name)
                   .click(function () {
                     $('#listSelect').hide();
-                    $('#labels').empty();
-
-                    $('#cardOutput').empty();
+                    clearCard();
                     cardSelected(card.id);
                   })
                   .appendTo($cards);
 
-                window.resizeTo(266, 58 + $cards.outerHeight());
-
+                getListHeight();
+                // ipcRenderer.send('set-size', 266, 58 + $cards.outerHeight());
+                // // window.resizeTo(266, 58 + $cards.outerHeight());
               });
 
             })
@@ -109,6 +109,7 @@ jQuery(document).ready(function ($) {
   var cardSelected = function (selectedCard) {
 
     $("#singleCard").show();
+    $("listOutput").empty();
 
     $cards = $("<div>")
       .empty()
@@ -164,12 +165,13 @@ jQuery(document).ready(function ($) {
       var cardLink = card.url;
 
       //Displays correct color label
-      var cardLabel;
-      var labelSort = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
       var labelLength = card.labels.length;
+      var labelSort = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
       for (var i = 0; i < labelLength; i++) {
-        cardLabel = card.labels[i].color;
+
+        var cardLabel = card.labels[i].color;
 
         switch (cardLabel) {
 
@@ -288,6 +290,7 @@ jQuery(document).ready(function ($) {
             console.log("No label");
         }
       }
+
       getCardHeight();
       ipcRenderer.send('set-size', 266, 15 + cardHeight);
       $(".toggle").show();
@@ -306,25 +309,29 @@ jQuery(document).ready(function ($) {
           $('.icons').hide();
         });
 
-      $(".trello")
-        .click(function () {
-          currentCard = card.id
-          ipcRenderer.send('trello-open', cardLink);
-
-        });
+      // $(".toggle")
+      //   .click(function () {
+      //     currentCard = card.id
+      //     ipcRenderer.send('trello-open', cardLink);
+      //
+      //   });
 
       $(".back")
         .click(function () {
+          clearList();
           getList();
           clearCard();
         });
 
       $(".tick")
         .click(function () {
-          completeCard(card.id);
-          nextCardId = cardsInList[cardsInList.indexOf(card.id)+1];
+          event.preventDefault();
+          // var incrementIndex = 1;
+          // incrementIndex = incrementIndex++;
+          var nextCardIndex = cardsInList.indexOf(currentCard) + 1;
+          nextCardId = cardsInList[nextCardIndex];
+          completeCard(currentCard);
           cardSelected(nextCardId);
-
         });
 
     });
@@ -336,27 +343,44 @@ ipcRenderer.on("refresh-card", function() {
   cardSelected(currentCard);
 });
 
+ipcRenderer.on("log-out", function() {
+  logout();
+  location.reload();
+});
+
 var completeCard = function (cardId) {
   Trello.put("cards/" + cardId + "/idList", {value: "5403bf2888d0ac13dcc52c4a"});
-  clearCard();
 }
 
 var getCardHeight = function () {  //define a function with the code you want to call
       cardHeight = $('.container').outerHeight();
   };
 
-var clearCard = function() {
-  $('#badges').empty();
-  $('#cardOutput').empty();
-  $('#labels').empty();
-  $cards.empty();
-  // $checklists.empty();
-
+var getListHeight = function () {
+  listHeight = 58 + $cards.outerHeight();
 };
 
-// trelloWindow.closed(function () {
-//   console.log("Closure detected");
-// });
+var clearCard = function() {
+  $('#badges').empty();
+  $('#labels').empty();
+  $('#cardOutput').empty();
+  $cards.empty();
+  // $checklists.empty();
+};
+
+var clearList = function() {
+  $cards.empty();
+  $('#listOutput').empty();
+};
+
+
+$("#zoom a").click(function(e) {
+        var $body = $("body");
+        var newClass = $(this).attr('class');
+        $body.removeClass("default pulse pulse-wide").addClass(newClass);
+       e.preventDefault();
+    }
+);
 
 //TRELLO AUTH
 

@@ -17,6 +17,12 @@ var trayMenuTemplate = [
         enabled: false
     },
     {
+        label: 'Log Out',
+        click: function() {
+          mainWindow.webContents.send('log-out');
+        }
+    },
+    {
         label: 'Quit',
         click: function () {
             // ipcRenderer.send('close-main-window');
@@ -95,6 +101,7 @@ function createWindow(rightAligned) {
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
     mainWindow = null;
+    trelloWindow = null;
   });
 }
 
