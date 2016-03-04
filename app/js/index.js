@@ -25,6 +25,7 @@ var opts = {
 };
 
 var Trello = require('./lib/client-enode')(window, jQuery, opts);
+var bootstrap = require('bootstrap');
 
 var cardHeight;
 var listHeight;
@@ -309,15 +310,16 @@ jQuery(document).ready(function ($) {
           $('.icons').hide();
         });
 
-      // $(".toggle")
-      //   .click(function () {
-      //     currentCard = card.id
-      //     ipcRenderer.send('trello-open', cardLink);
-      //
-      //   });
+      $(".toggle")
+        .click(function () {
+          currentCard = card.id
+          ipcRenderer.send('trello-open', cardLink);
+
+        });
 
       $(".back")
         .click(function () {
+          event.stopPropagation();
           clearList();
           getList();
           clearCard();
@@ -325,7 +327,7 @@ jQuery(document).ready(function ($) {
 
       $(".tick")
         .click(function () {
-          event.preventDefault();
+          event.stopPropagation();
           // var incrementIndex = 1;
           // incrementIndex = incrementIndex++;
           var nextCardIndex = cardsInList.indexOf(currentCard) + 1;
