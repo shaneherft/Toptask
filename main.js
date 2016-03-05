@@ -51,7 +51,7 @@ function createWindow(rightAligned) {
     // Create the browser window.
     mainWindow = new BrowserWindow({
       width: 266,
-      height: 206,
+      height: 66,
       x: rightAligned,
       y: 80,
       frame: 1,
@@ -68,7 +68,7 @@ function createWindow(rightAligned) {
     // Create the browser window.
     mainWindow = new BrowserWindow({
       width: 266,
-      height: 206,
+      height: 66,
       x: rightAligned,
       y: 80,
       frame: false,
@@ -158,7 +158,7 @@ app.on('activate', function () {
 });
 
 ipcMain.on('set-size', function(event, width, height) {
-  mainWindow.setSize(width,height); // prints "ping"
+  mainWindow.setSize(width, height);
 });
 
 ipcMain.on('trello-open', function(event, cardUrl, linkName) {

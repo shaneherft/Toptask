@@ -11,28 +11,37 @@
 
 }
 
-  @font-face {
-      font-family: 'tticons';
-      src: url('../fonts/tticons.eot');
-      src: url('../fonts/tticons.eot?#iefix') format('embedded-opentype'),
-           url('../fonts/tticons.woff') format('woff'),
-           url('../fonts/tticons.ttf') format('truetype'),
-           url('../fonts/tticons.svg#webfontregular') format('svg');
-      font-weight: normal;
-      font-style: normal;
+@font-face {
+    font-family: 'tticons';
+    src: url('../fonts/tticons.eot');
+    src: url('../fonts/tticons.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/tticons.woff') format('woff'),
+         url('../fonts/tticons.ttf') format('truetype'),
+         url('../fonts/tticons.svg#webfontregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
 }
 
-.icon-lg, .icon-sm { color: #b3b3b3; display: inline-block; font-family: "tticons"; -webkit-font-smoothing: antialiased; /* For more detail on this property, see Tim Van Damme's blog post. */ font-style: normal; font-weight: normal; line-height: 1; } .icon-sm { height: 18px; font-size: 12px; line-height: 18px; width: 18px; } .icon-lg { height: 30px; font-size: 20px; line-height: 30px; width: 30px; }
+font-face {
+    font-family: 'Brandon Text';
+    src: url('hvd_fonts_-_brandontext-medium-webfont.eot');
+    src: url('hvd_fonts_-_brandontext-medium-webfont.eot?#iefix') format('embedded-opentype'),
+         url('hvd_fonts_-_brandontext-medium-webfont.woff2') format('woff2'),
+         url('hvd_fonts_-_brandontext-medium-webfont.woff') format('woff'),
+         url('hvd_fonts_-_brandontext-medium-webfont.ttf') format('truetype'),
+         url('hvd_fonts_-_brandontext-medium-webfont.svg#brandon_textmedium') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+.icon-lg, .icon-sm { color: #999; display: inline-block; font-family: "tticons"; -webkit-font-smoothing: antialiased; /* For more detail on this property, see Tim Van Damme's blog post. */ font-style: normal; font-weight: normal; line-height: 1; } .icon-sm { height: 18px; font-size: 12px; line-height: 18px; width: 18px; } .icon-lg { height: 30px; font-size: 20px; line-height: 30px; width: 30px; }
 .icon-org:before { content: "\f000"; } .icon-member:before { content: "\f001"; } .icon-board:before { content: "\f002"; } .icon-comment:before {content: "\e910";} .icon-attachment:before {content: "\f010";} .icon-description:before {content: "\e911";} .icon-checklist:before {content: "\e90d";}
 
 body {
-  /*font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-size: 14px;*/
-  /*background-color: #e2e4e6;*/
-  /*background-color: #CB2F2F;*/
-  background-color: #A42127;
-  /*-webkit-app-region: drag;*/
-  /*cursor: move;*/
+  background-color: #e2e4e6;
+  /*background-image: radial-gradient(50% 69%, #E8A3A3 0%, rgba(245,245,245,0.10) 0%, rgba(226,228,230,0.10) 0%, rgba(200,58,58,0.10) 70%);*/
+  /*background-repeat: no-repeat;*/
 
 }
 
@@ -49,7 +58,6 @@ a {
   text-decoration: none;
   word-wrap: break-word;
   -webkit-user-select: none;
-  /*-webkit-app-region: no-drag;*/
 }
 
 span {
@@ -58,13 +66,15 @@ span {
   color: #8c8c8c;
 }
 
+/*.toptask {
+  position: relative;
+}*/
+
 .container {
   position: relative;
 }
 
 #loggedout {
-  text-align: center;
-  font-size: 20px;
 }
 
 #loggedin {
@@ -72,31 +82,99 @@ span {
 }
 
 .login {
-  height: 266px;
+  text-align: center;
+  display: inline-block;
 }
 
+#welcome-loading {
+  position: fixed;
+  background-color: #C83B3B;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 100%;
+  display: block;
+  text-decoration: none;
+  z-index: 9997;
+  outline: none;
+}
+
+
 .logo {
+  position: absolute;
+  top: 17px;
+  left: 10px;
   background-image: url('../images/tt-logo.png');
   background-repeat:no-repeat;
-  height: 75px;
-  width: 84px;
-  margin: 30px auto;
-  margin-bottom: 25px;
-  /*background-position: 50%, 0%;*/
+  height: 30px;
+  width: 33px;
+  margin-left: 12px;
+}
+
+.login-spacer {
+  position: absolute;
+  top: 17px;
+  left: 75px;
+  height: 30px;
+  width: 1px;
+  border-radius: 2px;
+  opacity: 0.2;
+  background-color: #ffffff;
 }
 
 .login-button {
-  background-color: #e2e4e6;
-  width: 150px;
-  padding: 10px 10px 10px 10px;
-  margin: 0 auto;
-  margin-bottom: 30px;
-  border-radius: 3px;
-  color: #4d4d4d;
-  font-weight: 500;
-  font-size: 18px;
-  box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.15);
+  position:absolute;;
+  top: 17px;
+  right: 20px;
+  font-family: "Brandon Text";
+  background-color: #EF9B59;
+  width: 148px;
+  padding: 5px 0 5px 0;
+  border-radius: 100px;
+  color: #ffffff;
+  font-size: 16px;
+  box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.15);
+  text-decoration: none;
+  cursor: pointer;
+}
 
+.login-button:hover {
+  background-color: #FEE785;
+  color: #A42127;
+}
+
+.loading {
+  position: absolute;
+  top: 17px;
+  left: 100px;
+  color: #ffffff;
+  font-family: "Brandon Text";
+  font-size: 20px;
+  text-align: center;
+  vertical-align: top;
+  margin-left: 30px;
+}
+
+.loading:after {
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: bottom;
+  -webkit-animation: ellipsis steps(4,end) 900ms infinite;
+  animation: ellipsis steps(4,end) 900ms infinite;
+  content: "\2026"; /* ascii code for the ellipsis character */
+  width: 0px;
+}
+
+@keyframes ellipsis {
+  to {
+    width: 15px;
+  }
+}
+
+@-webkit-keyframes ellipsis {
+  to {
+    width: 15px;
+  }
 }
 
 #output {
@@ -108,7 +186,7 @@ span {
   margin-top: 15px;
 }
 
-.cardContainer {
+.cardMainContainer {
   overflow: auto;
   padding: 7px 8px 0px 8px;
   position: relative;
@@ -140,9 +218,10 @@ span {
 
 
 #badges {
-  margin: 0px 0px 10px 4px;
+  margin: 0px 0px 10px 5px;
   font-family: 'Helvetica Neue', arial, sans-serif;
-  font-size: 9.5pt;
+  font-size: 10pt;
+  font-weight: 500;
   color: #8c8c8c;
 }
 
@@ -178,6 +257,7 @@ span {
   text-decoration: none;
   z-index: 9997;
   outline: none;
+  cursor: pointer;
 }
 
 .icons {
@@ -230,10 +310,7 @@ span {
   -webkit-app-region: drag;
 }
 
-
 #cardOutput {
-  /*margin: 4px 4px 0px 4px;*/
-  /*padding: 0 0 0 0;*/
   margin-bottom: -3px !important;
 }
 
