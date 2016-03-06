@@ -7,6 +7,7 @@ const ipcMain = require('electron').ipcMain;
 var Tray = require('tray');
 var Menu = require('menu');
 var path = require('path');
+var globalShortcut = require('global-shortcut');
 
 var trayIcon = null;
 
@@ -138,6 +139,14 @@ app.on('ready', function() {
   app.dock.hide();
   var displaySize = electron.screen.getPrimaryDisplay().workAreaSize;
   createWindow(displaySize.width - 346);
+
+  globalShortcut.register('ctrl+shift+1', function () {
+      mainWindow.webContents.send('global-shortcut', 0);
+  });
+  globalShortcut.register('ctrl+shift+2', function () {
+    mainWindow.webContents.send('global-shortcut', 1);
+  });
+
 });
 
 // Quit when all windows are closed.

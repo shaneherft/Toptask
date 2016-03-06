@@ -350,6 +350,10 @@ ipcRenderer.on("log-out", function() {
   location.reload();
 });
 
+ipcRenderer.on('global-shortcut', function (arg) {
+  localtion.reload();
+});
+
 var completeCard = function (cardId) {
   Trello.put("cards/" + cardId + "/idList", {value: "5403bf2888d0ac13dcc52c4a"});
 }
