@@ -30,7 +30,6 @@ var bootstrap = require('bootstrap');
 var cardHeight;
 var listHeight;
 var cardLength;
-var nextCardId;
 var cardsInList = [];
 var $cards;
 var $loading;
@@ -85,7 +84,7 @@ jQuery(document).ready(function ($) {
               $.each(cards, function (ix, card) {
 
                 cardsinList = [];
-                cardsInList.push(card.id);
+                cardsInList.push(card);
 
                 $("<a>")
                   .addClass("card")
@@ -94,7 +93,12 @@ jQuery(document).ready(function ($) {
                     $('#listSelect').hide();
                     $('#welcome-loading').show();
                     ipcRenderer.send('set-size', 266, 66);
-                    cardSelected(card.id);
+
+                    Trello.get("cards/" + card.id, function (card) {
+                      var selectedCard = card;
+                      cardSelected(selectedCard);
+                    });
+
                   })
                   .appendTo($list);
               });
@@ -113,7 +117,8 @@ jQuery(document).ready(function ($) {
     $("listOutput").empty();
     $('#cardOutput').empty();
 
-    Trello.get("cards/" + selectedCard, function (card) {
+    // Trello.get("cards/" + selectedCard, function (card) {
+      var currentCard = selectedCard;
 
       $cards = $("<div>")
         .appendTo("#cardOutput");
@@ -121,35 +126,35 @@ jQuery(document).ready(function ($) {
       $cards.empty();
       $("<a>")
         .addClass("cards")
-        .text(card.name)
+        .text(currentCard.name)
         .appendTo($cards);
 
       //CHECK ALL BADGES (SHOULD MAKE THIS A FUNCTION)
 
-      if (card.badges.description === true) {
+      if (currentCard.badges.description === true) {
         $('<span>')
           .addClass("icon-sm icon-description badge-spacer")
           .appendTo('#badges');
       }
 
-      if (card.badges.comments > 0) {
+      if (currentCard.badges.comments > 0) {
         $('<span>')
           .addClass("icon-sm icon-comment badge-spacer")
           .appendTo('#badges');
         $('<span>')
           .addClass("badge-text")
-          .text(card.badges.comments)
+          .text(currentCard.badges.comments)
           .appendTo('#badges');
       }
 
 
-      if (card.badges.checkItems > 0) {
+      if (currentCard.badges.checkItems > 0) {
         $('<span>')
           .addClass("icon-sm icon-checklist badge-spacer")
           .appendTo('#badges');
         $('<span>')
           .addClass("badge-text")
-          .text(card.badges.checkItemsChecked + "/" + card.badges.checkItems)
+          .text(currentCard.badges.checkItemsChecked + "/" + currentCard.badges.checkItems)
           .appendTo('#badges');
       }
       else {
@@ -157,12 +162,12 @@ jQuery(document).ready(function ($) {
       }
       //Displays correct color label
 
-      var labelLength = card.labels.length;
+      var labelLength = currentCard.labels.length;
       var labelSort = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
       for (var i = 0; i < labelLength; i++) {
 
-        var cardLabel = card.labels[i].color;
+        var cardLabel = currentCard.labels[i].color;
 
         switch (cardLabel) {
 
@@ -282,6 +287,8 @@ jQuery(document).ready(function ($) {
         }
       }
 
+
+
       $("#welcome-loading").hide();
       getCardHeight();
       ipcRenderer.send('set-size', 266, 15 + cardHeight);
@@ -304,7 +311,8 @@ jQuery(document).ready(function ($) {
 
       $(".toggle")
         .click(function () {
-          ipcRenderer.send('trello-open', card.url);
+          var cardLink = currentCard.url;
+          ipcRenderer.send('trello-open', cardLink);
         });
 
       $(".back")
@@ -314,7 +322,6 @@ jQuery(document).ready(function ($) {
           $('#welcome-loading').show();
           clearList();
           clearCard();
-          // delete card.url;
           getList();
 
         });
@@ -322,10 +329,12 @@ jQuery(document).ready(function ($) {
       $(".tick")
         .click(function () {
           event.stopPropagation();
-          var nextCardIndex = cardsInList.indexOf(card.id) + 1;
-          nextCardId = cardsInList[nextCardIndex];
-          completeCard(currentCard);
-          cardSelected(nextCardId);
+          var nextCardIndex = cardsInList.indexOf(currentCard) + 1;
+          var nextCard = cardsInList[nextCardIndex];
+          console.log(nextCardIndex);
+          var completedCard = currentCard.id;
+          cardComplete(completedCard);
+          cardSelected(nextCard);
         });
 
       $(".drag")
@@ -333,13 +342,13 @@ jQuery(document).ready(function ($) {
           event.stopPropagation();
         });
 
-    });
+    // });
 
   };
 
 ipcRenderer.on("refresh-card", function() {
   clearCard();
-  cardSelected(currentCard);
+  // cardSelected(currentCard);
 });
 
 ipcRenderer.on("log-out", function() {
@@ -347,9 +356,9 @@ ipcRenderer.on("log-out", function() {
   location.reload();
 });
 
-var completeCard = function (cardId) {
+var cardComplete = function (cardId) {
   Trello.put("cards/" + cardId + "/idList", {value: "5403bf2888d0ac13dcc52c4a"});
-}
+};
 
 var getCardHeight = function () {  //define a function with the code you want to call
       cardHeight = $('.container').outerHeight();

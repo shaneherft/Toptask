@@ -33,6 +33,7 @@ var cardLength;
 var nextCardId;
 var cardsInList = [];
 var $cards;
+var $list;
 var $loading;
 // var $checklists;
 var trelloWindow;
@@ -74,7 +75,7 @@ jQuery(document).ready(function ($) {
 
         // $("#fullName").text(member.fullName);
 
-        var $list = $("<div>")
+        $list = $("<div>")
           .appendTo("#listOutput");
 
         Trello.get("members/me/boards", (boards)=> {
@@ -110,8 +111,11 @@ jQuery(document).ready(function ($) {
   var cardSelected = function (selectedCard) {
 
     $("#singleCard").show();
-    $("listOutput").empty();
     $('#cardOutput').empty();
+    $("#listOutput").empty();
+    $('#labels').empty();
+    $('#badges').empty();
+
 
     Trello.get("cards/" + selectedCard, function (card) {
 
@@ -314,7 +318,6 @@ jQuery(document).ready(function ($) {
           $('#welcome-loading').show();
           clearList();
           clearCard();
-          // delete card.url;
           getList();
 
         });
@@ -324,7 +327,7 @@ jQuery(document).ready(function ($) {
           event.stopPropagation();
           var nextCardIndex = cardsInList.indexOf(card.id) + 1;
           nextCardId = cardsInList[nextCardIndex];
-          completeCard(currentCard);
+          completeCard(card.id);
           cardSelected(nextCardId);
         });
 
@@ -388,6 +391,7 @@ var clearCard = function() {
 
 var clearList = function() {
   $cards.empty();
+  $list.empty();
   $('#listOutput').empty();
 };
 
