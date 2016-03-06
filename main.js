@@ -161,7 +161,8 @@ ipcMain.on('set-size', function(event, width, height) {
   mainWindow.setSize(width, height);
 });
 
-ipcMain.on('trello-open', function(event, cardUrl, linkName) {
+ipcMain.on('trello-open', function(event, cardUrl) {
+  console.log(cardUrl);
   createTrelloWindow(cardUrl);
 });
 
