@@ -27,5 +27,8 @@
   "devDependencies": {
     "cross-env": "^1.0.7",
     "electron-prebuilt": "^0.36.9"
+  },
+  "dependencies": {
+    "nconf": "^0.8.4"
   }
 }

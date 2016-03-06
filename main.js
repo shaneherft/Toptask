@@ -8,14 +8,20 @@ var Tray = require('tray');
 var Menu = require('menu');
 var path = require('path');
 var globalShortcut = require('global-shortcut');
-
+var configuration = require('./configuration');
 var trayIcon = null;
-
+var settingsWindow = null;
 
 var trayMenuTemplate = [
     {
         label: 'Toptask',
         enabled: false
+    },
+    {
+        label: 'Settings',
+        click: function() {
+          createSettingsWindow();
+        }
     },
     {
         label: 'Log Out',
@@ -108,6 +114,10 @@ function createWindow(rightAligned) {
 
 function createTrelloWindow(cardUrl) {
 
+  if (trelloWindow) {
+      return;
+  }
+
   trelloWindow = new BrowserWindow({
     width: 800,
     height: 600,
@@ -133,19 +143,39 @@ function createTrelloWindow(cardUrl) {
 
 }
 
+function createSettingsWindow() {
+
+    if (settingsWindow) {
+        return;
+    }
+
+    settingsWindow = new BrowserWindow({
+        frame: false,
+        height: 200,
+        resizable: false,
+        width: 200
+    });
+
+    settingsWindow.loadURL('file://' + __dirname + '/settings.html');
+
+    settingsWindow.on('closed', function () {
+        settingsWindow = null;
+    });
+};
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 app.on('ready', function() {
+
+  // if (!configuration.readSettings('shortcutKeys')) {
+    configuration.saveSettings('shortcutKeys', ['cmd','shift']);
+  // }
+
   app.dock.hide();
   var displaySize = electron.screen.getPrimaryDisplay().workAreaSize;
   createWindow(displaySize.width - 346);
 
-  globalShortcut.register('ctrl+shift+1', function () {
-      mainWindow.webContents.send('global-shortcut', 0);
-  });
-  globalShortcut.register('ctrl+shift+2', function () {
-    mainWindow.webContents.send('global-shortcut', 1);
-  });
+  setGlobalShortcuts();
 
 });
 
@@ -176,6 +206,27 @@ ipcMain.on('trello-open', function(event, cardUrl) {
 });
 
 
-// mainWindow.BrowserWindowProxy.closed(function() {
-// console.log("Window close detected");
-// });
+ipcMain.on('close-settings-window', function () {
+    // if (settingsWindow) {
+        settingsWindow.close();
+    // }
+});
+
+
+ipcMain.on('set-global-shortcuts', function () {
+    setGlobalShortcuts();
+});
+
+function setGlobalShortcuts() {
+    globalShortcut.unregisterAll();
+
+    var shortcutKeysSetting = configuration.readSettings('shortcutKeys');
+    var shortcutPrefix = shortcutKeysSetting.length === 0 ? '' : shortcutKeysSetting.join('+') + '+';
+
+    globalShortcut.register(shortcutPrefix + 's', function () {
+        mainWindow.webContents.send('global-shortcut', 0);
+    });
+    // globalShortcut.register(shortcutPrefix + '2', function () {
+    //     mainWindow.webContents.send('global-shortcut', 1);
+    // });
+}

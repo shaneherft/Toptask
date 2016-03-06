@@ -351,8 +351,15 @@ ipcRenderer.on("log-out", function() {
 });
 
 ipcRenderer.on('global-shortcut', function (arg) {
-  localtion.reload();
+  location.reload();
 });
+
+
+// var settings = document.querySelector('.settings');
+// settings.addEventListener('click', function () {
+//     ipcRenderer.send('open-settings-window');
+// });
+
 
 var completeCard = function (cardId) {
   Trello.put("cards/" + cardId + "/idList", {value: "5403bf2888d0ac13dcc52c4a"});
