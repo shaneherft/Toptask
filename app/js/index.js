@@ -227,7 +227,7 @@ jQuery(document).ready(function ($) {
             break;
 
           default:
-            return false;
+            console.log("No label");
         }
       }
 
@@ -318,7 +318,6 @@ jQuery(document).ready(function ($) {
         .unbind('click')
         .click(function () {
           event.stopPropagation();
-          console.log(cardsInList);
           var nextCardId = cardsInList[cardsInList.indexOf(card.id)+1];
           completeCard(card.id);
           cardSelected(nextCardId);
