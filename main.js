@@ -11,6 +11,8 @@ var globalShortcut = require('global-shortcut');
 var configuration = require('./configuration');
 var trayIcon = null;
 var settingsWindow = null;
+var trelloWindow = null;
+var mainWindow;
 
 var trayMenuTemplate = [
     {
@@ -43,10 +45,8 @@ var __DEV__ = (process.env['NODE_ENV'] === 'development');
 console.log(`NODE_ENV=[${process.env['NODE_ENV']}]`);
 
 // Config
-var mainWindow;
-var trelloWindow;
-var cardUrl;
-var displaySize;
+
+
 // var xpos = displaySize.width;
 // console.log(xpos);
 
@@ -112,7 +112,7 @@ function createWindow(rightAligned) {
   });
 }
 
-function createTrelloWindow(cardUrl) {
+function createTrelloWindow(cardLink) {
 
   if (trelloWindow) {
       return;
@@ -130,12 +130,10 @@ function createTrelloWindow(cardUrl) {
     }
   });
 
-  trelloWindow.loadURL(cardUrl);
+  trelloWindow.loadURL(cardLink);
 
   trelloWindow.on('closed', function () {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
+
     mainWindow.webContents.send('refresh-card');
     trelloWindow = null;
 
@@ -171,7 +169,7 @@ app.on('ready', function() {
     configuration.saveSettings('shortcutKeys', ['cmd','shift']);
   // }
 
-  app.dock.hide();
+  // app.dock.hide();
   var displaySize = electron.screen.getPrimaryDisplay().workAreaSize;
   createWindow(displaySize.width - 346);
 

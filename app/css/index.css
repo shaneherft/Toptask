@@ -70,15 +70,16 @@ span {
   position: relative;
 }*/
 
-.container {
+/*.container {
   position: relative;
-}
+}*/
 
 #loggedout {
 }
 
 #loggedin {
   display: none;
+  position: relative;
 }
 
 .login {
@@ -217,7 +218,7 @@ span {
 }
 
 
-#badges {
+.badge {
   margin: 0px 0px 10px 5px;
   font-family: 'Helvetica Neue', arial, sans-serif;
   font-size: 10pt;
