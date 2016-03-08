@@ -258,6 +258,7 @@ span {
 
 .icon-background:hover {
   background-color: rgba(0, 0, 0, 0.70);
+  /*background-color: #C83B3B;*/
 }
 
 .tick {

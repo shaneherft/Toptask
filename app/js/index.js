@@ -33,11 +33,14 @@ jQuery(document).ready(function ($) {
   var $loading;
   var cardsInList;
 
-  $(".toggle").hide();
+  // $(".toggle").hide();
   // var checkAuth = Trello.authorized();
   // if (checkAuth === true) {
   //   console.log(checkAuth);
-  //   onAuthorize();
+  //   getList();
+  // }
+  // else {
+  //   console.log("false");
   // }
 
   var onAuthorize = function () {
@@ -53,6 +56,7 @@ jQuery(document).ready(function ($) {
 
     var getList = function() {
 
+      $('#cardOutput').empty();
       $('#listOutput').empty();
       $('.toggle').hide();
 
@@ -98,7 +102,10 @@ jQuery(document).ready(function ($) {
 
     Trello.get("cards/" + selectedCard, function (card) {
 
-      var currentCard = card.id;
+      // var currentCard = card.id;
+
+
+
       $('#loggedin').addClass('cardContainer');
 
       //GET LABEL AND APPEND TO CARDOUTPUT
@@ -334,7 +341,7 @@ jQuery(document).ready(function ($) {
         });
 
       ipcRenderer.on("refresh-card", function() {
-        cardSelected(currentCard);
+        cardSelected(card.id);
       });
 
       var completeCard = function (cardId) {
