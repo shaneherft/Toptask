@@ -99,7 +99,7 @@ jQuery(document).ready(function ($) {
     Trello.get("cards/" + selectedCard, function (card) {
 
       var currentCard = card.id;
-      console.log(cardsInList);
+      $('#loggedin').addClass('cardContainer');
 
       //GET LABEL AND APPEND TO CARDOUTPUT
 
@@ -257,6 +257,7 @@ jQuery(document).ready(function ($) {
 
       if (card.badges.comments > 0) {
         $('<span>')
+          // .text(card.badges.comments)
           .addClass("icon-sm icon-comment badge-spacer")
           .appendTo('.badge');
         $('<span>')
@@ -269,6 +270,7 @@ jQuery(document).ready(function ($) {
       if (card.badges.checkItems > 0) {
         $('<span>')
           .addClass("icon-sm icon-checklist badge-spacer")
+            // .text(card.badges.checkItemsChecked + "/" + card.badges.checkItems)
           .appendTo('.badge');
         $('<span>')
           .addClass("badge-text")
@@ -279,7 +281,10 @@ jQuery(document).ready(function ($) {
       // EVENTS AND LISTENERS
 
       $("#welcome-loading").hide();
-      ipcRenderer.send('set-size', 266, 15 + $card.outerHeight());
+
+      var cardHeight = $('.cardContainer').outerHeight();
+      ipcRenderer.send('set-size', 266, 15 + cardHeight);
+
       $(".toggle").show();
 
 
@@ -350,11 +355,6 @@ ipcRenderer.on("log-out", function() {
 ipcRenderer.on('global-shortcut', function (arg) {
   location.reload();
 });
-
-
-// var getCardHeight = function () {  //define a function with the code you want to call
-//       cardHeight = $('.container').outerHeight();
-//   };
 
 var  ellipsis = {
     'value' : ['', '.', '..', '...'],
