@@ -12,6 +12,17 @@
 }
 
 @font-face {
+    font-family: 'HelveticaNeueBold';
+    src: url('../fonts/HelveticaNeueBold.eot');
+    src: url('../fonts/HelveticaNeueBold.eot') format('embedded-opentype'),
+         url('../fonts/HelveticaNeueBold.woff2') format('woff2'),
+         url('../fonts/HelveticaNeueBold.woff') format('woff'),
+         url('../fonts/HelveticaNeueBold.ttf') format('truetype'),
+         url('../fonts/HelveticaNeueBold.svg#HelveticaNeueBold') format('svg');
+}
+
+
+@font-face {
     font-family: 'tticons';
     src: url('../fonts/tticons.eot');
     src: url('../fonts/tticons.eot?#iefix') format('embedded-opentype'),
@@ -53,7 +64,7 @@ a {
   font-weight: 400;
   font-size: 14px;
   line-height: 18px;
-  margin: 0px 0 6px;
+  margin: 0px 0 0px;
   overflow: hidden;
   text-decoration: none;
   word-wrap: break-word;
@@ -178,6 +189,13 @@ span {
   }
 }
 
+.listName {
+  font-family: 'HelveticaNeueBold', Arial, sans-serif;
+  font-size: 15px;
+  line-height: 18px;
+  color: #4d4d4d;
+  margin-bottom: 8px;
+}
 
 .cardName {
   margin-top: 15px;
@@ -186,7 +204,8 @@ span {
 
 .cardContainer {
   background-color: #fff;
-  padding: 8px 8px 0px 8px;
+  padding: 8px 8px 8px 8px;
+  margin-bottom: 5px;
   border-bottom: 1px solid #ccc;
   border-radius: 3px;
   cursor: pointer;
@@ -210,7 +229,7 @@ span {
 
 
 .badge {
-  margin: 0px 0px 10px 0px;
+  margin: 4px 0px 10px 0px;
   font-family: 'Helvetica Neue', arial, sans-serif;
   font-size: 9pt;
   font-weight: 500;
@@ -218,8 +237,9 @@ span {
 }
 
 .badge-spacer {
-  margin-left: 8px;
-  margin-right: 0px;
+  margin: 6px 0 0 6px;
+  /*margin-left: 8px;
+  margin-right: 0px;*/
 }
 
 .badge-text {
@@ -289,9 +309,9 @@ span {
   -webkit-app-region: drag;
 }
 
-#cardOutput {
+/*#cardOutput {
   margin-bottom: -3px !important;
-}
+}*/
 
 #connectLink {
   cursor: pointer;

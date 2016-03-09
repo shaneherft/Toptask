@@ -13,6 +13,7 @@ var trayIcon = null;
 var settingsWindow = null;
 var trelloWindow = null;
 var mainWindow;
+var displaySize =1;
 
 var trayMenuTemplate = [
     {
@@ -57,7 +58,7 @@ function createWindow(rightAligned) {
 
     // Create the browser window.
     mainWindow = new BrowserWindow({
-      width: 266,
+      width: 269,
       height: 66,
       x: rightAligned,
       y: 80,
@@ -74,7 +75,7 @@ function createWindow(rightAligned) {
 
     // Create the browser window.
     mainWindow = new BrowserWindow({
-      width: 266,
+      width: 269,
       height: 66,
       x: rightAligned,
       y: 80,
@@ -170,7 +171,7 @@ app.on('ready', function() {
   // }
 
   // app.dock.hide();
-  var displaySize = electron.screen.getPrimaryDisplay().workAreaSize;
+  displaySize = electron.screen.getPrimaryDisplay().workAreaSize;
   createWindow(displaySize.width - 346);
 
   setGlobalShortcuts();
@@ -195,11 +196,16 @@ app.on('activate', function () {
 });
 
 ipcMain.on('set-size', function(event, width, height) {
-  mainWindow.setSize(width, height);
+  if (height < displaySize.height - 140) {
+    mainWindow.setSize(width, height);
+  }
+  else {
+    mainWindow.setSize(width, displaySize.height - 140)
+  }
+
 });
 
 ipcMain.on('trello-open', function(event, cardUrl) {
-  console.log(cardUrl);
   createTrelloWindow(cardUrl);
 });
 

@@ -33,6 +33,16 @@ jQuery(document).ready(function ($) {
   var $loading;
   var cardsInList;
 
+  // $(".toggle").hide();
+  // var checkAuth = Trello.authorized();
+  // if (checkAuth === true) {
+  //   console.log(checkAuth);
+  //   getList();
+  // }
+  // else {
+  //   console.log("false");
+  // }
+
   var onAuthorize = function () {
     updateLoggedIn();
     $loading = $("<div>")
@@ -40,93 +50,76 @@ jQuery(document).ready(function ($) {
       .text("Loading")
       .appendTo("#welcome-loading");
     getList();
-  };
+    };
 
     //TRELLO FUNCTIONS
 
-  var getList = function() {
+    var getList = function() {
 
-    $('#cardOutput').empty();
-    $('#listOutput').empty();
-    $('.toggle').hide();
+      $('#cardOutput').empty();
+      $('#listOutput').empty();
+      $('.toggle').hide();
 
-    Trello.members.get("me", (member)=> {
+      Trello.members.get("me", (member)=> {
 
-      // Trello.get("members/me/boards", (boards)=> {
-      //   Trello.get("boards/52a964092424e6632f0d6921/lists", (lists)=> {
-          Trello.get("lists/55d26f54726fb67f022db618/cards", (cards)=> {
-            // console.debug(boards, lists, cards)
-            // $list.empty();
+        var $list = $("<div>")
+          .appendTo("#listOutput");
 
-            //PUT ME BACK!!!!!!!!!!!
-            // cardsInList = [];
-            var $listOutput = $("#listOutput");
-            var listName = "PRIORITY";
-            var $list = $("<div class='listName'>" + listName + "</div>")
-              .addClass('')
-              .appendTo("#listOutput");
+        Trello.get("members/me/boards", (boards)=> {
+          Trello.get("boards/52a964092424e6632f0d6921/lists", (lists)=> {
+            Trello.get("lists/55d26f54726fb67f022db618/cards", (cards)=> {
+              // console.debug(boards, lists, cards)
+              $list.empty();
+              cardsInList = [];
 
-            $.each(cards, function (ix, card) {
+              $.each(cards, function (ix, card) {
 
-              // cardsInList.push(card.id);
+                cardsInList.push(card.id);
 
-
-              var cardNumber = $listOutput.children().length;
-              $listOutput.append('<div class="cardContainer" id="cardNumber' + $listOutput.children().length + '"></div>');
-
-              // $("<a>")
-              //   .addClass("cardContainer")
-              //   .text(card.name)
-              //   .click(function () {
-              //     $('#welcome-loading').show();
-              //     ipcRenderer.send('set-size', 266, 66);
-              //     cardSelected(card.id);
-              //   })
-              //   .appendTo('#listOutput');
-
-              console.log(cardNumber);
-              cardDisplay(card, cardNumber);
-
-            });
-
-            $('#welcome-loading').hide();
-            console.log($listOutput);
-            ipcRenderer.send('set-size', 269, 58 + $listOutput.outerHeight());
-
+                $("<a>")
+                  .addClass("card")
+                  .text(card.name)
+                  .click(function () {
+                    $('#welcome-loading').show();
+                    ipcRenderer.send('set-size', 266, 66);
+                    cardSelected(card.id);
+                  })
+                  .appendTo($list);
+              });
+              $('#welcome-loading').hide();
+              ipcRenderer.send('set-size', 266, 58 + $list.outerHeight());
+            })
           })
-      //   })
-      // })
-    });
-  };
+        })
+      });
+    };
 
 
   var cardSelected = function (selectedCard) {
 
-    // $('#cardOutput').empty();
-    // $("#listOutput").empty();
+    $('#cardOutput').empty();
+    $("#listOutput").empty();
 
     Trello.get("cards/" + selectedCard, function (card) {
 
-      cardDisplay(card);
-      cardAction(card);
-    });
+      // var currentCard = card.id;
 
-  };
 
-  //GET LABEL AND APPEND TO CARDOUTPUT
 
-  var cardDisplay = function(displayCard, cardNumber) {
+      $('#loggedin').addClass('cardContainer');
 
-      var $cardNumber = $('#cardNumber' + cardNumber);
-      console.log(displayCard.id + " " + cardNumber);
-      console.log($cardNumber);
+      //GET LABEL AND APPEND TO CARDOUTPUT
 
-      var labelLength = displayCard.labels.length;
+      var $labels = $("<div>")
+        .addClass("label")
+        .appendTo("#cardOutput");
+
+      var labelLength = card.labels.length;
       var labelSort = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
       for (var i = 0; i < labelLength; i++) {
 
-        var cardLabel = displayCard.labels[i].color;
+        var cardLabel = card.labels[i].color;
 
         switch (cardLabel) {
 
@@ -183,61 +176,61 @@ jQuery(document).ready(function ($) {
           case "green":
             $("<div class=cardLabel></div>")
               .css("background-color", "#61bd4f")
-              .appendTo($cardNumber);
+              .appendTo(".label");
             break;
 
           case "red":
             $("<div class=cardLabel></div>")
               .css("background-color", "#eb5a46")
-              .appendTo($cardNumber);
+              .appendTo(".label");
             break;
 
           case "sky":
             $("<div class=cardLabel></div>")
               .css("background-color", "#00c2e0")
-              .appendTo($cardNumber);
+              .appendTo(".label");
             break;
 
           case "orange":
             $("<div class=cardLabel></div>")
               .css("background-color", "#ffab4a")
-              .appendTo($cardNumber);
+              .appendTo(".label");
             break;
 
           case "yellow":
             $("<div class=cardLabel></div>")
               .css("background-color", "#f2d600")
-              .appendTo($cardNumber);
+              .appendTo(".label");
             break;
 
           case "blue":
             $("<div class=cardLabel></div>")
               .css("background-color", "#0079bf")
-              .appendTo($cardNumber);
+              .appendTo(".label");
             break;
 
           case "pink":
             $("<div class=cardLabel></div>")
               .css("background-color", "#ff80ce")
-              .appendTo($cardNumber);
+              .appendTo(".label");
             break;
 
           case "lime":
             $("<div class=cardLabel></div>")
               .css("background-color", "#51e898")
-              .appendTo($cardNumber);
+              .appendTo(".label");
             break;
 
           case "purple":
             $("<div class=cardLabel></div>")
               .css("background-color", "#c377e0")
-              .appendTo($cardNumber);
+              .appendTo(".label");
             break;
 
           case "black":
             $("<div class=cardLabel></div>")
               .css("background-color", "#4d4d4d")
-              .appendTo($cardNumber);
+              .appendTo(".label");
             break;
 
           default:
@@ -248,121 +241,122 @@ jQuery(document).ready(function ($) {
       //GET CARD NAME AND APPEND TO CARDOUTPUT
 
       var $card = $("<div>")
-        .appendTo($cardNumber);
+        .appendTo("#cardOutput");
 
       $card.empty();
       $("<a>")
         .addClass("cards")
-        .attr({href: displayCard.url, target: "trello"})
-        .text(displayCard.name)
+        .attr({href: card.url, target: "trello"})
+        .text(card.name)
         .appendTo($card);
 
       //GET CARD BADGES AND APPEND TO CARDOUTPUT
 
-      if (displayCard.badges.description === true) {
+      var $badges = $("<div>")
+        .addClass("badge")
+        .appendTo("#cardOutput");
+
+      if (card.badges.description === true) {
         $('<span>')
           .addClass("icon-sm icon-description badge-spacer")
-          .appendTo($cardNumber);
+          .appendTo('.badge');
       }
 
-      if (displayCard.badges.comments > 0) {
+      if (card.badges.comments > 0) {
         $('<span>')
           // .text(card.badges.comments)
           .addClass("icon-sm icon-comment badge-spacer")
-          .appendTo($cardNumber);
+          .appendTo('.badge');
         $('<span>')
           .addClass("badge-text")
-          .text(displayCard.badges.comments)
-          .appendTo($cardNumber);
+          .text(card.badges.comments)
+          .appendTo('.badge');
       }
 
-      if (displayCard.badges.checkItems > 0) {
+
+      if (card.badges.checkItems > 0) {
         $('<span>')
           .addClass("icon-sm icon-checklist badge-spacer")
             // .text(card.badges.checkItemsChecked + "/" + card.badges.checkItems)
-          .appendTo($cardNumber);
+          .appendTo('.badge');
         $('<span>')
           .addClass("badge-text")
-          .text(displayCard.badges.checkItemsChecked + "/" + displayCard.badges.checkItems)
-          .appendTo($cardNumber);
+          .text(card.badges.checkItemsChecked + "/" + card.badges.checkItems)
+          .appendTo('.badge');
       }
-  //
-  //     // EVENTS AND LISTENERS
-  //
-  //     $("#welcome-loading").hide();
-  //     var cardHeight = $('.cardContainer').outerHeight();
-  //     ipcRenderer.send('set-size', 269, 15 + cardHeight);
 
-        setInterval(function() {
+      // EVENTS AND LISTENERS
 
-          alert("Hello"); 
+      $("#welcome-loading").hide();
 
-        }, 1800000);
-  //
+      var cardHeight = $('.cardContainer').outerHeight();
+      ipcRenderer.send('set-size', 266, 15 + cardHeight);
+
+      $(".toggle").show();
+
+
+      $(".toggle").click(function (event) {
+        event.preventDefault();
+        $("div.overlay").fadeToggle("fast");
+
+      });
+
+      $(".toggle")
+        .mouseover(function () {
+          $('.icons').show();
+        })
+        .mouseout(function () {
+          $('.icons').hide();
+        });
+
+      $(".toggle")
+        .unbind('click')
+        .click(function () {
+          ipcRenderer.send('trello-open', card.url);
+        });
+
+      $(".back")
+        .unbind('click')
+        .click(function () {
+          event.stopPropagation();
+          ipcRenderer.send('set-size', 266, 66);
+          $('#welcome-loading').show();
+          $('#cardOutput').empty();
+          getList();
+
+        });
+
+      $(".tick")
+        .unbind('click')
+        .click(function () {
+          event.stopPropagation();
+          var nextCardId = cardsInList[cardsInList.indexOf(card.id)+1];
+          completeCard(card.id);
+          cardSelected(nextCardId);
+        });
+
+      $(".drag")
+        .click(function () {
+          event.stopPropagation();
+        });
+
+      ipcRenderer.on("refresh-card", function() {
+        cardSelected(card.id);
+      });
+
+      var completeCard = function (cardId) {
+        Trello.put("cards/" + cardId + "/idList", {value: "5403bf2888d0ac13dcc52c4a"});
+      }
+
+    });
+
   };
-  //
-  //
-  // var cardAction = function(card) {
-  //
-  // $(".toggle").show();
-  //
-  //
-  // $(".toggle").click(function (event) {
-  //   event.preventDefault();
-  //   $("div.overlay").fadeToggle("fast");
-  //
-  // });
-  //
-  // $(".toggle")
-  //   .mouseover(function () {
-  //     $('.icons').show();
-  //   })
-  //   .mouseout(function () {
-  //     $('.icons').hide();
-  //   });
-  //
-  // $(".toggle")
-  //   .unbind('click')
-  //   .click(function () {
-  //     ipcRenderer.send('trello-open', displayCard.url);
-  //   });
-  //
-  // $(".back")
-  //   .unbind('click')
-  //   .click(function () {
-  //     event.stopPropagation();
-  //     ipcRenderer.send('set-size', 266, 66);
-  //     $('#welcome-loading').show();
-  //     $('#cardOutput').empty();
-  //     getList();
-  //
-  //   });
-  //
-  // $(".tick")
-  //   .unbind('click')
-  //   .click(function () {
-  //     event.stopPropagation();
-  //     $('#welcome-loading').show();
-  //     var nextCardId = cardsInList[cardsInList.indexOf(displayCard.id)+1];
-  //     completeCard(displayCard.id);
-  //     cardSelected(nextCardId);
-  //   });
-  //
-  // $(".drag")
-  //   .click(function () {
-  //     event.stopPropagation();
-  //   });
-  //
-  //
-  // ipcRenderer.on("refresh-card", function() {
-  //   cardSelected(displayCard.id);
-  // });
-  //
-  // var completeCard = function (cardId) {
-  //   Trello.put("cards/" + cardId + "/idList", {value: "5403bf2888d0ac13dcc52c4a"});
-  // }
 
-// };
+
+
+
+
+
 
 
 ipcRenderer.on("log-out", function() {
