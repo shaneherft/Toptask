@@ -32,6 +32,7 @@ jQuery(document).ready(function ($) {
 
   var $loading;
   var cardsInList;
+  var cardTimer;
 
   var onAuthorize = function () {
     updateLoggedIn();
@@ -56,10 +57,8 @@ jQuery(document).ready(function ($) {
       //   Trello.get("boards/52a964092424e6632f0d6921/lists", (lists)=> {
           Trello.get("lists/55d26f54726fb67f022db618/cards", (cards)=> {
             // console.debug(boards, lists, cards)
-            // $list.empty();
+            cardsInList = [];
 
-            //PUT ME BACK!!!!!!!!!!!
-            // cardsInList = [];
             var $listOutput = $("#listOutput");
             var listName = "PRIORITY";
             var $list = $("<div class='listName'>" + listName + "</div>")
@@ -68,30 +67,33 @@ jQuery(document).ready(function ($) {
 
             $.each(cards, function (ix, card) {
 
-              // cardsInList.push(card.id);
-
+              cardsInList.push(card.id);
 
               var cardNumber = $listOutput.children().length;
               $listOutput.append('<div class="cardContainer" id="cardNumber' + $listOutput.children().length + '"></div>');
+              // $('<div class="overlay"></div>').appendTo('#cardNumber' + cardNumber);
 
-              // $("<a>")
-              //   .addClass("cardContainer")
-              //   .text(card.name)
-              //   .click(function () {
-              //     $('#welcome-loading').show();
-              //     ipcRenderer.send('set-size', 266, 66);
-              //     cardSelected(card.id);
-              //   })
-              //   .appendTo('#listOutput');
-
-              console.log(cardNumber);
               cardDisplay(card, cardNumber);
 
             });
 
+            // $('.overlay').hide();
+
+            ipcRenderer.send('set-size', 269, 30 + $listOutput.outerHeight());
             $('#welcome-loading').hide();
-            console.log($listOutput);
-            ipcRenderer.send('set-size', 269, 58 + $listOutput.outerHeight());
+            // $(".cardContainer")
+            //   .mouseover(function () {
+            //     $('.overlay').show();
+            //   })
+            //   .mouseout(function () {
+            //     $(this).hide();
+            //   });
+            //
+            // $(".overlay").click(function (event) {
+            //   event.preventDefault();
+            //   $("div.overlay").fadeToggle("fast");
+
+            // });
 
           })
       //   })
@@ -99,27 +101,11 @@ jQuery(document).ready(function ($) {
     });
   };
 
-
-  var cardSelected = function (selectedCard) {
-
-    // $('#cardOutput').empty();
-    // $("#listOutput").empty();
-
-    Trello.get("cards/" + selectedCard, function (card) {
-
-      cardDisplay(card);
-      cardAction(card);
-    });
-
-  };
-
-  //GET LABEL AND APPEND TO CARDOUTPUT
+  //DISPLAYS CARD CORRECTLY ON LISTS AND CARD SELECTION
 
   var cardDisplay = function(displayCard, cardNumber) {
 
       var $cardNumber = $('#cardNumber' + cardNumber);
-      console.log(displayCard.id + " " + cardNumber);
-      console.log($cardNumber);
 
       var labelLength = displayCard.labels.length;
       var labelSort = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -253,7 +239,6 @@ jQuery(document).ready(function ($) {
       $card.empty();
       $("<a>")
         .addClass("cards")
-        .attr({href: displayCard.url, target: "trello"})
         .text(displayCard.name)
         .appendTo($card);
 
@@ -267,7 +252,6 @@ jQuery(document).ready(function ($) {
 
       if (displayCard.badges.comments > 0) {
         $('<span>')
-          // .text(card.badges.comments)
           .addClass("icon-sm icon-comment badge-spacer")
           .appendTo($cardNumber);
         $('<span>')
@@ -279,7 +263,6 @@ jQuery(document).ready(function ($) {
       if (displayCard.badges.checkItems > 0) {
         $('<span>')
           .addClass("icon-sm icon-checklist badge-spacer")
-            // .text(card.badges.checkItemsChecked + "/" + card.badges.checkItems)
           .appendTo($cardNumber);
         $('<span>')
           .addClass("badge-text")
@@ -293,76 +276,103 @@ jQuery(document).ready(function ($) {
   //     var cardHeight = $('.cardContainer').outerHeight();
   //     ipcRenderer.send('set-size', 269, 15 + cardHeight);
 
-        setInterval(function() {
+  $cardNumber.click(function () {
+    $(this).siblings().remove();
+    ipcRenderer.send('set-size', 269, 15 + $('#listOutput').outerHeight());
+    cardAction(displayCard, cardNumber);
+  });
 
-          alert("Hello"); 
+  // GIVES SINGLE CARD VIEW ON HOVER TOGGLE ACTIONS
 
-        }, 1800000);
-  //
+  var cardAction = function(currentCard, cardNumber) {
+
+  $(".toggle").show();
+
+  $(".toggle").click(function (event) {
+    event.preventDefault();
+    $("div.overlay").fadeToggle("fast");
+
+  });
+
+  $(".toggle")
+    .mouseover(function () {
+      $('.icons').show();
+    })
+    .mouseout(function () {
+      $('.icons').hide();
+    });
+
+  $(".toggle")
+    .unbind('click')
+    .click(function () {
+      ipcRenderer.send('trello-open', currentCard.url);
+    });
+
+  $(".back")
+    .unbind('click')
+    .click(function () {
+      event.stopPropagation();
+      ipcRenderer.send('set-size', 269, 66);
+      $('#welcome-loading').show();
+      $('#listOutput').empty();
+      getList();
+    });
+
+  $(".tick")
+    .unbind('click')
+    .click(function () {
+      event.stopPropagation();
+      $('#welcome-loading').show();
+      var nextCardId = cardsInList[cardsInList.indexOf(currentCard.id)+1];
+      completeCard(currentCard.id);
+      cardSelected(nextCardId, cardNumber);
+    });
+
+  $(".drag")
+    .click(function () {
+      event.stopPropagation();
+    });
+
+
+  ipcRenderer.on("refresh-card", function() {
+    cardSelected(currentCard.id, cardNumber);
+  });
+
+  var completeCard = function (cardId) {
+    Trello.put("cards/" + cardId + "/idList", {value: "5403bf2888d0ac13dcc52c4a"});
+  }
+
+  var cardTimer = function() {
+
+    setInterval(function() {
+      $cardNumber.toggleClass('pulse');
+    }, 900000);
   };
-  //
-  //
-  // var cardAction = function(card) {
-  //
-  // $(".toggle").show();
-  //
-  //
-  // $(".toggle").click(function (event) {
-  //   event.preventDefault();
-  //   $("div.overlay").fadeToggle("fast");
-  //
-  // });
-  //
-  // $(".toggle")
-  //   .mouseover(function () {
-  //     $('.icons').show();
-  //   })
-  //   .mouseout(function () {
-  //     $('.icons').hide();
-  //   });
-  //
-  // $(".toggle")
-  //   .unbind('click')
-  //   .click(function () {
-  //     ipcRenderer.send('trello-open', displayCard.url);
-  //   });
-  //
-  // $(".back")
-  //   .unbind('click')
-  //   .click(function () {
-  //     event.stopPropagation();
-  //     ipcRenderer.send('set-size', 266, 66);
-  //     $('#welcome-loading').show();
-  //     $('#cardOutput').empty();
-  //     getList();
-  //
-  //   });
-  //
-  // $(".tick")
-  //   .unbind('click')
-  //   .click(function () {
-  //     event.stopPropagation();
-  //     $('#welcome-loading').show();
-  //     var nextCardId = cardsInList[cardsInList.indexOf(displayCard.id)+1];
-  //     completeCard(displayCard.id);
-  //     cardSelected(nextCardId);
-  //   });
-  //
-  // $(".drag")
-  //   .click(function () {
-  //     event.stopPropagation();
-  //   });
-  //
-  //
-  // ipcRenderer.on("refresh-card", function() {
-  //   cardSelected(displayCard.id);
-  // });
-  //
-  // var completeCard = function (cardId) {
-  //   Trello.put("cards/" + cardId + "/idList", {value: "5403bf2888d0ac13dcc52c4a"});
-  // }
 
-// };
+  cardTimer();
+
+  }
+
+};
+
+// SELECTS AN INDIVIDUAL CARD TO DISPLAY
+
+var cardSelected = function (selectedCard, cardNumber) {
+
+  var $cardNumber = $('#cardNumber' + cardNumber);
+
+  $cardNumber.empty();
+
+  Trello.get("cards/" + selectedCard, function (card) {
+
+    cardDisplay(card, cardNumber);
+    cardAction(card, cardNumber);
+    ipcRenderer.send('set-size', 269, 15 + $cardNumber.outerHeight());
+    $('#welcome-loading').hide();
+
+  });
+
+};
 
 
 ipcRenderer.on("log-out", function() {
@@ -405,7 +415,6 @@ $("#zoom a").click(function(e) {
        e.preventDefault();
     }
 );
-
 
 //TRELLO AUTH
 
