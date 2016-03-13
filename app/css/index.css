@@ -191,11 +191,25 @@ span {
 }
 
 .listName {
+  display: inline-block;
   font-family: 'HelveticaNeueBold', Arial, sans-serif;
   font-size: 15px;
   line-height: 18px;
   color: #4d4d4d;
   margin-bottom: 8px;
+}
+
+.listDrag {
+  display: inline-block;
+  float: right;
+  line-height: 15px;
+  width: 30px;
+  height: 15px;
+  background-image: url('../images/drag-small.png');
+  background-position: right;
+  background-repeat: no-repeat;
+  cursor: move;
+  -webkit-app-region: drag;
 }
 
 .cardName {
@@ -384,12 +398,12 @@ body.pulse-wide {
 
 @keyframes pulse_animation {
 	0% { transform: scale(1); }
-	30% { transform: scale(1); }
-	40% { transform: scale(1.05); }
-	50% { transform: scale(1); }
+	30% { transform: scale(1.04); }
+	40% { transform: scale(1.08); }
+	50% { transform: scale(1.04); }
 	60% { transform: scale(1); }
-	70% { transform: scale(1.05); }
-	80% { transform: scale(1); }
+	70% { transform: scale(1.04); }
+	80% { transform: scale(1.08); }
 	100% { transform: scale(1); }
 }
 

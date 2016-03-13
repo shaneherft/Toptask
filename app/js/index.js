@@ -62,8 +62,10 @@ jQuery(document).ready(function ($) {
             var $listOutput = $("#listOutput");
             var listName = "PRIORITY";
             var $list = $("<div class='listName'>" + listName + "</div>")
-              .addClass('')
+              // .addClass('')
               .appendTo("#listOutput");
+
+            $("<div class='listDrag'></div>").appendTo("#listOutput");
 
             $.each(cards, function (ix, card) {
 
@@ -269,18 +271,14 @@ jQuery(document).ready(function ($) {
           .text(displayCard.badges.checkItemsChecked + "/" + displayCard.badges.checkItems)
           .appendTo($cardNumber);
       }
-  //
-  //     // EVENTS AND LISTENERS
-  //
-  //     $("#welcome-loading").hide();
-  //     var cardHeight = $('.cardContainer').outerHeight();
-  //     ipcRenderer.send('set-size', 269, 15 + cardHeight);
 
-  $cardNumber.click(function () {
-    $(this).siblings().remove();
-    ipcRenderer.send('set-size', 269, 15 + $('#listOutput').outerHeight());
-    cardAction(displayCard, cardNumber);
-  });
+    $cardNumber.click(function () {
+      $(this).siblings().remove();
+      ipcRenderer.send('set-size', 269, 15 + $('#listOutput').outerHeight());
+      cardAction(displayCard, cardNumber);
+    });
+
+  };
 
   // GIVES SINGLE CARD VIEW ON HOVER TOGGLE ACTIONS
 
@@ -325,7 +323,16 @@ jQuery(document).ready(function ($) {
       $('#welcome-loading').show();
       var nextCardId = cardsInList[cardsInList.indexOf(currentCard.id)+1];
       completeCard(currentCard.id);
+
+      if (nextCardId != null) {
       cardSelected(nextCardId, cardNumber);
+      }
+      else {
+        $('#welcome-loading').show();
+        $('#listOutput').empty();
+        getList();
+      }
+
     });
 
   $(".drag")
@@ -351,9 +358,9 @@ jQuery(document).ready(function ($) {
 
   cardTimer();
 
-  }
-
 };
+
+// };
 
 // SELECTS AN INDIVIDUAL CARD TO DISPLAY
 
