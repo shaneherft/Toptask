@@ -288,7 +288,7 @@ span {
 .icons {
   display: none;
   float: right;
-  margin: 12px 12px auto;
+  margin: 10px 10px auto;
   z-index: 9999;
 }
 
@@ -296,8 +296,8 @@ span {
   display: inline-block;
   background-color: rgba(0, 0, 0, 0.30);
   vertical-align: middle;
-  width: 38px;
-  height: 38px;
+  width: 32px;
+  height: 32px;
   border-radius: 100%;
   margin: 0px 2px 0px 2px;
 }
@@ -308,8 +308,8 @@ span {
 }
 
 .tick {
-  width: 38px;
-  height: 38px;
+  width: 32px;
+  height: 32px;
   background-image: url('../images/tick.png');
   background-position: center;
   background-repeat: no-repeat;
@@ -317,8 +317,8 @@ span {
 }
 
 .trello {
-  width: 38px;
-  height: 38px;
+  width: 32px;
+  height: 32px;
   background-image: url('../images/trello.png');
   background-position: center;
   background-repeat: no-repeat;
@@ -326,22 +326,59 @@ span {
 }
 
 .back {
-  width: 36px;
-  height: 35px;
+  width: 32px;
+  height: 28px;
   background-image: url('../images/back.png');
-  background-position: 45%, 47%;
+  background-position: center;
   background-repeat: no-repeat;
   cursor: pointer;
 }
 
 .drag {
-  width: 38px;
-  height: 38px;
+  width: 32px;
+  height: 32px;
   background-image: url('../images/drag.png');
-  background-position: 50%, 50%;
+    background-position: center;
   background-repeat: no-repeat;
   cursor: move;
   -webkit-app-region: drag;
+}
+
+.timer {
+  width: 32px;
+  height: 31px;
+  float: right;
+  background-image: url('../images/timer.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  cursor: pointer;
+}
+
+.time {
+  display: inline-block;
+  color: white;
+  font-family: "Brandon Text";
+  /*line-height: 32px;*/
+  font-size: 16px;
+  font-weight: 400;
+  /*margin-left: 6px;*/
+  width: 32px
+}
+
+.time-display {
+  display: inline-block;
+  background-color: rgba(0, 0, 0, 0.30);
+  /*vertical-align: middle;
+  text-align: center;*/
+  width: 70px;
+  height: 32px;
+  border-radius: 20px;
+  margin: 0px 2px 0px 2px;
+}
+
+.time-display:hover {
+  background-color: rgba(0, 0, 0, 0.70);
+  /*background-color: #C83B3B;*/
 }
 
 /*#cardOutput {
