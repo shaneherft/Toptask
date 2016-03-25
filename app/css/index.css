@@ -288,7 +288,7 @@ span {
 .icons {
   display: none;
   float: right;
-  margin: 10px 10px auto;
+  margin: 10px 12px auto;
   z-index: 9999;
 }
 
@@ -345,9 +345,11 @@ span {
 }
 
 .timer {
+  display: inline-block;
   width: 32px;
-  height: 31px;
+  height: 32px;
   float: right;
+  margin-right: 4px;
   background-image: url('../images/timer.png');
   background-repeat: no-repeat;
   background-position: center;
@@ -358,26 +360,26 @@ span {
   display: inline-block;
   color: white;
   font-family: "Brandon Text";
-  /*line-height: 32px;*/
-  font-size: 16px;
+  line-height: 14px;
+  font-size: 15px;
   font-weight: 400;
-  /*margin-left: 6px;*/
-  width: 32px
+  margin-left: 10px;
+  /*width: 32px*/
 }
 
 .time-display {
   display: inline-block;
-  background-color: rgba(0, 0, 0, 0.30);
-  /*vertical-align: middle;
-  text-align: center;*/
-  width: 70px;
+  background-color: rgba(0, 0, 0, 0.70);
+  vertical-align: middle;
+  width: 80px;
   height: 32px;
   border-radius: 20px;
   margin: 0px 2px 0px 2px;
+  cursor: default;
 }
 
-.time-display:hover {
-  background-color: rgba(0, 0, 0, 0.70);
+/*.time-display:hover {
+  background-color: rgba(0, 0, 0, 0.70);*/
   /*background-color: #C83B3B;*/
 }
 

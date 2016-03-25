@@ -2,7 +2,7 @@
 var electron = require('electron'),
   app = electron.app,
   BrowserWindow = electron.BrowserWindow;
-
+const storage = require('electron-json-storage');
 const ipcMain = require('electron').ipcMain;
 var Tray = require('tray');
 var Menu = require('menu');
@@ -24,6 +24,14 @@ var trayMenuTemplate = [
         label: 'Settings',
         click: function() {
           createSettingsWindow();
+        }
+    },
+    {
+        label: 'Clear Storage',
+        click: function() {
+          storage.clear(function(error) {
+            if (error) throw error;
+          });
         }
     },
     {
