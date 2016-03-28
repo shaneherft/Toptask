@@ -67,6 +67,7 @@ jQuery(document).ready(function ($) {
           error: (err)=> console.debug('Trello error', err),
         });
       });
+      console.log(data);
     }
 
   });
@@ -74,7 +75,6 @@ jQuery(document).ready(function ($) {
   var $loading;
   var cardsInList;
   var cardTimer;
-  var cardTime;
 
   var onAuthorize = function () {
     updateLoggedIn();
@@ -370,7 +370,7 @@ jQuery(document).ready(function ($) {
       $('#welcome-loading').show();
       var nextCardId = cardsInList[cardsInList.indexOf(currentCard.id)+1];
       completeCard(currentCard.id);
-      saveTime(currentCard);
+      saveTime(currentCard.id, currentCard.labels);
 
       if (nextCardId != null) {
       cardSelected(nextCardId, cardNumber);
@@ -454,74 +454,83 @@ jQuery(document).ready(function ($) {
     t = setTimeout(add, 1000);
   }
 
-//   var saveTime = function(currentCard) {
-//
-//     var cardTime = secondsTimer;
-//     var timeOutput;
-//     // var timeLabels = currentCard.labels;
-//
-//     storage.get(currentCard.id, function(error, data) {
-//       if (error) throw error;
-//
-//       if (data.time > 0) {
-//         cardTime = cardTime + data.time;
-//       }
-//
-//       storage.set(currentCard.id, { time: cardTime, name: currentCard.name }, function(error) {
-//         if (error) throw error;
-//       });
-//
-//     });
-//
-//     // for (var i = 0; i < timeLabels.length; i++) {
-//     //
-//     //   var labelName = timeLabels[i].name;
-//     //   var labelTime = secondsTimer;
-//     //
-//     //   storage.get(labelName, function(error, data) {
-//     //     if (error) throw error;
-//     //
-//     //     if (data.time > 0) {
-//     //       labelTime = labelTime + data.time;
-//     //     }
-//     //
-//     //     storage.set(currentCard.id, { time: labelTime }, function(error) {
-//     //       if (error) throw error;
-//     //     });
-//     //
-//     //   });
-//     //
-//     // }
-//
-//     storage.keys(function(error, keys) {
-//       if (error) throw error;
-//
-//       for (var key of keys) {
-//         storage.get(key, function(error, data) {
-//           if (error) throw error;
-//
-//           if (data.time) {
-//             timeOutput += "/n" + "Time spent: " + Math.floor(data.time / 3600) + " hours and " + Math.floor(data.time / 60) + " minutes";
-//             // console.log(data.name + ": " + data.time);
-//           }
-//         });
-//       }
-//       console.log(timeOutput);
-//
-//     });
-//
-//     // var stringTime = "Time spent: " + Math.floor(cardTime / 3600) + " hours and " + Math.floor(cardTime / 60) + " minutes";
-//     // Trello.put('/cards/56f660d3c3887f343909d4c9/desc', {value: stringTime});
-//
-//     clearTimeout(t);
-//     secondsTimer = 0;
-//     h1.textContent = "0:00";
-//     seconds = 0; minutes = 0; hours = 0;
-//
-//   };
-//
+  var saveTime = function(currentCard) {
+    var cardTime = secondsTimer;
+    var timeLabels = currentCard.labels;
+
+
+    for (i = 0; i < timeLabels.length; i++) {
+
+      var labelTime = secondsTimer;
+      var labelName = timeLabels[i].name;
+      console.log(labelName);
+
+      storage.get(labelName, function(error, data) {
+        if (error) throw error;
+
+        if (data.time > 0) {
+        labelTime = labelTime + data.time;
+        }
+
+      });
+
+      storage.set(labelName, { time: labelTime, name: "Label: " + labelName }, function(error) {
+        if (error) throw error;
+      });
+
+
+
+    }
+
+    clearTimeout(t);
+    secondsTimer = 0;
+    h1.textContent = "0:00";
+    seconds = 0; minutes = 0; hours = 0;
+
+    printTime();
+
+  }
+
+
+
 };
 
+// CHECKS IF CARD OR LABEL HAS PREVIOUS TIME ON IT
+
+var totalTime = function (key, newTime) {
+
+storage.get(key, function(error, data) {
+  if (error) throw error;
+
+  if (data.time > 0) {
+  newTime += data.time;
+  }
+
+  printTime();
+
+};
+
+// PRINTS TOTAL TIME TO CARD
+
+var printTime = function () {
+
+  storage.keys(function(error, keys) {
+  if (error) throw error;
+
+  for (var key of keys) {
+
+    storage.get(key, function(error, data) {
+      if (error) throw error;
+      if (data.time > 0) {
+        console.log(data.name + " " + data.time);
+      }
+    });
+
+  }
+
+  });
+
+};
 
 // SELECTS AN INDIVIDUAL CARD TO DISPLAY
 
