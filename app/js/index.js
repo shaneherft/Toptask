@@ -74,7 +74,6 @@ jQuery(document).ready(function ($) {
   var $loading;
   var cardsInList;
   var cardTimer;
-  var cardTime;
 
   var onAuthorize = function () {
     updateLoggedIn();
@@ -359,7 +358,7 @@ jQuery(document).ready(function ($) {
       ipcRenderer.send('set-size', 269, 66);
       $('#welcome-loading').show();
       $('#listOutput').empty();
-      saveTime(currentCard);
+      // saveTime(currentCard);
       getList();
     });
 
@@ -367,10 +366,11 @@ jQuery(document).ready(function ($) {
     .unbind('click')
     .click(function () {
       event.stopPropagation();
+      $('.toggle').hide();
       $('#welcome-loading').show();
       var nextCardId = cardsInList[cardsInList.indexOf(currentCard.id)+1];
       completeCard(currentCard.id);
-      saveTime(currentCard);
+      // saveTime(currentCard);
 
       if (nextCardId != null) {
       cardSelected(nextCardId, cardNumber);
