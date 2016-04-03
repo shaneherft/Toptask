@@ -115,7 +115,7 @@ span {
 
 .logo {
   position: absolute;
-  top: 17px;
+  top: 19px;
   left: 10px;
   background-image: url('../images/tt-logo.png');
   background-repeat:no-repeat;
@@ -126,7 +126,7 @@ span {
 
 .login-spacer {
   position: absolute;
-  top: 17px;
+  top: 19px;
   left: 75px;
   height: 30px;
   width: 1px;
@@ -137,7 +137,7 @@ span {
 
 .login-button {
   position:absolute;;
-  top: 17px;
+  top: 19px;
   right: 20px;
   font-family: "Brandon Text";
   background-color: #EF9B59;
@@ -158,7 +158,7 @@ span {
 
 .loading {
   position: absolute;
-  top: 17px;
+  top: 19px;
   left: 100px;
   color: #ffffff;
   font-family: "Brandon Text";

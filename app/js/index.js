@@ -500,7 +500,8 @@ var saveTime = function(keyId, keyName, time) {
 
 var logTime = function() {
 
-  var printString = [];
+  var trelloTime = "Time spent this week:";
+  Trello.put('/cards/56f660d3c3887f343909d4c9/desc', {value: trelloTime});
 
   storage.keys(function(error, keys) {
     if (error) throw error;
@@ -512,13 +513,22 @@ var logTime = function() {
   var printTime = function(name) {
     storage.get(name, function(error, data) {
       if (error) throw error;
-      if (data.time > 0) {
-      console.log(data.name + " " + data.time);
+      if (data.time) {
+        
+      // console.log(data.name + " " + data.time);
+      Trello.get('/cards/56f660d3c3887f343909d4c9/desc', (description)=> {
+        // trelloTime = description._value + "\n" + "hello";
+        trelloTime = "Shane \n" + "is " + "\n awesome" + '\n' + description._value + data.name + "-" + data.time;
+
+      });
+      // Trello.put('/cards/56f660d3c3887f343909d4c9/desc', {value: trelloTime});
       }
     });
   };
+
+
   // var stringTime = "Time spent: " + Math.floor(cardTime / 3600) + " hours and " + Math.floor(cardTime / 60) + " minutes";
-  // Trello.put('/cards/56f660d3c3887f343909d4c9/desc', {value: stringTime});
+
 };
 
 
