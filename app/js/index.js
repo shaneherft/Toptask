@@ -38,7 +38,6 @@ jQuery(document).ready(function ($) {
       $("#connectLink").ready(function doAuth() {
         Trello.authorize({
           type: 'popup',
-          // type: "redirect",
           name: "Toptask",
           scope: {
             read: true,
@@ -56,7 +55,6 @@ jQuery(document).ready(function ($) {
       $("#connectLink").click(function doAuth() {
         Trello.authorize({
           type: 'popup',
-          // type: "redirect",
           name: "Toptask",
           scope: {
             read: true,
@@ -107,7 +105,6 @@ jQuery(document).ready(function ($) {
             var $listOutput = $("#listOutput");
             var listName = "PRIORITY";
             var $list = $("<div class='listName'>" + listName + "</div>")
-              // .addClass('')
               .appendTo("#listOutput");
 
             $("<div class='listDrag'></div>").appendTo("#listOutput");
@@ -118,33 +115,15 @@ jQuery(document).ready(function ($) {
 
               var cardNumber = $listOutput.children().length;
               $listOutput.append('<div class="cardContainer" id="cardNumber' + $listOutput.children().length + '"></div>');
-              // $('<div class="overlay"></div>').appendTo('#cardNumber' + cardNumber);
 
               cardDisplay(card, cardNumber);
 
             });
 
-            // $('.overlay').hide();
-
             ipcRenderer.send('set-size', 269, 30 + $listOutput.outerHeight());
             $('#welcome-loading').hide();
-            // $(".cardContainer")
-            //   .mouseover(function () {
-            //     $('.overlay').show();
-            //   })
-            //   .mouseout(function () {
-            //     $(this).hide();
-            //   });
-            //
-            // $(".overlay").click(function (event) {
-            //   event.preventDefault();
-            //   $("div.overlay").fadeToggle("fast");
-
-            // });
 
           })
-      //   })
-      // })
     });
   };
 
@@ -358,7 +337,12 @@ jQuery(document).ready(function ($) {
       ipcRenderer.send('set-size', 269, 66);
       $('#welcome-loading').show();
       $('#listOutput').empty();
-      // saveTime(currentCard);
+      saveTime(currentCard.id, currentCard.name, secondsTimer);
+      for (i = 0; i < currentCard.labels.length; i++) {
+        saveTime(currentCard.labels[i].name, currentCard.labels[i].name, secondsTimer);
+      }
+      clearTime();
+      logTime();
       getList();
     });
 
@@ -370,7 +354,11 @@ jQuery(document).ready(function ($) {
       $('#welcome-loading').show();
       var nextCardId = cardsInList[cardsInList.indexOf(currentCard.id)+1];
       completeCard(currentCard.id);
-      // saveTime(currentCard);
+      saveTime(currentCard.id, currentCard.name, secondsTimer);
+      for (i = 0; i < currentCard.labels.length; i++) {
+        saveTime(currentCard.labels[i].name, currentCard.labels[i].name, secondsTimer);
+      }
+      clearTime();
 
       if (nextCardId != null) {
       cardSelected(nextCardId, cardNumber);
@@ -390,7 +378,11 @@ jQuery(document).ready(function ($) {
 
 
   ipcRenderer.on("refresh-card", function() {
-    saveTime(currentCard);
+    saveTime(currentCard.id, currentCard.name, secondsTimer);
+    for (i = 0; i < currentCard.labels.length; i++) {
+      saveTime(currentCard.labels[i].name, currentCard.labels[i].name, secondsTimer);
+    }
+    clearTime();
     location.reload();
   });
 
@@ -454,72 +446,13 @@ jQuery(document).ready(function ($) {
     t = setTimeout(add, 1000);
   }
 
-//   var saveTime = function(currentCard) {
-//
-//     var cardTime = secondsTimer;
-//     var timeOutput;
-//     // var timeLabels = currentCard.labels;
-//
-//     storage.get(currentCard.id, function(error, data) {
-//       if (error) throw error;
-//
-//       if (data.time > 0) {
-//         cardTime = cardTime + data.time;
-//       }
-//
-//       storage.set(currentCard.id, { time: cardTime, name: currentCard.name }, function(error) {
-//         if (error) throw error;
-//       });
-//
-//     });
-//
-//     // for (var i = 0; i < timeLabels.length; i++) {
-//     //
-//     //   var labelName = timeLabels[i].name;
-//     //   var labelTime = secondsTimer;
-//     //
-//     //   storage.get(labelName, function(error, data) {
-//     //     if (error) throw error;
-//     //
-//     //     if (data.time > 0) {
-//     //       labelTime = labelTime + data.time;
-//     //     }
-//     //
-//     //     storage.set(currentCard.id, { time: labelTime }, function(error) {
-//     //       if (error) throw error;
-//     //     });
-//     //
-//     //   });
-//     //
-//     // }
-//
-//     storage.keys(function(error, keys) {
-//       if (error) throw error;
-//
-//       for (var key of keys) {
-//         storage.get(key, function(error, data) {
-//           if (error) throw error;
-//
-//           if (data.time) {
-//             timeOutput += "/n" + "Time spent: " + Math.floor(data.time / 3600) + " hours and " + Math.floor(data.time / 60) + " minutes";
-//             // console.log(data.name + ": " + data.time);
-//           }
-//         });
-//       }
-//       console.log(timeOutput);
-//
-//     });
-//
-//     // var stringTime = "Time spent: " + Math.floor(cardTime / 3600) + " hours and " + Math.floor(cardTime / 60) + " minutes";
-//     // Trello.put('/cards/56f660d3c3887f343909d4c9/desc', {value: stringTime});
-//
-//     clearTimeout(t);
-//     secondsTimer = 0;
-//     h1.textContent = "0:00";
-//     seconds = 0; minutes = 0; hours = 0;
-//
-//   };
-//
+  var clearTime = function() {
+    clearTimeout(t);
+    secondsTimer = 0;
+    h1.textContent = "0:00";
+    seconds = 0; minutes = 0; hours = 0;
+  };
+
 };
 
 
@@ -541,6 +474,54 @@ var cardSelected = function (selectedCard, cardNumber) {
   });
 
 };
+
+// SAVES TIME SPENT ON CARD
+
+var saveTime = function(keyId, keyName, time) {
+
+  var totalTime = time;
+
+  storage.get(keyId, function(error, data) {
+    if (error) throw error;
+
+    if (data.time) {
+    totalTime += data.time;
+    }
+    storage.set(keyId, { name: keyName, time: totalTime }, function(error) {
+      if (error) throw error;
+      console.log(keyId + " " + keyName + " " + totalTime);
+      });
+  });
+
+};
+
+
+// LOGS PRODUCTIVITY STATS TO CARD
+
+var logTime = function() {
+
+  var printString = [];
+
+  storage.keys(function(error, keys) {
+    if (error) throw error;
+    for (var key of keys) {
+      printTime(key);
+    }
+  });
+
+  var printTime = function(name) {
+    storage.get(name, function(error, data) {
+      if (error) throw error;
+      if (data.time > 0) {
+      console.log(data.name + " " + data.time);
+      }
+    });
+  };
+  // var stringTime = "Time spent: " + Math.floor(cardTime / 3600) + " hours and " + Math.floor(cardTime / 60) + " minutes";
+  // Trello.put('/cards/56f660d3c3887f343909d4c9/desc', {value: stringTime});
+};
+
+
 
 ipcRenderer.on("log-out", function() {
   logout();
