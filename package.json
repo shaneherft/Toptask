@@ -26,10 +26,12 @@
   "homepage": "https://github.com/atom/electron-quick-start#readme",
   "devDependencies": {
     "cross-env": "^1.0.7",
-    "electron-prebuilt": "^0.36.9"
+    "electron-prebuilt": "*"
   },
   "dependencies": {
+    "bootstrap": "^3.3.6",
     "electron-json-storage": "^2.0.0",
-    "nconf": "^0.8.4"
+    "nconf": "^0.8.4",
+    "async": "latest"
   }
 }

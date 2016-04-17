@@ -2,8 +2,11 @@
 var electron = require('electron'),
   app = electron.app,
   BrowserWindow = electron.BrowserWindow;
+
 const storage = require('electron-json-storage');
+
 const ipcMain = require('electron').ipcMain;
+
 var Tray = require('tray');
 var Menu = require('menu');
 var path = require('path');
@@ -70,8 +73,8 @@ function createWindow(rightAligned) {
       height: 66,
       x: rightAligned,
       y: 80,
-      frame: 1,
-      alwaysOnTop: true,
+      frame: false,
+      alwaysOnTop: false,
       webPreferences: {"node-integration": true,}
     });
     // Open the DevTools.
