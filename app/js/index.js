@@ -36,14 +36,14 @@ var T = new Twit({
 jQuery(document).ready(function ($) {
     //do jQuery stuff when DOM is ready
 
-    // T.getAuth()
+    T.getAuth()
     T.get('statuses/user_timeline', { user_id: '4615983616', count: 1 }, function (err, data, response) {
       if (data) {
       var rawTweet = data[0].text;
       var parseIndex = rawTweet.indexOf("via");
       loadingMessage = rawTweet.slice(0, parseIndex - 2);
       console.log(loadingMessage);
-      storage.set('loadingMessage', {quote: loadingMessage}, function (error) {
+      storage.set('loadingMessage', {type: 'loader', quote: loadingMessage}, function (error) {
           if (error) throw error;
       });
       }
@@ -104,8 +104,6 @@ jQuery(document).ready(function ($) {
     var momentum = 0;
     var date = new Date();
     var dateNum = date.getDate();
-
-    console.log(loadingMessage);
 
     var onAuthorize = function () {
         updateLoggedIn();
@@ -389,6 +387,7 @@ jQuery(document).ready(function ($) {
 
                 async.series(flow, (err, results)=> {
                     getList();
+                    // location.reload();
                 });
             });
 
@@ -422,6 +421,7 @@ jQuery(document).ready(function ($) {
                         $('#welcome-loading').show();
                         $('#listOutput').empty();
                         getList();
+                        // location.reload();
                     }
                 });
             });
