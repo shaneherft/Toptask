@@ -18,61 +18,101 @@ window.open = function (a, b, c) {
 };
 
 var ttSettings = require('./settings');
-
+var Twit = require('twit');
 var Trello = require('./lib/client-enode')(window, jQuery, ttSettings.connection);
 var bootstrap = require('bootstrap');
+var loadingMessage = "Loading";
+
+var T = new Twit({
+  consumer_key:         'Smxc5So9dx0pSzZ25oj1ahwNP',
+  consumer_secret:      'nehOKVEn3CcaKkxXUarDImf8PoQlOtEkWJIbnYWtnT9u2M8TgQ',
+  access_token:         '23528255-YmkZONLCSP77hHICezQzrNNWGBip2rgH6aStOUNxp',
+  access_token_secret:  'QqQNSGetxO8C48fp7TGCTnGucuzaqUYYG5zF4FSGSTDPp',
+  timeout_ms:           60*1000,  // optional HTTP request timeout to apply to all requests.
+})
+
+
 
 jQuery(document).ready(function ($) {
     //do jQuery stuff when DOM is ready
 
-    storage.get('authStatus', function (error, data) {
+    // T.getAuth()
+    T.get('statuses/user_timeline', { user_id: '4615983616', count: 1 }, function (err, data, response) {
+      if (data) {
+      var rawTweet = data[0].text;
+      var parseIndex = rawTweet.indexOf("via");
+      loadingMessage = rawTweet.slice(0, parseIndex - 2);
+      console.log(loadingMessage);
+      storage.set('loadingMessage', {quote: loadingMessage}, function (error) {
+          if (error) throw error;
+      });
+      }
+    })
+
+    storage.get("loadingMessage", function (error, data) {
         if (error) throw error;
-
-        if (data.auth === true) {
-            $("#connectLink").ready(function doAuth() {
-                Trello.authorize({
-                    type: 'popup',
-                    name: "Toptask",
-                    scope: {
-                        read: true,
-                        write: true
-                    },
-                    expiration: 'never',
-                    success: onAuthorize,
-                    error: (err)=> console.debug('Trello error', err),
-                });
-
-            });
-        }
-
-        else {
-            $("#connectLink").click(function doAuth() {
-                Trello.authorize({
-                    type: 'popup',
-                    name: "Toptask",
-                    scope: {
-                        read: true,
-                        write: true
-                    },
-                    expiration: 'never',
-                    success: onAuthorize,
-                    error: (err)=> console.debug('Trello error', err),
-                });
-            });
-        }
-
+        loadingMessage = data.quote;
+        authStart();
     });
+
+    var authStart = function(callback) {
+      storage.get('authStatus', function (error, data) {
+          if (error) throw error;
+
+          if (data.auth === true) {
+              $("#connectLink").ready(function doAuth() {
+                  Trello.authorize({
+                      type: 'popup',
+                      name: "Toptask",
+                      scope: {
+                          read: true,
+                          write: true
+                      },
+                      expiration: 'never',
+                      success: onAuthorize,
+                      error: (err)=> console.debug('Trello error', err),
+                  });
+
+              });
+          }
+
+          else {
+              $("#connectLink").click(function doAuth() {
+                  Trello.authorize({
+                      type: 'popup',
+                      name: "Toptask",
+                      scope: {
+                          read: true,
+                          write: true
+                      },
+                      expiration: 'never',
+                      success: onAuthorize,
+                      error: (err)=> console.debug('Trello error', err),
+                  });
+              });
+          }
+
+        });
+        if (callback) {
+          callback();
+        }
+    };
 
     var $loading;
     var cardsInList;
     var cardTimer;
+    var momentum = 0;
+    var date = new Date();
+    var dateNum = date.getDate();
+
+    console.log(loadingMessage);
 
     var onAuthorize = function () {
         updateLoggedIn();
         $loading = $("<div>")
             .addClass('loading')
-            .text("Loading")
-            .appendTo("#welcome-loading");
+            .text(loadingMessage)
+            .appendTo("#loading-message");
         getList();
 
         storage.set('authStatus', {auth: Trello.authorized()}, function (error) {
@@ -357,6 +397,8 @@ jQuery(document).ready(function ($) {
             .click(event => {
                 event.stopPropagation();
                 $('.toggle').hide();
+                momentum += 1;
+                console.log(momentum);
                 $('#welcome-loading').show();
                 var nextCardId = cardsInList[cardsInList.indexOf(currentCard.id) + 1];
                 console.debug({currentCard, cardsInList});
@@ -558,7 +600,6 @@ jQuery(document).ready(function ($) {
                 }
             });
         });
-        // var stringTime = "Time spent: " + Math.floor(cardTime / 3600) + " hours and " + Math.floor(cardTime / 60) + " minutes";
     };
 
     ipcRenderer.on("log-out", function () {
@@ -568,6 +609,10 @@ jQuery(document).ready(function ($) {
 
     ipcRenderer.on('global-shortcut', function (arg) {
         location.reload();
+    });
+
+    ipcRenderer.on('founder-mantra', function (arg) {
+        console.log(arg);
     });
 
     var ellipsis = {
@@ -592,7 +637,6 @@ jQuery(document).ready(function ($) {
             this.count = 0;
         }
     };
-
 
     $("#zoom a").click(function (e) {
             var $body = $("body");

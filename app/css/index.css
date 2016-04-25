@@ -112,7 +112,6 @@ span {
   outline: none;
 }
 
-
 .logo {
   position: absolute;
   top: 19px;
@@ -156,16 +155,24 @@ span {
   color: #A42127;
 }
 
-.loading {
+#loading-message {
   position: absolute;
-  top: 19px;
-  left: 100px;
+  top: 0px;
+  bottom: 0px;
+  left: 70px;
+  vertical-align: middle;
+}
+
+
+.loading {
+  position: relative;
+  display: inline-block;
   color: #ffffff;
   font-family: "Brandon Text";
-  font-size: 20px;
-  text-align: center;
-  vertical-align: top;
+  font-size: 16px;
+  line-height: 20px;
   margin-left: 30px;
+  padding: 12px 0 12px 0;
 }
 
 .loading:after {

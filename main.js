@@ -54,6 +54,26 @@ var trayMenuTemplate = [
 
 var __DEV__ = (process.env['NODE_ENV'] === 'development');
 
+var dialog = require('electron').dialog;
+var Twit = require('twit');
+
+// var T = new Twit({
+//   consumer_key:         'Smxc5So9dx0pSzZ25oj1ahwNP',
+//   consumer_secret:      'nehOKVEn3CcaKkxXUarDImf8PoQlOtEkWJIbnYWtnT9u2M8TgQ',
+//   access_token:         '23528255-YmkZONLCSP77hHICezQzrNNWGBip2rgH6aStOUNxp',
+//   access_token_secret:  'QqQNSGetxO8C48fp7TGCTnGucuzaqUYYG5zF4FSGSTDPp',
+//   timeout_ms:           60*1000,  // optional HTTP request timeout to apply to all requests.
+// })
+
+// T.getAuth()
+//
+// T.get('statuses/user_timeline', { user_id: '4615983616', count: 1 }, function (err, data, response) {
+//   var rawTweet = data[0].text;
+//   var parseIndex = rawTweet.indexOf("via");
+//   var parseTweet = rawTweet.slice(0, parseIndex - 2);
+//   console.log(parseTweet);
+// })
+
 console.log(`NODE_ENV=[${process.env['NODE_ENV']}]`);
 
 // Config
@@ -94,8 +114,6 @@ function createWindow(rightAligned) {
       alwaysOnTop: true,
       webPreferences: {
         "node-integration": true,
-        // "preload": "file:///Users/shaneherft/Google%20Drive/Development/Toptask/app/js/preload.js"
-        // "preload": path.join(__dirname, 'preload.js')
       }
     });
   }
@@ -110,6 +128,7 @@ function createWindow(rightAligned) {
   }
   var trayMenu = Menu.buildFromTemplate(trayMenuTemplate);
   trayIcon.setContextMenu(trayMenu);
+
 
   mainWindow.on('closed', () => {
     mainWindow = null;
@@ -134,11 +153,8 @@ function createTrelloWindow(cardLink) {
     width: 800,
     height: 600,
     frame: true,
-    // alwaysOnTop: true,
     webPreferences: {
       "node-integration": false
-      // "preload": "file:///Users/shaneherft/Google%20Drive/Development/Toptask/app/js/preload.js"
-      // "preload": path.join(__dirname, 'preload.js')
     }
   });
 
@@ -222,9 +238,7 @@ ipcMain.on('trello-open', function(event, cardUrl) {
 
 
 ipcMain.on('close-settings-window', function () {
-    // if (settingsWindow) {
         settingsWindow.close();
-    // }
 });
 
 
@@ -241,7 +255,4 @@ function setGlobalShortcuts() {
     globalShortcut.register(shortcutPrefix + 's', function () {
         mainWindow.webContents.send('global-shortcut', 0);
     });
-    // globalShortcut.register(shortcutPrefix + '2', function () {
-    //     mainWindow.webContents.send('global-shortcut', 1);
-    // });
 }
