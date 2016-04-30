@@ -49,6 +49,10 @@ font-face {
 .icon-lg, .icon-sm { color: #999; display: inline-block; font-family: "tticons"; -webkit-font-smoothing: antialiased; /* For more detail on this property, see Tim Van Damme's blog post. */ font-style: normal; font-weight: normal; line-height: 1; } .icon-sm { height: 18px; font-size: 12px; line-height: 18px; width: 18px; } .icon-lg { height: 30px; font-size: 20px; line-height: 30px; width: 30px; }
 .icon-org:before { content: "\f000"; } .icon-member:before { content: "\f001"; } .icon-board:before { content: "\f002"; } .icon-comment:before {content: "\e910";} .icon-attachment:before {content: "\f010";} .icon-description:before {content: "\e911";} .icon-checklist:before {content: "\e90d";}
 
+::-webkit-scrollbar {
+    display: none;
+}
+
 body {
   background-color: #e2e4e6;
   /*background-image: radial-gradient(50% 69%, #E8A3A3 0%, rgba(245,245,245,0.10) 0%, rgba(226,228,230,0.10) 0%, rgba(200,58,58,0.10) 70%);*/
@@ -115,18 +119,18 @@ span {
 .logo {
   position: absolute;
   top: 19px;
-  left: 10px;
+  left: 20px;
   background-image: url('../images/tt-logo.png');
   background-repeat:no-repeat;
   height: 30px;
   width: 33px;
-  margin-left: 12px;
+
 }
 
 .login-spacer {
   position: absolute;
   top: 19px;
-  left: 75px;
+  left: 73px;
   height: 30px;
   width: 1px;
   border-radius: 2px;
@@ -135,13 +139,14 @@ span {
 }
 
 .login-button {
-  position:absolute;;
-  top: 19px;
+  position: absolute;
+  top: 16px;
   right: 20px;
   font-family: "Brandon Text";
   background-color: #EF9B59;
-  width: 148px;
-  padding: 5px 0 5px 0;
+  width: 80px;
+  padding: 7px 0 7px 0;
+  line-height: 18px;
   border-radius: 100px;
   color: #ffffff;
   font-size: 16px;
@@ -155,24 +160,26 @@ span {
   color: #A42127;
 }
 
-#loading-message {
-  position: absolute;
-  top: 0px;
-  bottom: 0px;
-  left: 70px;
-  vertical-align: middle;
-}
-
 
 .loading {
-  position: relative;
-  display: inline-block;
+  position: absolute;
   color: #ffffff;
   font-family: "Brandon Text";
   font-size: 16px;
   line-height: 20px;
-  margin-left: 30px;
-  padding: 12px 0 12px 0;
+  left: 129px;
+  top: 23px;
+}
+
+.welcome {
+  position: absolute;
+  top: 14px;
+  left: 94px;
+  color: #ffffff;
+  font-family: "Brandon Text";
+  font-size: 16px;
+  line-height: 18px;
+  width: 160px;
 }
 
 .loading:after {
@@ -295,7 +302,7 @@ span {
 .icons {
   display: none;
   float: right;
-  margin: 10px 12px auto;
+  margin: 12px 12px auto;
   z-index: 9999;
 }
 
@@ -306,7 +313,7 @@ span {
   width: 32px;
   height: 32px;
   border-radius: 100%;
-  margin: 0px 2px 0px 2px;
+  margin: 0px 1.5px 0px 1.5px;
 }
 
 .icon-background:hover {
@@ -356,7 +363,6 @@ span {
   width: 32px;
   height: 32px;
   float: right;
-  margin-right: 4px;
   background-image: url('../images/timer.png');
   background-repeat: no-repeat;
   background-position: center;
@@ -378,16 +384,16 @@ span {
   display: inline-block;
   background-color: rgba(0, 0, 0, 0.70);
   vertical-align: middle;
-  width: 80px;
+  width: 85px;
   height: 32px;
   border-radius: 20px;
-  margin: 0px 2px 0px 2px;
+  margin: 0px 0px 0px 0px;
   cursor: default;
 }
 
-/*.time-display:hover {
-  background-color: rgba(0, 0, 0, 0.70);*/
-  /*background-color: #C83B3B;*/
+.time-display.time-adjust {
+  box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.15);
+  background-color: #EF9B59;
 }
 
 /*#cardOutput {

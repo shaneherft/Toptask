@@ -89,9 +89,9 @@ function createWindow(rightAligned) {
 
     // Create the browser window.
     mainWindow = new BrowserWindow({
-      width: 269,
+      width: 344,
       height: 66,
-      x: rightAligned,
+      x: rightAligned -20,
       y: 80,
       frame: false,
       alwaysOnTop: false,
@@ -106,9 +106,9 @@ function createWindow(rightAligned) {
 
     // Create the browser window.
     mainWindow = new BrowserWindow({
-      width: 269,
+      width: 344,
       height: 66,
-      x: rightAligned,
+      x: rightAligned - 20,
       y: 80,
       frame: false,
       alwaysOnTop: true,
@@ -230,6 +230,10 @@ ipcMain.on('set-size', function(event, width, height) {
     mainWindow.setSize(width, displaySize.height - 140)
   }
 
+});
+
+ipcMain.on('load-size', function(event) {
+    mainWindow.setSize(269, 66)
 });
 
 ipcMain.on('trello-open', function(event, cardUrl) {

@@ -13,9 +13,9 @@
   <div id="welcome-loading">
     <div class="logo"></div>
     <div class="login-spacer"></div>
-    <div id="loading-message"></div>
+    <div id="welcome-message"></div>
     <div class="login" id="loggedout">
-      <a class="login-button" id="connectLink" href="#">Connect Trello</a>
+      <a class="login-button" id="connectLink" href="#">Start</a>
     </div>
   </div>
 
@@ -29,8 +29,18 @@
         <div class="toggle">
           <div class="icons">
 
-            <div class="time-display"><h1 class=time><time>0:00</time></h1>
-              <a href="#" class="timer"></a></div>
+            <div class="time-display">
+              <h1 class=time><time>00:00</time></h1>
+              <!-- <form id="time-input" onsubmit="return false;">
+                <input id="input-hours" type="number"/>
+                <p>:</p>
+                <input id="input-minutes" type="number"/>
+                <input type="submit" id="inputButton"/>
+                <a href="#" id="stop" class="timer"></a>
+              </form> -->
+              <a href="#" id="stop" class="timer"></a>
+            </div>
+
             <div class="icon-background"><a href="#" class="back"></a></div>
             <div class="icon-background"><a href="#" class="trello"></a></div>
             <div class="icon-background"><a href="#" class="tick"></a></div>
