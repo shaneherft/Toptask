@@ -506,13 +506,70 @@ jQuery(document).ready(function ($) {
         });
 
         var stopStart = function () {
+
           var $timedisplay = $(".time-display").hasClass("time-adjust");
+
+
+            var timeInput = function () {
+              var inputHours = document.getElementById("input-hours").value;
+              var inputMinutes = document.getElementById("input-minutes").value;
+              hours = inputHours;
+              minutes = inputMinutes;
+              seconds = ((hours * 60) + minutes) * 60;
+              secondsTimer = seconds;
+
+              h1.textContent = (inputHours ? (inputHours > 9 ? inputHours : "0" + inputHours) : "00") + ":" + (inputMinutes ? (inputMinutes > 9 ? (inputMinutes > 59 ? (inputMinutes % 60) : inputMinutes) : "0" + minutes) : "00");
+
+              console.log(inputHours * 60);
+              console.log(inputHours * 60 + inputMinutes);
+
+              console.log(inputHours + ":" + inputMinutes);
+            };
+
+            // if ($timedisplay === true) {
+            //   console.log("time-adjust turned on");
+            //   clearTimeout(t);
+            //   $(".time-display > h1").remove();
+            //   $('<form id="time-input" onsubmit="return false"><input class="input-time" id="input-hours" max="99" value=' + (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ' type="number"/><p class="input-time">:</p><input class="input-time" id="input-minutes" value=' + (minutes ? (minutes > 9 ? (minutes > 59 ? (minutes % 60) : minutes) : "0" + minutes) : "00") + ' max="59" type="number"/><input type="submit" id="input-button" class="timer" value=""></form>')
+            //   .appendTo('#time-switch');
+            //
+            //   $('#input-button')
+            //   .unbind('click')
+            //   .click(event => {
+            //   event.stopPropagation()
+            //   timeInput();
+            // });
+
             if ($timedisplay === true) {
               console.log("time-adjust turned on");
               clearTimeout(t);
+              $(".time-display > h1").remove();
+              $('<form id="time-input" onsubmit="return false"><input class="input-time" id="input-hours" max="99" value=' + (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ' type="number"/><p class="input-time">:</p><input class="input-time" id="input-minutes" value=' + (minutes ? (minutes > 9 ? (minutes > 59 ? (minutes % 60) : minutes) : "0" + minutes) : "00") + ' max="59" type="number"/></form>')
+              .appendTo('#time-switch');
+              //
+              // var timeInput = function () {
+              //   var inputHours = document.getElementById("input-hours").value;
+              //   var inputMinutes = document.getElementById("input-minutes").value;
+              //   hours = inputHours;
+              //   minutes = inputMinutes;
+              //   seconds = ((hours * 60) + minutes) * 60;
+              //   secondsTimer = seconds;
+              //
+              //   h1.textContent = (inputHours ? (inputHours > 9 ? inputHours : "0" + inputHours) : "00") + ":" + (inputMinutes ? (inputMinutes > 9 ? (inputMinutes > 59 ? (inputMinutes % 60) : inputMinutes) : "0" + minutes) : "00");
+              //
+              //   console.log(inputHours * 60);
+              //   console.log(inputHours * 60 + inputMinutes);
+              //
+              //   console.log(inputHours + ":" + inputMinutes);
+              // };
+
+
             }
+
             else {
               console.log("time-adjust turned off");
+              timeInput();
+              $('#time-switch').empty();
               timer();
             }
         };
@@ -532,7 +589,6 @@ jQuery(document).ready(function ($) {
             var cardHours = Math.floor(time / 3600);
             seconds = seconds + cardSeconds;
             minutes = minutes + cardMinutes;
-            console.log(minutes);
             hours = hours + cardHours;
         };
 
@@ -555,15 +611,6 @@ jQuery(document).ready(function ($) {
         function timer() {
             t = setTimeout(add, 1000);
         }
-
-        var timeInput = function () {
-          var inputHours = document.getElementById("input-hours").value;
-          var inputMinutes = document.getElementById("input-minutes").value;
-          console.log(inputHours + ":" + inputMinutes);
-        };
-
-        var inputButton = document.getElementById('inputButton');
-        inputButton.addEventListener('click', timeInput, false);
 
     };
 

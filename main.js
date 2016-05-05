@@ -89,7 +89,7 @@ function createWindow(rightAligned) {
 
     // Create the browser window.
     mainWindow = new BrowserWindow({
-      width: 344,
+      width: 349,
       height: 66,
       x: rightAligned -20,
       y: 80,
@@ -106,7 +106,7 @@ function createWindow(rightAligned) {
 
     // Create the browser window.
     mainWindow = new BrowserWindow({
-      width: 344,
+      width: 349,
       height: 66,
       x: rightAligned - 20,
       y: 80,
