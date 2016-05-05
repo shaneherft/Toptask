@@ -366,7 +366,7 @@ span {
 
 .timer {
   display: inline-block;
-  width: 30px;
+  width: 28px;
   height: 32px;
   margin-right: 2px;
   float: right;
@@ -388,10 +388,11 @@ span {
 }
 
 .time-display {
+  position: relative;
   display: inline-block;
   background-color: rgba(0, 0, 0, 0.70);
   vertical-align: middle;
-  width: 85px;
+  width: 88px;
   height: 32px;
   border-radius: 20px;
   margin: 0px 0px 0px 0px;
@@ -400,6 +401,9 @@ span {
 
 #time-switch {
   display: inline-block;
+  position: absolute;
+  left: 7px;
+  top: -9px;
 }
 
 .time-display.time-adjust {
@@ -411,29 +415,31 @@ span {
   display: inline-block;
   color: white;
   font-family: "Brandon Text";
-  line-height: 14px;
   font-size: 15px;
   font-weight: 400;
-  /*margin-left: 10px;*/
   border: none;
   background: none;
 }
 
 #input-minutes {
-  width: 14px;
+  width: 19px;
 }
 
 #input-hours {
-  width: 14px;
+  width: 19px;
 }
 
-#input-button {
+#color {
+  margin-bottom: 1px;
+}
+
+/*#input-button {
   border: none;
   box-shadow: none;
   background-color: #EF9B59;
   width: 30px;
   height: 32px;
-}
+}*/
 
 /*#cardOutput {
   margin-bottom: -3px !important;

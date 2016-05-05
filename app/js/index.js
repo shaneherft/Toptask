@@ -51,17 +51,24 @@ jQuery(document).ready(function ($) {
     // T.getAuth()
     T.get('statuses/user_timeline', { user_id: '4615983616', count: 1 }, function (err, data, response) {
       if (data) {
-      var rawTweet = data[0].text;
-      var parseIndex = rawTweet.indexOf("via");
-      welcomeMessage = rawTweet.slice(0, parseIndex - 2);
-      console.log(welcomeMessage);
-      // storage.set('welcomeMessage', {type: 'loader', quote: loadingMessage}, function (error) {
-      //     if (error) throw error;
-      // });
-      $welcome = $("<div>")
-          .addClass('welcome')
-          .text(welcomeMessage)
-          .appendTo("#welcome-message");
+        var rawTweet = data[0].text;
+        var parseIndex = rawTweet.indexOf("via");
+        welcomeMessage = rawTweet.slice(0, parseIndex - 2);
+        console.log(welcomeMessage.length);
+
+        // storage.set('welcomeMessage', {type: 'loader', quote: loadingMessage}, function (error) {
+        //     if (error) throw error;
+        // });
+        $welcome = $("<div>")
+            .addClass('welcome')
+            .text(welcomeMessage)
+            .appendTo("#welcome-message");
+            if (welcomeMessage.length > 38) {
+              $('.welcome').css({'font-size':14});
+            }
+            else if (welcomeMessage.length > 60) {
+              $('.welcome').css({'font-size':12});
+            }
       }
     })
 
@@ -472,6 +479,7 @@ jQuery(document).ready(function ($) {
 
         var h1 = document.getElementsByTagName('h1')[0],
             stop = document.getElementById('stop')
+            h1.textContent = "00:00";
             seconds = 0, minutes = 0, hours = 0,
             t;
 
@@ -489,14 +497,6 @@ jQuery(document).ready(function ($) {
             }
         });
 
-        // $('#stop')
-        //     .unbind('click')
-        //     .click(event => {
-        //     event.stopPropagation()
-        //     $(".time-display")
-        //       .toggleClass("time-adjust");
-        // });
-
         $('#stop')
             .unbind('click')
             .click(event => {
@@ -509,60 +509,32 @@ jQuery(document).ready(function ($) {
 
           var $timedisplay = $(".time-display").hasClass("time-adjust");
 
-
             var timeInput = function () {
               var inputHours = document.getElementById("input-hours").value;
               var inputMinutes = document.getElementById("input-minutes").value;
-              hours = inputHours;
-              minutes = inputMinutes;
+              hours = parseInt(inputHours);
+              minutes = parseInt(inputMinutes);
               seconds = ((hours * 60) + minutes) * 60;
               secondsTimer = seconds;
 
-              h1.textContent = (inputHours ? (inputHours > 9 ? inputHours : "0" + inputHours) : "00") + ":" + (inputMinutes ? (inputMinutes > 9 ? (inputMinutes > 59 ? (inputMinutes % 60) : inputMinutes) : "0" + minutes) : "00");
-
-              console.log(inputHours * 60);
-              console.log(inputHours * 60 + inputMinutes);
-
-              console.log(inputHours + ":" + inputMinutes);
+              // h1.textContent = (inputHours ? (inputHours > 9 ? inputHours : "0" + inputHours) : "00") + ":" + (inputMinutes ? (inputMinutes > 9 ? (inputMinutes > 59 ? (inputMinutes % 60) : inputMinutes) : "0" + minutes) : "00");
+              console.log("Time provided = " + hours + ":" + minutes);
+              console.log("Hours = " + hours);
+              console.log("Minutes = " + ((hours * 60) + minutes));
+              console.log("Seconds = " + seconds);
             };
-
-            // if ($timedisplay === true) {
-            //   console.log("time-adjust turned on");
-            //   clearTimeout(t);
-            //   $(".time-display > h1").remove();
-            //   $('<form id="time-input" onsubmit="return false"><input class="input-time" id="input-hours" max="99" value=' + (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ' type="number"/><p class="input-time">:</p><input class="input-time" id="input-minutes" value=' + (minutes ? (minutes > 9 ? (minutes > 59 ? (minutes % 60) : minutes) : "0" + minutes) : "00") + ' max="59" type="number"/><input type="submit" id="input-button" class="timer" value=""></form>')
-            //   .appendTo('#time-switch');
-            //
-            //   $('#input-button')
-            //   .unbind('click')
-            //   .click(event => {
-            //   event.stopPropagation()
-            //   timeInput();
-            // });
 
             if ($timedisplay === true) {
               console.log("time-adjust turned on");
               clearTimeout(t);
-              $(".time-display > h1").remove();
-              $('<form id="time-input" onsubmit="return false"><input class="input-time" id="input-hours" max="99" value=' + (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ' type="number"/><p class="input-time">:</p><input class="input-time" id="input-minutes" value=' + (minutes ? (minutes > 9 ? (minutes > 59 ? (minutes % 60) : minutes) : "0" + minutes) : "00") + ' max="59" type="number"/></form>')
+              $(".time-display > h1").hide();
+              $('<form id="time-input" onsubmit="return false"><input class="input-time" id="input-hours" max="99" value=' + (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ' type="number"/><p id="colon" class="input-time">:</p><input class="input-time" id="input-minutes" value=' + (minutes ? (minutes > 9 ? (minutes > 59 ? (minutes % 60) : minutes) : "0" + minutes) : "00") + ' max="59" type="number"/></form>')
               .appendTo('#time-switch');
-              //
-              // var timeInput = function () {
-              //   var inputHours = document.getElementById("input-hours").value;
-              //   var inputMinutes = document.getElementById("input-minutes").value;
-              //   hours = inputHours;
-              //   minutes = inputMinutes;
-              //   seconds = ((hours * 60) + minutes) * 60;
-              //   secondsTimer = seconds;
-              //
-              //   h1.textContent = (inputHours ? (inputHours > 9 ? inputHours : "0" + inputHours) : "00") + ":" + (inputMinutes ? (inputMinutes > 9 ? (inputMinutes > 59 ? (inputMinutes % 60) : inputMinutes) : "0" + minutes) : "00");
-              //
-              //   console.log(inputHours * 60);
-              //   console.log(inputHours * 60 + inputMinutes);
-              //
-              //   console.log(inputHours + ":" + inputMinutes);
-              // };
-
+              $('#time-input')
+                .unbind('click')
+                .click(event => {
+                event.stopPropagation()
+              });
 
             }
 
@@ -570,6 +542,8 @@ jQuery(document).ready(function ($) {
               console.log("time-adjust turned off");
               timeInput();
               $('#time-switch').empty();
+              $(".time-display > h1").show();
+              h1.textContent = (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ":" + (minutes ? (minutes > 9 ? (minutes > 59 ? (minutes % 60) : minutes) : "0" + minutes) : "00");
               timer();
             }
         };
