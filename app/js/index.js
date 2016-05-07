@@ -363,6 +363,8 @@ jQuery(document).ready(function ($) {
 
     var cardAction = function (currentCard, cardNumber) {
 
+        var timeHasBeenAdjusted = false;
+
         $(".toggle").show();
 
         $(".toggle").click(function (event) {
@@ -417,8 +419,8 @@ jQuery(document).ready(function ($) {
             .click(event => {
                 event.stopPropagation();
                 $('.toggle').hide();
-                momentum += 1;
-                console.log(momentum);
+                // momentum += 1;
+                // console.log(momentum);
                 $('#welcome-loading').show();
                 var nextCardId = cardsInList[cardsInList.indexOf(currentCard.id) + 1];
                 console.debug({currentCard, cardsInList});
@@ -509,12 +511,18 @@ jQuery(document).ready(function ($) {
 
           var $timedisplay = $(".time-display").hasClass("time-adjust");
 
+
+
+
             var timeInput = function () {
               var inputHours = document.getElementById("input-hours").value;
               var inputMinutes = document.getElementById("input-minutes").value;
               hours = parseInt(inputHours);
               minutes = parseInt(inputMinutes);
               seconds = ((hours * 60) + minutes) * 60;
+              if (secondsTimer != seconds) {
+                timeHasBeenAdjusted = true;
+              }
               secondsTimer = seconds;
 
               // h1.textContent = (inputHours ? (inputHours > 9 ? inputHours : "0" + inputHours) : "00") + ":" + (inputMinutes ? (inputMinutes > 9 ? (inputMinutes > 59 ? (inputMinutes % 60) : inputMinutes) : "0" + minutes) : "00");
@@ -522,6 +530,7 @@ jQuery(document).ready(function ($) {
               console.log("Hours = " + hours);
               console.log("Minutes = " + ((hours * 60) + minutes));
               console.log("Seconds = " + seconds);
+              console.log("Time adjusted? " + timeHasBeenAdjusted);
             };
 
             if ($timedisplay === true) {
