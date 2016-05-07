@@ -54,7 +54,6 @@ jQuery(document).ready(function ($) {
         var rawTweet = data[0].text;
         var parseIndex = rawTweet.indexOf("via");
         welcomeMessage = rawTweet.slice(0, parseIndex - 2);
-        console.log(welcomeMessage.length);
 
         // storage.set('welcomeMessage', {type: 'loader', quote: loadingMessage}, function (error) {
         //     if (error) throw error;
@@ -154,7 +153,7 @@ jQuery(document).ready(function ($) {
             //   Trello.get("boards/52a964092424e6632f0d6921/lists", (lists)=> {
             //     Trello.get("lists/55d26f54726fb67f022db618/cards", (cards)=> {
             Trello.get("lists/" + ttSettings.tids.list + "/cards", (cards)=> { //
-                console.debug(cards);
+                // console.debug(cards);
                 cardsInList = [];
 
                 var $listOutput = $("#listOutput");
@@ -364,6 +363,7 @@ jQuery(document).ready(function ($) {
     var cardAction = function (currentCard, cardNumber) {
 
         var timeHasBeenAdjusted = false;
+        var startTime = 0;
 
         $(".toggle").show();
 
@@ -395,19 +395,40 @@ jQuery(document).ready(function ($) {
                 $('#welcome-loading').show();
                 $('#listOutput').empty();
 
-                var labelTimeFuncs = currentCard.labels.reduce((accu, label)=> {
-                    accu.push(callback=>saveLabelTime(label.id, label.name, secondsTimer, callback));
-                    return accu
-                }, []);
-                console.debug('back labelTimeFuncs', labelTimeFuncs);
-                var flow = [
-                    (callback)=> saveCardTime(currentCard.id, currentCard.name, secondsTimer, callback),
-                ].concat(labelTimeFuncs, [
-                    (callback)=> {
-                        clearTime();
-                        logTime(callback);
-                    }
-                ]);
+                if (timeHasBeenAdjusted) {
+                  var labelTimeFuncs = currentCard.labels.reduce((accu, label)=> {
+                      accu.push(callback=>saveLabelTime(label.id, label.name, secondsTimer - startTime, callback));
+                      console.log(secondsTimer);
+                      console.log(startTime);
+                      return accu
+                  }, []);
+                  // console.debug('back labelTimeFuncs', labelTimeFuncs);
+                  var flow = [
+                      (callback)=> saveNewCardTime(currentCard.id, currentCard.name, secondsTimer, callback),
+                  ].concat(labelTimeFuncs, [
+                      (callback)=> {
+                          clearTime();
+                          logTime(callback);
+                      }
+                  ]);
+                  timeHasBeenAdjusted = false;
+                }
+
+                else {
+                  var labelTimeFuncs = currentCard.labels.reduce((accu, label)=> {
+                      accu.push(callback=>saveLabelTime(label.id, label.name, secondsTimer, callback));
+                      return accu
+                  }, []);
+                  // console.debug('back labelTimeFuncs', labelTimeFuncs);
+                  var flow = [
+                      (callback)=> saveCardTime(currentCard.id, currentCard.name, secondsTimer, callback),
+                  ].concat(labelTimeFuncs, [
+                      (callback)=> {
+                          clearTime();
+                          logTime(callback);
+                      }
+                  ]);
+                }
 
                 async.series(flow, (err, results)=> {
                     getList();
@@ -423,13 +444,13 @@ jQuery(document).ready(function ($) {
                 // console.log(momentum);
                 $('#welcome-loading').show();
                 var nextCardId = cardsInList[cardsInList.indexOf(currentCard.id) + 1];
-                console.debug({currentCard, cardsInList});
+                // console.debug({currentCard, cardsInList});
 
                 var labelTimeFuncs = currentCard.labels.reduce((accu, label)=> {
                     accu.push((callback)=>saveLabelTime(label.id, label.name, secondsTimer, callback));
                     return accu;
                 }, []);
-                console.debug('tick labelTimeFuncs', labelTimeFuncs);
+                // console.debug('tick labelTimeFuncs', labelTimeFuncs);
                 var flow = [
                     (callback)=> completeCard(currentCard.id, callback),
                     (callback)=> saveCardTime(currentCard.id, currentCard.name, secondsTimer, callback),
@@ -511,26 +532,18 @@ jQuery(document).ready(function ($) {
 
           var $timedisplay = $(".time-display").hasClass("time-adjust");
 
-
-
-
             var timeInput = function () {
-              var inputHours = document.getElementById("input-hours").value;
-              var inputMinutes = document.getElementById("input-minutes").value;
-              hours = parseInt(inputHours);
-              minutes = parseInt(inputMinutes);
-              seconds = ((hours * 60) + minutes) * 60;
-              if (secondsTimer != seconds) {
+              var inputHours = parseInt(document.getElementById("input-hours").value);
+              var inputMinutes = parseInt(document.getElementById("input-minutes").value);
+              if (inputHours != hours || inputMinutes != minutes) {
                 timeHasBeenAdjusted = true;
               }
+              hours = inputHours;
+              minutes = inputMinutes;
+              seconds = ((hours * 60) + minutes) * 60;
               secondsTimer = seconds;
-
-              // h1.textContent = (inputHours ? (inputHours > 9 ? inputHours : "0" + inputHours) : "00") + ":" + (inputMinutes ? (inputMinutes > 9 ? (inputMinutes > 59 ? (inputMinutes % 60) : inputMinutes) : "0" + minutes) : "00");
-              console.log("Time provided = " + hours + ":" + minutes);
-              console.log("Hours = " + hours);
-              console.log("Minutes = " + ((hours * 60) + minutes));
-              console.log("Seconds = " + seconds);
-              console.log("Time adjusted? " + timeHasBeenAdjusted);
+              console.log(secondsTimer);
+              console.log(startTime);
             };
 
             if ($timedisplay === true) {
@@ -567,6 +580,7 @@ jQuery(document).ready(function ($) {
         };
 
         var timeDisplay = function (time) {
+            startTime = time;
             var cardSeconds = time - (Math.floor(time / 60) * 60);
             var cardMinutes = Math.floor(time / 60);
             var cardHours = Math.floor(time / 3600);
@@ -621,7 +635,7 @@ jQuery(document).ready(function ($) {
 
     var saveTime = function (keyType, keyId, keyName, time, callback) {
 
-        console.debug('saveTime', arguments);
+        // console.debug('saveTime', arguments);
 
         var totalTime = time;
 
@@ -633,15 +647,29 @@ jQuery(document).ready(function ($) {
             }
             storage.set(keyId, {type: keyType, name: keyName, time: totalTime}, (error)=> {
                 if (error) throw error;
-                console.log(keyId + " " + keyName + " " + totalTime);
+                // console.log(keyId + " " + keyName + " " + totalTime);
                 callback(null, totalTime); // success
             });
         });
 
     };
 
+    var saveNewTime = function (keyType, keyId, keyName, time, callback) {
+
+        // console.debug('saveTime', arguments);
+
+        var totalTime = time;
+
+        storage.set(keyId, {type: keyType, name: keyName, time: totalTime}, (error)=> {
+            if (error) throw error;
+            console.log(keyId + " " + keyName + " " + totalTime);
+            callback(null, totalTime); // success
+        });
+    };
+
     var saveLabelTime = saveTime.bind(null, 'label');
     var saveCardTime = saveTime.bind(null, 'card');
+    var saveNewCardTime = saveNewTime.bind(null, 'card');
 
 // LOGS PRODUCTIVITY STATS TO CARD
 
@@ -650,17 +678,17 @@ jQuery(document).ready(function ($) {
         var tdata = {card: [], label: []};
 
         storage.keys((err, keys)=> {
-            console.debug('logTime storage.keys', err, keys);
+            // console.debug('logTime storage.keys', err, keys);
             // storage.keys returns irelevant data - ... "authStatus", "Cache", "Cookies", "Cookies-journal", "Local Storage", "Preferences"]
             // you need to rethink what you store and how you query relevant data
             // because here you need only card ids, but getting also label ids + irrelevant data above
 
             // https://github.com/caolan/async
             async.mapSeries(keys, (name, cb)=> storage.get(name, (error, data)=> {
-                console.debug('logTime data', error, data);
+                // console.debug('logTime data', error, data);
                 // if (error) return cb(error);
                 if (data['type'] == 'card' && data['time'] > 60 || data['type'] == 'label' && data['time'] > 60 ) {
-                    console.debug('tdata', [tdata, data['type'], tdata[data['type']]]);
+                    // console.debug('tdata', [tdata, data['type'], tdata[data['type']]]);
                     tdata[data['type']].push(data);
                 }
                 return cb(null, 1);
@@ -672,7 +700,7 @@ jQuery(document).ready(function ($) {
                     var labeltime = tdata.label.reduce(_grabTime, '');
 
                     var trelloTime = "**TASKS:**\n" + "\n" + cardtime + "\n\n**LABELS:**\n" + "\n" + labeltime;
-                    console.debug('trelloTime', {trelloTime, cardtime, labeltime});
+                    // console.debug('trelloTime', {trelloTime, cardtime, labeltime});
                     Trello.put('/cards/' + ttSettings.tids.card + '/desc', {value: trelloTime})
                         .always((o, e, d)=>callback(e, d));
                 } else {

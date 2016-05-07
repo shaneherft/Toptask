@@ -95,7 +95,7 @@ function createWindow(rightAligned) {
       y: 80,
       frame: false,
       alwaysOnTop: false,
-      webPreferences: {"node-integration": true,}
+      webPreferences: {"nodeIntegration": true,}
     });
     // Open the DevTools.
     mainWindow.webContents.openDevTools({detach: true});
@@ -113,7 +113,7 @@ function createWindow(rightAligned) {
       frame: false,
       alwaysOnTop: true,
       webPreferences: {
-        "node-integration": true,
+        "nodeIntegration": true,
       }
     });
   }
