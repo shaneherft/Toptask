@@ -24,7 +24,6 @@ var Trello = require('./lib/client-enode')(window, jQuery, ttSettings.connection
 var bootstrap = require('bootstrap');
 var loadingMessage = "Loading";
 var clearTime;
-// var jqueryNumbers = require('./lib/jquery.number.js');
 
 var T = new Twit({
   consumer_key:         'Smxc5So9dx0pSzZ25oj1ahwNP',
@@ -42,65 +41,69 @@ jQuery(document).ready(function ($) {
     var $loading;
     var cardsInList;
     var cardTimer;
-    var momentum = 0;
-    var date = new Date();
-    var dateNum = date.getDate();
-    // ipcRenderer.send('load-size');
 
+    var currentUrl = location.href;
 
-    // T.getAuth()
-    T.get('statuses/user_timeline', { user_id: '4615983616', count: 1 }, function (err, data, response) {
-      if (data) {
-        var rawTweet = data[0].text;
-        var parseIndex = rawTweet.indexOf("via");
-        welcomeMessage = rawTweet.slice(0, parseIndex - 2);
+    if (currentUrl === "file:///Users/shaneherft/Google%20Drive/Development/Toptask/index.html") {
 
-        // storage.set('welcomeMessage', {type: 'loader', quote: loadingMessage}, function (error) {
-        //     if (error) throw error;
-        // });
-        $welcome = $("<div>")
-            .addClass('welcome')
-            .text(welcomeMessage)
-            .appendTo("#welcome-message");
-            if (welcomeMessage.length > 38) {
-              $('.welcome').css({'font-size':14});
+      var reloadUrl = currentUrl + "?reloaded";
+      // T.getAuth()
+      T.get('statuses/user_timeline', { user_id: '4615983616', count: 1 }, function (err, data, response) {
+
+        if (data) {
+          var rawTweet = data[0].text;
+          var parseIndex = rawTweet.indexOf("via");
+          welcomeMessage = rawTweet.slice(0, parseIndex - 2);
+          welcomeMessage = welcomeMessage + ".";
+          welcomeMessage = "Hello asdlkasjdlkas jdlkasjdlkasjdlkasjdlkasjdlak sjdlkasjdlaksjdlkasjdlakjs";
+
+          $welcome = $("<div>")
+              .addClass('welcome')
+              .text(welcomeMessage)
+              .appendTo("#welcome-message");
+              if (welcomeMessage.length > 38) {
+                $('.welcome').css({'font-size':14});
+              }
+              else if (welcomeMessage.length > 60) {
+                $('.welcome').css({'font-size':12}, {'line-height':16});
+              }
+              else if (welcomeMessage.length < 20) {
+                $('.welcome').css({'top':24});
+              }
+        };
+      });
+
+    }
+
+    else {
+
+      var authStart = function() {
+        storage.get('authStatus', function (error, data) {
+            if (error) throw error;
+
+            if (data.auth === true) {
+                $("#connectLink").ready(function doAuth() {
+                    Trello.authorize({
+                        type: 'popup',
+                        name: "Toptask",
+                        scope: {
+                            read: true,
+                            write: true
+                        },
+                        expiration: 'never',
+                        success: onAuthorize,
+                        error: (err)=> console.debug('Trello error', err),
+                    });
+
+                });
             }
-            else if (welcomeMessage.length > 60) {
-              $('.welcome').css({'font-size':12});
-            }
-      }
-    })
+          });
+        };
 
+      authStart();
 
+    };
 
-    // storage.get("loadingMessage", function (error, data) {
-    //     if (error) throw error;
-    //     loadingMessage = data.quote;
-    //     authStart();
-    // });
-
-    // var authStart = function() {
-    //   storage.get('authStatus', function (error, data) {
-    //       if (error) throw error;
-    //
-    //       if (data.auth === true) {
-              // $("#connectLink").ready(function doAuth() {
-              //     Trello.authorize({
-              //         type: 'popup',
-              //         name: "Toptask",
-              //         scope: {
-              //             read: true,
-              //             write: true
-              //         },
-              //         expiration: 'never',
-              //         success: onAuthorize,
-              //         error: (err)=> console.debug('Trello error', err),
-              //     });
-              //
-              // });
-          // }
-
-          // else {
     $("#connectLink").click(function doAuth() {
         Trello.authorize({
             type: 'popup',
@@ -114,15 +117,6 @@ jQuery(document).ready(function ($) {
             error: (err)=> console.debug('Trello error', err),
         });
     });
-    //       }
-    //
-    //     });
-    //     // if (callback) {
-    //     //   callback();
-    //     // }
-    // };
-
-
 
     var onAuthorize = function () {
         updateLoggedIn();
@@ -134,9 +128,9 @@ jQuery(document).ready(function ($) {
             .appendTo("#welcome-message");
         getList();
 
-        // storage.set('authStatus', {auth: Trello.authorized()}, function (error) {
-        //     if (error) throw error;
-        // });
+        storage.set('authStatus', {auth: Trello.authorized()}, function (error) {
+            if (error) throw error;
+        });
     };
 
     //TRELLO FUNCTIONS
@@ -526,7 +520,7 @@ jQuery(document).ready(function ($) {
                 event.stopPropagation();
             });
 
-        ipcRenderer.on("refresh-card", function () {
+        ipcRenderer.once("refresh-card", function () {
 
             if ($timedisplay === true) {
               $(".time-display").toggleClass("time-adjust");
@@ -535,33 +529,47 @@ jQuery(document).ready(function ($) {
             }
 
             if (timeHasBeenAdjusted) {
-              saveNewCardTime(currentCard.id, currentCard.name, secondsTimer);
-              for (i = 0; i < currentCard.labels.length; i++) {
-                  saveLabelTime(currentCard.labels[i].id, currentCard.labels[i].name, secondsTimer - startTime);
-              }
+              var labelTimeFuncs = currentCard.labels.reduce((accu, label)=> {
+                  accu.push(callback=>saveLabelTime(label.id, label.name, secondsTimer - startTime, callback));
+                  console.log(secondsTimer);
+                  console.log(startTime);
+                  return accu
+              }, []);
+              // console.debug('back labelTimeFuncs', labelTimeFuncs);
+              var flow = [
+                  (callback)=> saveNewCardTime(currentCard.id, currentCard.name, secondsTimer, callback),
+              ].concat(labelTimeFuncs, [
+                  (callback)=> {
+                      clearTime();
+                      logTime(callback);
+                  }
+              ]);
               timeHasBeenAdjusted = false;
-              clearTime();
-              ipcRenderer.removeListener("refresh-card");
-              // onAuthorize();
-              ipcRenderer.send('load-size');
-              $('#welcome-loading').show();
-              $('#listOutput').empty();
-              getList();
             }
 
             else {
-              saveCardTime(currentCard.id, currentCard.name, secondsTimer);
-              for (i = 0; i < currentCard.labels.length; i++) {
-                  saveLabelTime(currentCard.labels[i].id, currentCard.labels[i].name, secondsTimer);
-              }
-              clearTime();
-              // onAuthorize();
-              ipcRenderer.send('load-size');
-              $('#welcome-loading').show();
-              $('#listOutput').empty();
-              getList();
+              var labelTimeFuncs = currentCard.labels.reduce((accu, label)=> {
+                  accu.push(callback=>saveLabelTime(label.id, label.name, secondsTimer, callback));
+                  return accu
+              }, []);
+              // console.debug('back labelTimeFuncs', labelTimeFuncs);
+              var flow = [
+                  (callback)=> saveCardTime(currentCard.id, currentCard.name, secondsTimer, callback),
+              ].concat(labelTimeFuncs, [
+                  (callback)=> {
+                      clearTime();
+                      logTime(callback);
+                  }
+              ]);
             }
+
+            async.series(flow, (err, results)=> {
+                window.location = reloadUrl;
+                // getList();
+            });
         });
+
+        // });
 
         var completeCard = function (cardId, callback) {
             Trello.put("cards/" + cardId + "/idList", {value: ttSettings.tids.completeList})
@@ -626,7 +634,7 @@ jQuery(document).ready(function ($) {
               console.log("time-adjust turned on");
               clearTimeout(t);
               $(".time-display > h1").hide();
-              $('<form id="time-input" onsubmit="return false"><input class="input-time" id="input-hours" max="99" value=' + (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ' type="number"/><p id="colon" class="input-time">:</p><input class="input-time" id="input-minutes" value=' + (minutes ? (minutes > 9 ? (minutes > 59 ? (minutes % 60) : minutes) : "0" + minutes) : "00") + ' max="59" type="number"/></form>')
+              $('<form id="time-input" onsubmit="return false"><input class="input-time blink" id="input-hours" max="99" value=' + (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ' type="number"/><p id="colon" class="input-time blink">:</p><input class="input-time blink" id="input-minutes" value=' + (minutes ? (minutes > 9 ? (minutes > 59 ? (minutes % 60) : minutes) : "0" + minutes) : "00") + ' max="59" type="number"/></form>')
               .appendTo('#time-switch');
               $('#time-input')
                 .unbind('click')

@@ -129,7 +129,6 @@ function createWindow(rightAligned) {
   var trayMenu = Menu.buildFromTemplate(trayMenuTemplate);
   trayIcon.setContextMenu(trayMenu);
 
-
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
