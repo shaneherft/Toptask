@@ -154,7 +154,7 @@ function createTrelloWindow(cardLink) {
     height: 600,
     frame: true,
     webPreferences: {
-      "node-integration": false
+      "nodeIntegration": false
     }
   });
 

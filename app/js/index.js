@@ -155,6 +155,7 @@ jQuery(document).ready(function ($) {
             Trello.get("lists/" + ttSettings.tids.list + "/cards", (cards)=> { //
                 // console.debug(cards);
                 cardsInList = [];
+                console.log(cardsInList);
 
                 var $listOutput = $("#listOutput");
                 var listName = "PRIORITY";
@@ -173,6 +174,8 @@ jQuery(document).ready(function ($) {
                     cardDisplay(card, cardNumber);
 
                 });
+
+                console.log(cardsInList);
 
                 ipcRenderer.send('set-size', 269, 30 + $listOutput.outerHeight());
                 $('#welcome-loading').hide();
@@ -362,6 +365,7 @@ jQuery(document).ready(function ($) {
 
     var cardAction = function (currentCard, cardNumber) {
 
+        var $timedisplay;
         var timeHasBeenAdjusted = false;
         var startTime = 0;
 
@@ -394,6 +398,12 @@ jQuery(document).ready(function ($) {
                 ipcRenderer.send('load-size');
                 $('#welcome-loading').show();
                 $('#listOutput').empty();
+
+                if ($timedisplay === true) {
+                  $(".time-display").toggleClass("time-adjust");
+                  $('#time-switch').empty();
+                  $(".time-display > h1").show();
+                }
 
                 if (timeHasBeenAdjusted) {
                   var labelTimeFuncs = currentCard.labels.reduce((accu, label)=> {
@@ -446,15 +456,55 @@ jQuery(document).ready(function ($) {
                 var nextCardId = cardsInList[cardsInList.indexOf(currentCard.id) + 1];
                 // console.debug({currentCard, cardsInList});
 
-                var labelTimeFuncs = currentCard.labels.reduce((accu, label)=> {
-                    accu.push((callback)=>saveLabelTime(label.id, label.name, secondsTimer, callback));
-                    return accu;
-                }, []);
-                // console.debug('tick labelTimeFuncs', labelTimeFuncs);
-                var flow = [
-                    (callback)=> completeCard(currentCard.id, callback),
-                    (callback)=> saveCardTime(currentCard.id, currentCard.name, secondsTimer, callback),
-                ].concat(labelTimeFuncs);
+                // var labelTimeFuncs = currentCard.labels.reduce((accu, label)=> {
+                //     accu.push((callback)=>saveLabelTime(label.id, label.name, secondsTimer, callback));
+                //     return accu;
+                // }, []);
+                // // console.debug('tick labelTimeFuncs', labelTimeFuncs);
+                // var flow = [
+                //     (callback)=> completeCard(currentCard.id, callback),
+                //     (callback)=> saveCardTime(currentCard.id, currentCard.name, secondsTimer, callback),
+                // ].concat(labelTimeFuncs);
+                if ($timedisplay === true) {
+                  $(".time-display").toggleClass("time-adjust");
+                  $('#time-switch').empty();
+                  $(".time-display > h1").show();
+                }
+
+                if (timeHasBeenAdjusted) {
+                  var labelTimeFuncs = currentCard.labels.reduce((accu, label)=> {
+                      accu.push(callback=>saveLabelTime(label.id, label.name, secondsTimer - startTime, callback));
+                      console.log(secondsTimer);
+                      console.log(startTime);
+                      return accu
+                  }, []);
+                  // console.debug('back labelTimeFuncs', labelTimeFuncs);
+                  var flow = [
+                      (callback)=> saveNewCardTime(currentCard.id, currentCard.name, secondsTimer, callback),
+                  ].concat(labelTimeFuncs, [
+                      (callback)=> {
+                          clearTime();
+                          logTime(callback);
+                      }
+                  ]);
+                  timeHasBeenAdjusted = false;
+                }
+
+                else {
+                  var labelTimeFuncs = currentCard.labels.reduce((accu, label)=> {
+                      accu.push(callback=>saveLabelTime(label.id, label.name, secondsTimer, callback));
+                      return accu
+                  }, []);
+                  // console.debug('back labelTimeFuncs', labelTimeFuncs);
+                  var flow = [
+                      (callback)=> saveCardTime(currentCard.id, currentCard.name, secondsTimer, callback),
+                  ].concat(labelTimeFuncs, [
+                      (callback)=> {
+                          clearTime();
+                          logTime(callback);
+                      }
+                  ]);
+                }
 
                 // https://github.com/caolan/async#seriestasks-callback
                 async.series(flow, (err, results)=> {
@@ -477,12 +527,40 @@ jQuery(document).ready(function ($) {
             });
 
         ipcRenderer.on("refresh-card", function () {
-            saveCardTime(currentCard.id, currentCard.name, secondsTimer);
-            for (i = 0; i < currentCard.labels.length; i++) {
-                saveLabelTime(currentCard.labels[i].id, currentCard.labels[i].name, secondsTimer);
+
+            if ($timedisplay === true) {
+              $(".time-display").toggleClass("time-adjust");
+              $('#time-switch').empty();
+              $(".time-display > h1").show();
             }
-            clearTime();
-            onAuthorize();
+
+            if (timeHasBeenAdjusted) {
+              saveNewCardTime(currentCard.id, currentCard.name, secondsTimer);
+              for (i = 0; i < currentCard.labels.length; i++) {
+                  saveLabelTime(currentCard.labels[i].id, currentCard.labels[i].name, secondsTimer - startTime);
+              }
+              timeHasBeenAdjusted = false;
+              clearTime();
+              ipcRenderer.removeListener("refresh-card");
+              // onAuthorize();
+              ipcRenderer.send('load-size');
+              $('#welcome-loading').show();
+              $('#listOutput').empty();
+              getList();
+            }
+
+            else {
+              saveCardTime(currentCard.id, currentCard.name, secondsTimer);
+              for (i = 0; i < currentCard.labels.length; i++) {
+                  saveLabelTime(currentCard.labels[i].id, currentCard.labels[i].name, secondsTimer);
+              }
+              clearTime();
+              // onAuthorize();
+              ipcRenderer.send('load-size');
+              $('#welcome-loading').show();
+              $('#listOutput').empty();
+              getList();
+            }
         });
 
         var completeCard = function (cardId, callback) {
@@ -492,9 +570,9 @@ jQuery(document).ready(function ($) {
         };
 
         var cardTimer = function () {
-            setInterval(()=> {
-                $cardNumber.toggleClass('pulse');
-            }, 900000);
+            // setInterval(()=> {
+            //     $cardNumber.toggleClass('pulse');
+            // }, 900000);
         };
 
         timer();
@@ -530,7 +608,7 @@ jQuery(document).ready(function ($) {
 
         var stopStart = function () {
 
-          var $timedisplay = $(".time-display").hasClass("time-adjust");
+          $timedisplay = $(".time-display").hasClass("time-adjust");
 
             var timeInput = function () {
               var inputHours = parseInt(document.getElementById("input-hours").value);
@@ -542,8 +620,6 @@ jQuery(document).ready(function ($) {
               minutes = inputMinutes;
               seconds = ((hours * 60) + minutes) * 60;
               secondsTimer = seconds;
-              console.log(secondsTimer);
-              console.log(startTime);
             };
 
             if ($timedisplay === true) {
