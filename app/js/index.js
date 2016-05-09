@@ -22,6 +22,8 @@ var ttSettings = require('./settings');
 var Twit = require('twit');
 var Trello = require('./lib/client-enode')(window, jQuery, ttSettings.connection);
 var bootstrap = require('bootstrap');
+var fs = require('fs');
+var nconf = require('nconf');
 var loadingMessage = "Loading";
 var clearTime;
 
@@ -33,6 +35,40 @@ var T = new Twit({
   timeout_ms:           60*1000,  // optional HTTP request timeout to apply to all requests.
 })
 
+
+// var tids_shane = {
+//     list: '55d26f54726fb67f022db618',
+//     card: '56f660d3c3887f343909d4c9',
+//     completeList: "5403bf2888d0ac13dcc52c4a",
+// };
+//
+// var data = JSON.stringify(tids_shane);
+//
+// fs.writeFile('./configuration.json', data, function (err) {
+//  if (err) {
+//    console.log('There has been an error saving your configuration data.');
+//    console.log(err.message);
+//    return;
+//  }
+//  console.log('Configuration saved successfully.')
+// });
+
+nconf.use('file', { file: './configuration.json' });
+  nconf.load();
+  // nconf.set('name', 'Avian');
+  // nconf.set('dessert:name', 'Ice Cream');
+  // nconf.set('dessert:flavor', 'chocolate');
+
+  var logCard = nconf.get('card');
+  console.log(logCard);
+
+  nconf.save(function (err) {
+    if (err) {
+      console.error(err.message);
+      return;
+    }
+    console.log('Configuration saved successfully.');
+  });
 
 
 jQuery(document).ready(function ($) {
@@ -77,11 +113,18 @@ jQuery(document).ready(function ($) {
               .addClass('welcome')
               .text(welcomeMessage)
               .appendTo("#welcome-message");
+
               if (welcomeMessage.length > 38) {
+                ipcRenderer.send('set-size', 349, 84);
                 $('.welcome').css({'font-size':14});
+                $('.login-spacer').css({'height': 48});
+
               }
               else if (welcomeMessage.length > 60) {
+                ipcRenderer.send('set-size', 349, 82);
                 $('.welcome').css({'font-size':12}, {'line-height':16});
+                $('.login-spacer').css({'height': 46});
+
               }
               else if (welcomeMessage.length < 20) {
                 $('.welcome').css({'top':24});
@@ -146,38 +189,40 @@ jQuery(document).ready(function ($) {
             .appendTo("#welcome-message");
         getList();
 
-        // storage.set('date', {day: dd}, function (error) {
-        //     if (error) throw error;
-        //
-        //     storage.get('date', function (error, data) {
-        //         if (error) throw error;
-        //
-        //         if (data.day === dd) {
-        //
-        //           Trello.put('/cards/' + ttSettings.tids.card, {name: 'Daily Progress - ' + logDate});
-        //           Trello.put("cards/" + ttSettings.tids.card + "/idList", {value: ttSettings.tids.completeList})
-        //
-        //           var creationSuccess = function(data) {
-        //             console.log('Card created successfully. Data returned:' + JSON.stringify(data));
-        //             ttSettings.tids.card = data.id;
-        //           };
-        //
-        //           var newCard = {
-        //             name: 'Daily Progress',
-        //             idLabels: '55a35d27fb396fe706fb7b1e',
-        //             idList: ttSettings.tids.list,
-        //             pos: 'bottom'
-        //           };
-        //
-        //           Trello.post('/cards/', newCard, creationSuccess);
-        //
-        //           storage.clear(function(error) {
-        //             if (error) throw error;
-        //           });
-        //
-        //         }
-        //     });
-        // });
+        storage.set('date', {day: dd}, function (error) {
+            if (error) throw error;
+
+            storage.get('date', function (error, data) {
+                if (error) throw error;
+
+                if (data.day < dd) {
+
+                  Trello.put('/cards/' + logCard, {name: 'Daily Progress - ' + logDate});
+                  Trello.put("cards/" + logCard + "/idList", {value: ttSettings.tids.completeList})
+
+                  var creationSuccess = function(data) {
+                    // console.log('Card created successfully. Data returned:' + JSON.stringify(data));
+                    nconf.set('card', data.id);
+                    nconf.save()
+                    logCard = data.id;
+                  };
+
+                  var newCard = {
+                    name: 'Daily Progress',
+                    idLabels: '55a35d27fb396fe706fb7b1e',
+                    idList: ttSettings.tids.list,
+                    pos: 'bottom'
+                  };
+
+                  Trello.post('/cards/', newCard, creationSuccess);
+
+                  storage.clear(function(error) {
+                    if (error) throw error;
+                  });
+
+                }
+            });
+        });
 
         storage.set('authStatus', {auth: Trello.authorized()}, function (error) {
             if (error) throw error;
@@ -840,7 +885,7 @@ jQuery(document).ready(function ($) {
 
                     var trelloTime = "**TASKS:**\n" + "\n" + cardtime + "\n\n**LABELS:**\n" + "\n" + labeltime;
                     // console.debug('trelloTime', {trelloTime, cardtime, labeltime});
-                    Trello.put('/cards/' + ttSettings.tids.card + '/desc', {value: trelloTime})
+                    Trello.put('/cards/' + logCard + '/desc', {value: trelloTime})
                         .always((o, e, d)=>callback(e, d));
                 } else {
                     // need to return from async anyway
