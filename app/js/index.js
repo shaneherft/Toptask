@@ -42,7 +42,24 @@ jQuery(document).ready(function ($) {
     var cardsInList;
     var cardTimer;
 
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth()+1; //January is 0!
+    var yyyy = today.getFullYear();
+
+    if(dd<10) {
+      dd='0'+dd
+    }
+
+    if(mm<10) {
+      mm='0'+mm
+    }
+
+    var logDate = mm+'/'+dd+'/'+yyyy;
+
     var currentUrl = location.href;
+
+    // if (currentUrl === "file:///Users/shaneherft/Desktop/TopTask.app/Contents/Resources/app/index.html") {
 
     if (currentUrl === "file:///Users/shaneherft/Google%20Drive/Development/Toptask/index.html") {
 
@@ -55,7 +72,6 @@ jQuery(document).ready(function ($) {
           var parseIndex = rawTweet.indexOf("via");
           welcomeMessage = rawTweet.slice(0, parseIndex - 2);
           welcomeMessage = welcomeMessage + ".";
-          welcomeMessage = "Hello asdlkasjdlkas jdlkasjdlkasjdlkasjdlkasjdlak sjdlkasjdlaksjdlkasjdlakjs";
 
           $welcome = $("<div>")
               .addClass('welcome')
@@ -76,6 +92,8 @@ jQuery(document).ready(function ($) {
     }
 
     else {
+
+      var reloadUrl = currentUrl;
 
       var authStart = function() {
         storage.get('authStatus', function (error, data) {
@@ -127,6 +145,39 @@ jQuery(document).ready(function ($) {
             .text("Loading")
             .appendTo("#welcome-message");
         getList();
+
+        // storage.set('date', {day: dd}, function (error) {
+        //     if (error) throw error;
+        //
+        //     storage.get('date', function (error, data) {
+        //         if (error) throw error;
+        //
+        //         if (data.day === dd) {
+        //
+        //           Trello.put('/cards/' + ttSettings.tids.card, {name: 'Daily Progress - ' + logDate});
+        //           Trello.put("cards/" + ttSettings.tids.card + "/idList", {value: ttSettings.tids.completeList})
+        //
+        //           var creationSuccess = function(data) {
+        //             console.log('Card created successfully. Data returned:' + JSON.stringify(data));
+        //             ttSettings.tids.card = data.id;
+        //           };
+        //
+        //           var newCard = {
+        //             name: 'Daily Progress',
+        //             idLabels: '55a35d27fb396fe706fb7b1e',
+        //             idList: ttSettings.tids.list,
+        //             pos: 'bottom'
+        //           };
+        //
+        //           Trello.post('/cards/', newCard, creationSuccess);
+        //
+        //           storage.clear(function(error) {
+        //             if (error) throw error;
+        //           });
+        //
+        //         }
+        //     });
+        // });
 
         storage.set('authStatus', {auth: Trello.authorized()}, function (error) {
             if (error) throw error;
@@ -474,13 +525,15 @@ jQuery(document).ready(function ($) {
                   }, []);
                   // console.debug('back labelTimeFuncs', labelTimeFuncs);
                   var flow = [
+                      (callback)=> completeCard(currentCard.id, callback),
                       (callback)=> saveNewCardTime(currentCard.id, currentCard.name, secondsTimer, callback),
-                  ].concat(labelTimeFuncs, [
-                      (callback)=> {
-                          clearTime();
-                          logTime(callback);
-                      }
-                  ]);
+                  ].concat(labelTimeFuncs);
+                  // , [
+                  //     (callback)=> {
+                  //         clearTime();
+                  //         logTime(callback);
+                  //     }
+                  // ]);
                   timeHasBeenAdjusted = false;
                 }
 
@@ -491,13 +544,15 @@ jQuery(document).ready(function ($) {
                   }, []);
                   // console.debug('back labelTimeFuncs', labelTimeFuncs);
                   var flow = [
+                      (callback)=> completeCard(currentCard.id, callback),
                       (callback)=> saveCardTime(currentCard.id, currentCard.name, secondsTimer, callback),
-                  ].concat(labelTimeFuncs, [
-                      (callback)=> {
-                          clearTime();
-                          logTime(callback);
-                      }
-                  ]);
+                  ].concat(labelTimeFuncs);
+                  // , [
+                  //     (callback)=> {
+                  //         clearTime();
+                  //         logTime(callback);
+                  //     }
+                  // ]);
                 }
 
                 // https://github.com/caolan/async#seriestasks-callback

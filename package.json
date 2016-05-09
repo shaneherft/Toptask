@@ -29,9 +29,9 @@
     "electron-prebuilt": "*"
   },
   "dependencies": {
+    "async": "latest",
     "bootstrap": "^3.3.6",
     "electron-json-storage": "^2.0.0",
-    "nconf": "^0.8.4",
-    "async": "latest"
+    "nconf": "^0.8.4"
   }
 }

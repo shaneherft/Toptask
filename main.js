@@ -23,12 +23,12 @@ var trayMenuTemplate = [
         label: 'Toptask',
         enabled: false
     },
-    {
-        label: 'Settings',
-        click: function() {
-          createSettingsWindow();
-        }
-    },
+    // {
+    //     label: 'Settings',
+    //     click: function() {
+    //       createSettingsWindow();
+    //     }
+    // },
     {
         label: 'Clear Storage',
         click: function() {
@@ -168,39 +168,39 @@ function createTrelloWindow(cardLink) {
 
 }
 
-function createSettingsWindow() {
-
-    if (settingsWindow) {
-        return;
-    }
-
-    settingsWindow = new BrowserWindow({
-        frame: false,
-        height: 200,
-        resizable: false,
-        width: 200
-    });
-
-    settingsWindow.loadURL('file://' + __dirname + '/settings.html');
-
-    settingsWindow.on('closed', function () {
-        settingsWindow = null;
-    });
-};
+// function createSettingsWindow() {
+//
+//     if (settingsWindow) {
+//         return;
+//     }
+//
+//     settingsWindow = new BrowserWindow({
+//         frame: false,
+//         height: 200,
+//         resizable: false,
+//         width: 200
+//     });
+//
+//     settingsWindow.loadURL('file://' + __dirname + '/settings.html');
+//
+//     settingsWindow.on('closed', function () {
+//         settingsWindow = null;
+//     });
+// };
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 app.on('ready', function() {
 
   // if (!configuration.readSettings('shortcutKeys')) {
-    configuration.saveSettings('shortcutKeys', ['cmd','shift']);
+    // configuration.saveSettings('shortcutKeys', ['cmd','shift']);
   // }
 
   // app.dock.hide();
   displaySize = electron.screen.getPrimaryDisplay().workAreaSize;
   createWindow(displaySize.width - 346);
 
-  setGlobalShortcuts();
+  // setGlobalShortcuts();
 
 });
 
@@ -240,22 +240,22 @@ ipcMain.on('trello-open', function(event, cardUrl) {
 });
 
 
-ipcMain.on('close-settings-window', function () {
-        settingsWindow.close();
-});
+// ipcMain.on('close-settings-window', function () {
+//         settingsWindow.close();
+// });
 
 
-ipcMain.on('set-global-shortcuts', function () {
-    setGlobalShortcuts();
-});
+// ipcMain.on('set-global-shortcuts', function () {
+//     setGlobalShortcuts();
+// });
 
-function setGlobalShortcuts() {
-    globalShortcut.unregisterAll();
-
-    var shortcutKeysSetting = configuration.readSettings('shortcutKeys');
-    var shortcutPrefix = shortcutKeysSetting.length === 0 ? '' : shortcutKeysSetting.join('+') + '+';
-
-    globalShortcut.register(shortcutPrefix + 's', function () {
-        mainWindow.webContents.send('global-shortcut', 0);
-    });
-}
+// function setGlobalShortcuts() {
+//     globalShortcut.unregisterAll();
+//
+//     var shortcutKeysSetting = configuration.readSettings('shortcutKeys');
+//     var shortcutPrefix = shortcutKeysSetting.length === 0 ? '' : shortcutKeysSetting.join('+') + '+';
+//
+//     globalShortcut.register(shortcutPrefix + 's', function () {
+//         mainWindow.webContents.send('global-shortcut', 0);
+//     });
+// }
