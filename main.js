@@ -160,7 +160,7 @@ function createTrelloWindow(cardLink) {
   trelloWindow.loadURL(cardLink);
 
   trelloWindow.on('closed', function () {
-
+    mainWindow.setSize(269, 66);
     mainWindow.webContents.send('refresh-card');
     trelloWindow = null;
 

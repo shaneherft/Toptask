@@ -79,6 +79,8 @@ jQuery(document).ready(function ($) {
     var cardTimer;
 
     var today = new Date();
+    today.setHours(0,0,0,0);
+    console.log(today);
     var dd = today.getDate();
     var mm = today.getMonth()+1; //January is 0!
     var yyyy = today.getFullYear();
@@ -91,7 +93,7 @@ jQuery(document).ready(function ($) {
       mm='0'+mm
     }
 
-    var logDate = mm+'/'+dd+'/'+yyyy;
+    var logDate = dd+'/'+ mm +'/'+yyyy;
 
     var currentUrl = location.href;
 
@@ -114,7 +116,7 @@ jQuery(document).ready(function ($) {
               .text(welcomeMessage)
               .appendTo("#welcome-message");
 
-              if (welcomeMessage.length > 38) {
+              if (welcomeMessage.length > 36) {
                 ipcRenderer.send('set-size', 349, 84);
                 $('.welcome').css({'font-size':14});
                 $('.login-spacer').css({'height': 48});
@@ -139,10 +141,11 @@ jQuery(document).ready(function ($) {
       var reloadUrl = currentUrl;
 
       var authStart = function() {
-        storage.get('authStatus', function (error, data) {
-            if (error) throw error;
+        // storage.get('authStatus', function (error, data) {
+        //     if (error) throw error;
+        var authConfig = nconf.get('authStatus');
 
-            if (data.auth === true) {
+            if (authConfig === true) {
                 $("#connectLink").ready(function doAuth() {
                     Trello.authorize({
                         type: 'popup',
@@ -158,7 +161,7 @@ jQuery(document).ready(function ($) {
 
                 });
             }
-          });
+          // });
         };
 
       authStart();
@@ -180,53 +183,77 @@ jQuery(document).ready(function ($) {
     });
 
     var onAuthorize = function () {
+
         updateLoggedIn();
+
+        nconf.set('authStatus', Trello.authorized());
+        nconf.save()
+
         $("#welcome-message").empty();
         ipcRenderer.send('load-size');
         $loading = $("<div>")
             .addClass('loading')
             .text("Loading")
             .appendTo("#welcome-message");
+
+        var setDate = function() {
+          storage.set('date', {date: today}, function (error) {
+              if (error) throw error;
+          });
+        };
+
+        var clearStorage = function(callback) {
+          storage.clear(function(error) {
+            if (error) throw error;
+            callback(setDate);
+          });
+        }
+
+        var checkDate = function(callbackSet, callbackClear) {
+
+          storage.get('date', function (error, data) {
+            if (error) throw error;
+            var storedDate = new Date(data.date);
+            console.log("Stored date " + storedDate + " current date " + today);
+
+            if (storedDate < today) {
+
+              Trello.put('/cards/' + logCard, {name: 'Daily Progress - ' + logDate});
+              // Trello.put("cards/" + logCard + "/idList", {value: ttSettings.tids.completeList})
+              console.log("I'm working!");
+              var creationSuccess = function(data) {
+                // console.log('Card created successfully. Data returned:' + JSON.stringify(data));
+                nconf.set('card', data.id);
+                nconf.save()
+                logCard = data.id;
+              };
+
+              var newCard = {
+                name: 'Daily Progress',
+                idLabels: '55a35d27fb396fe706fb7b1e',
+                idList: ttSettings.tids.list,
+                pos: 'bottom'
+              };
+
+              Trello.post('/cards/', newCard, creationSuccess);
+
+              callbackClear(setDate, clearStorage);
+
+            }
+
+            else {
+              callbackSet(setDate);
+            }
+
+          });
+
+        };
+
+        checkDate(setDate, clearStorage);
+        // storage.set('authStatus', {auth: Trello.authorized()}, function (error) {
+        //     if (error) throw error;
+        // });
         getList();
-
-        storage.set('date', {day: dd}, function (error) {
-            if (error) throw error;
-
-            storage.get('date', function (error, data) {
-                if (error) throw error;
-
-                if (data.day < dd) {
-
-                  Trello.put('/cards/' + logCard, {name: 'Daily Progress - ' + logDate});
-                  Trello.put("cards/" + logCard + "/idList", {value: ttSettings.tids.completeList})
-
-                  var creationSuccess = function(data) {
-                    // console.log('Card created successfully. Data returned:' + JSON.stringify(data));
-                    nconf.set('card', data.id);
-                    nconf.save()
-                    logCard = data.id;
-                  };
-
-                  var newCard = {
-                    name: 'Daily Progress',
-                    idLabels: '55a35d27fb396fe706fb7b1e',
-                    idList: ttSettings.tids.list,
-                    pos: 'bottom'
-                  };
-
-                  Trello.post('/cards/', newCard, creationSuccess);
-
-                  storage.clear(function(error) {
-                    if (error) throw error;
-                  });
-
-                }
-            });
-        });
-
-        storage.set('authStatus', {auth: Trello.authorized()}, function (error) {
-            if (error) throw error;
-        });
     };
 
     //TRELLO FUNCTIONS
@@ -540,6 +567,7 @@ jQuery(document).ready(function ($) {
             .click(event => {
                 event.stopPropagation();
                 $('.toggle').hide();
+                ipcRenderer.send('load-size');
                 // momentum += 1;
                 // console.log(momentum);
                 $('#welcome-loading').show();
@@ -599,18 +627,15 @@ jQuery(document).ready(function ($) {
                   //     }
                   // ]);
                 }
-
                 // https://github.com/caolan/async#seriestasks-callback
                 async.series(flow, (err, results)=> {
                     clearTime();
                     if (nextCardId != null) {
                         cardSelected(nextCardId, cardNumber);
                     } else {
-                        ipcRenderer.send('load-size');
                         $('#welcome-loading').show();
                         $('#listOutput').empty();
                         getList();
-                        // location.reload();
                     }
                 });
             });
@@ -622,6 +647,7 @@ jQuery(document).ready(function ($) {
 
         ipcRenderer.once("refresh-card", function () {
 
+            $('#welcome-loading').show();
             if ($timedisplay === true) {
               $(".time-display").toggleClass("time-adjust");
               $('#time-switch').empty();
