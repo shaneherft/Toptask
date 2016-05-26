@@ -96,12 +96,6 @@ jQuery(document).ready(function ($) {
     }
 
     var logDate = (dd === 1 ? dd : dd - 1) +'/'+ mm +'/'+yyyy;
-
-    // var currentUrl = location.href;
-
-      // if (currentUrl === "file:///Users/shaneherft/Google%20Drive/Development/Toptask/index.html" || currentUrl === "file:///Users/shaneherft/Desktop/TopTask.app/Contents/Resources/app/index.html" ) {
-
-      // var reloadUrl = currentUrl + "?reloaded";
       // T.getAuth()
       T.get('statuses/user_timeline', { user_id: '4615983616', count: 1 }, function (err, data, response) {
 
@@ -138,40 +132,6 @@ jQuery(document).ready(function ($) {
         }
 
       });
-
-    //}
-
-    // else {
-    //
-    //   var reloadUrl = currentUrl;
-    //
-    //   var authStart = function() {
-    //     // storage.get('authStatus', function (error, data) {
-    //     //     if (error) throw error;
-    //     var authConfig = nconf.get('authStatus');
-    //
-    //         if (authConfig === true) {
-    //             $("#connectLink").ready(function doAuth() {
-    //                 Trello.authorize({
-    //                     type: 'popup',
-    //                     name: "Toptask",
-    //                     scope: {
-    //                         read: true,
-    //                         write: true
-    //                     },
-    //                     expiration: 'never',
-    //                     success: onAuthorize,
-    //                     error: (err)=> console.debug('Trello error', err),
-    //                 });
-    //
-    //             });
-    //         }
-    //       // });
-    //     };
-    //
-    //   authStart();
-    //
-    // };
 
     $("#connectLink").click(function doAuth() {
         Trello.authorize({
@@ -219,15 +179,12 @@ jQuery(document).ready(function ($) {
           storage.get('date', function (error, data) {
             if (error) throw error;
             var storedDate = new Date(data.date);
-            // console.log("Stored date " + storedDate + " current date " + today);
 
             if (storedDate < today) {
-              // console.log("I'm working!");
               Trello.put('/cards/' + logCard, {name: 'Daily Progress - ' + logDate});
               Trello.put("cards/" + logCard + "/idList", {value: ttSettings.tids.completeList})
 
               var creationSuccess = function(data) {
-                // console.log('Card created successfully. Data returned:' + JSON.stringify(data));
                 nconf.set('card', data.id);
                 nconf.save()
                 logCard = data.id;
@@ -255,9 +212,6 @@ jQuery(document).ready(function ($) {
         };
 
         checkDate(setDate, clearStorage);
-        // storage.set('authStatus', {auth: Trello.authorized()}, function (error) {
-        //     if (error) throw error;
-        // });
         getList();
     };
 
@@ -495,22 +449,6 @@ jQuery(document).ready(function ($) {
         var timeHasBeenAdjusted = false;
         var startTime = 0;
 
-        // var cardRefresh = function(currentCard) {
-        //
-        //   // Clear the current Contents
-        //
-        //   // Get the card from Trello
-        //   Trello.get("cards/" + currentCard.id, (card)=> {
-        //     console.log(card);
-        //   });
-        //
-        //   // Reset the Contents
-        //   // Load the card
-        //   // Start card display
-        // };
-        //
-        // cardRefresh(currentCard);
-
         $(".toggle").show();
 
         $(".toggle").click(function (event) {
@@ -593,8 +531,6 @@ jQuery(document).ready(function ($) {
                 event.stopPropagation();
                 $('.toggle').hide();
                 ipcRenderer.send('load-size');
-                // momentum += 1;
-                // console.log(momentum);
                 $('#welcome-loading').show();
                 var nextCardId = cardsInList[cardsInList.indexOf(currentCard.id) + 1];
                 // console.debug({currentCard, cardsInList});
