@@ -35,7 +35,6 @@ var T = new Twit({
   timeout_ms:           60*1000,  // optional HTTP request timeout to apply to all requests.
 })
 
-
 // var tids_shane = {
 //     list: '55d26f54726fb67f022db618',
 //     card: '56f660d3c3887f343909d4c9',
@@ -75,6 +74,7 @@ nconf.use('file', { file: __dirname + '/configuration.json' });
 
 jQuery(document).ready(function ($) {
     //do jQuery stuff when DOM is ready
+    ipcRenderer.setMaxListeners(1);
     var $welcome;
     var $loading;
     var cardsInList;
@@ -97,11 +97,11 @@ jQuery(document).ready(function ($) {
 
     var logDate = (dd === 1 ? dd : dd - 1) +'/'+ mm +'/'+yyyy;
 
-    var currentUrl = location.href;
+    // var currentUrl = location.href;
 
-      if (currentUrl === "file:///Users/shaneherft/Google%20Drive/Development/Toptask/index.html" || currentUrl === "file:///Users/shaneherft/Desktop/TopTask.app/Contents/Resources/app/index.html" ) {
+      // if (currentUrl === "file:///Users/shaneherft/Google%20Drive/Development/Toptask/index.html" || currentUrl === "file:///Users/shaneherft/Desktop/TopTask.app/Contents/Resources/app/index.html" ) {
 
-      var reloadUrl = currentUrl + "?reloaded";
+      // var reloadUrl = currentUrl + "?reloaded";
       // T.getAuth()
       T.get('statuses/user_timeline', { user_id: '4615983616', count: 1 }, function (err, data, response) {
 
@@ -110,63 +110,68 @@ jQuery(document).ready(function ($) {
           var parseIndex = rawTweet.indexOf("via");
           welcomeMessage = rawTweet.slice(0, parseIndex - 2);
           welcomeMessage = welcomeMessage + ".";
+        }
 
-          $welcome = $("<div>")
-              .addClass('welcome')
-              .text(welcomeMessage)
-              .appendTo("#welcome-message");
+        else {
+          welcomeMessage = "Welcome to Toptask, have a productive day!"
+        }
 
-              if (welcomeMessage.length > 36) {
-                ipcRenderer.send('set-size', 349, 84);
-                $('.welcome').css({'font-size':14});
-                $('.login-spacer').css({'height': 48});
+        $welcome = $("<div>")
+            .addClass('welcome')
+            .text(welcomeMessage)
+            .appendTo("#welcome-message");
 
-              }
-              else if (welcomeMessage.length > 60) {
-                ipcRenderer.send('set-size', 349, 82);
-                $('.welcome').css({'font-size':12}, {'line-height':16});
-                $('.login-spacer').css({'height': 46});
+        if (welcomeMessage.length > 36) {
+          ipcRenderer.send('set-size', 349, 84);
+          $('.welcome').css({'font-size':14});
+          $('.login-spacer').css({'height': 48});
 
-              }
-              else if (welcomeMessage.length < 20) {
-                $('.welcome').css({'top':24});
-              }
-        };
+        }
+        else if (welcomeMessage.length > 60) {
+          ipcRenderer.send('set-size', 349, 82);
+          $('.welcome').css({'font-size':12}, {'line-height':16});
+          $('.login-spacer').css({'height': 46});
+
+        }
+        else if (welcomeMessage.length < 20) {
+          $('.welcome').css({'top':24});
+        }
+
       });
 
-    }
+    //}
 
-    else {
-
-      var reloadUrl = currentUrl;
-
-      var authStart = function() {
-        // storage.get('authStatus', function (error, data) {
-        //     if (error) throw error;
-        var authConfig = nconf.get('authStatus');
-
-            if (authConfig === true) {
-                $("#connectLink").ready(function doAuth() {
-                    Trello.authorize({
-                        type: 'popup',
-                        name: "Toptask",
-                        scope: {
-                            read: true,
-                            write: true
-                        },
-                        expiration: 'never',
-                        success: onAuthorize,
-                        error: (err)=> console.debug('Trello error', err),
-                    });
-
-                });
-            }
-          // });
-        };
-
-      authStart();
-
-    };
+    // else {
+    //
+    //   var reloadUrl = currentUrl;
+    //
+    //   var authStart = function() {
+    //     // storage.get('authStatus', function (error, data) {
+    //     //     if (error) throw error;
+    //     var authConfig = nconf.get('authStatus');
+    //
+    //         if (authConfig === true) {
+    //             $("#connectLink").ready(function doAuth() {
+    //                 Trello.authorize({
+    //                     type: 'popup',
+    //                     name: "Toptask",
+    //                     scope: {
+    //                         read: true,
+    //                         write: true
+    //                     },
+    //                     expiration: 'never',
+    //                     success: onAuthorize,
+    //                     error: (err)=> console.debug('Trello error', err),
+    //                 });
+    //
+    //             });
+    //         }
+    //       // });
+    //     };
+    //
+    //   authStart();
+    //
+    // };
 
     $("#connectLink").click(function doAuth() {
         Trello.authorize({
@@ -304,6 +309,8 @@ jQuery(document).ready(function ($) {
     //DISPLAYS CARD CORRECTLY ON LISTS AND CARD SELECTION
 
     var cardDisplay = function (displayCard, cardNumber) {
+
+        ipcRenderer.removeAllListeners();
 
         var $cardNumber = $('#cardNumber' + cardNumber);
 
@@ -476,6 +483,8 @@ jQuery(document).ready(function ($) {
             cardAction(displayCard, cardNumber);
         });
 
+        $('#welcome-loading').hide();
+
     };
 
     // GIVES SINGLE CARD VIEW ON HOVER TOGGLE ACTIONS
@@ -485,6 +494,22 @@ jQuery(document).ready(function ($) {
         var $timedisplay;
         var timeHasBeenAdjusted = false;
         var startTime = 0;
+
+        // var cardRefresh = function(currentCard) {
+        //
+        //   // Clear the current Contents
+        //
+        //   // Get the card from Trello
+        //   Trello.get("cards/" + currentCard.id, (card)=> {
+        //     console.log(card);
+        //   });
+        //
+        //   // Reset the Contents
+        //   // Load the card
+        //   // Start card display
+        // };
+        //
+        // cardRefresh(currentCard);
 
         $(".toggle").show();
 
@@ -645,7 +670,7 @@ jQuery(document).ready(function ($) {
                 event.stopPropagation();
             });
 
-        ipcRenderer.once("refresh-card", function () {
+        ipcRenderer.on("refresh-card", function () {
 
             $('#welcome-loading').show();
             if ($timedisplay === true) {
@@ -690,12 +715,9 @@ jQuery(document).ready(function ($) {
             }
 
             async.series(flow, (err, results)=> {
-                window.location = reloadUrl;
-                // getList();
+                cardSelected(currentCard.id, cardNumber);
             });
         });
-
-        // });
 
         var completeCard = function (cardId, callback) {
             Trello.put("cards/" + cardId + "/idList", {value: ttSettings.tids.completeList})
@@ -828,14 +850,16 @@ jQuery(document).ready(function ($) {
 
         var $cardNumber = $('#cardNumber' + cardNumber);
 
+        $('#card').empty();
         $cardNumber.empty();
+        // console.log(selected)
 
         Trello.get("cards/" + selectedCard, function (card) {
 
             cardDisplay(card, cardNumber);
             cardAction(card, cardNumber);
-            ipcRenderer.send('set-size', 269, 15 + $cardNumber.outerHeight());
-            $('#welcome-loading').hide();
+            ipcRenderer.send('set-size', 269, 15 + $cardNumber.outerHeight() );
+            // $('#welcome-loading').hide();
 
         });
 
@@ -886,6 +910,7 @@ jQuery(document).ready(function ($) {
     var logTime = function (callback) {
 
         var tdata = {card: [], label: []};
+        var totalStored = [];
 
         storage.keys((err, keys)=> {
             // console.debug('logTime storage.keys', err, keys);
@@ -897,9 +922,14 @@ jQuery(document).ready(function ($) {
             async.mapSeries(keys, (name, cb)=> storage.get(name, (error, data)=> {
                 // console.debug('logTime data', error, data);
                 // if (error) return cb(error);
+                if (data['type'] == 'card') {
+                  totalStored.push(data.time);
+                }
+
                 if (data['type'] == 'card' && data['time'] > 60 || data['type'] == 'label' && data['time'] > 60 ) {
                     // console.debug('tdata', [tdata, data['type'], tdata[data['type']]]);
                     tdata[data['type']].push(data);
+
                 }
                 return cb(null, 1);
             }), (err, result) => {
@@ -908,8 +938,10 @@ jQuery(document).ready(function ($) {
                     var _grabTime = (acc, cur)=>acc += cur.name + ' - ' + Math.floor(cur.time / 60) + (Math.floor(cur.time / 60) > 1 ? ' minutes\n' : ' minute\n' );
                     var cardtime = tdata.card.reduce(_grabTime, '');
                     var labeltime = tdata.label.reduce(_grabTime, '');
+                    var printStored = totalStored.reduce( (a,b) => a + b, 0 );
+                    console.log(printStored/3600);
 
-                    var trelloTime = "**TASKS:**\n" + "\n" + cardtime + "\n\n**LABELS:**\n" + "\n" + labeltime;
+                    var trelloTime = "**TASKS:**\n" + "\n" + cardtime + "\n\n**LABELS:**\n" + "\n" + labeltime + "\n\n**TOTAL TIME:**\n" + "\n" + ( Math.floor(printStored / 3600) < 1 ? '' : Math.floor(printStored / 3600) + " hours and ") +  Math.floor(printStored / 60) + (Math.floor(printStored / 60) > 1 ? " minutes\n": " minute\n") ;
                     // console.debug('trelloTime', {trelloTime, cardtime, labeltime});
                     Trello.put('/cards/' + logCard + '/desc', {value: trelloTime})
                         .always((o, e, d)=>callback(e, d));
