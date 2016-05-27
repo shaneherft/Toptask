@@ -41,7 +41,7 @@ var T = new Twit({
 //     card: '56f660d3c3887f343909d4c9',
 //     completeList: "5403bf2888d0ac13dcc52c4a",
 // };
-//
+
 // var data = JSON.stringify(tids_shane);
 //
 // fs.writeFile('./configuration.json', data, function (err) {
@@ -53,7 +53,9 @@ var T = new Twit({
 //  console.log('Configuration saved successfully.')
 // });
 
-nconf.use('file', { file: './configuration.json' });
+// nconf.use('file', { file: './configuration.json' });
+nconf.use('file', { file: __dirname + '/configuration.json' });
+// ('file://' + __dirname + '/index.html')
   nconf.load();
   // nconf.set('name', 'Avian');
   // nconf.set('dessert:name', 'Ice Cream');
@@ -93,13 +95,11 @@ jQuery(document).ready(function ($) {
       mm='0'+mm
     }
 
-    var logDate = dd+'/'+ mm +'/'+yyyy;
+    var logDate = (dd === 1 ? dd : dd - 1) +'/'+ mm +'/'+yyyy;
 
     var currentUrl = location.href;
 
-    // if (currentUrl === "file:///Users/shaneherft/Desktop/TopTask.app/Contents/Resources/app/index.html") {
-
-    if (currentUrl === "file:///Users/shaneherft/Google%20Drive/Development/Toptask/index.html") {
+      if (currentUrl === "file:///Users/shaneherft/Google%20Drive/Development/Toptask/index.html" || currentUrl === "file:///Users/shaneherft/Desktop/TopTask.app/Contents/Resources/app/index.html" ) {
 
       var reloadUrl = currentUrl + "?reloaded";
       // T.getAuth()
@@ -214,13 +214,13 @@ jQuery(document).ready(function ($) {
           storage.get('date', function (error, data) {
             if (error) throw error;
             var storedDate = new Date(data.date);
-            console.log("Stored date " + storedDate + " current date " + today);
+            // console.log("Stored date " + storedDate + " current date " + today);
 
             if (storedDate < today) {
-
+              // console.log("I'm working!");
               Trello.put('/cards/' + logCard, {name: 'Daily Progress - ' + logDate});
-              // Trello.put("cards/" + logCard + "/idList", {value: ttSettings.tids.completeList})
-              console.log("I'm working!");
+              Trello.put("cards/" + logCard + "/idList", {value: ttSettings.tids.completeList})
+
               var creationSuccess = function(data) {
                 // console.log('Card created successfully. Data returned:' + JSON.stringify(data));
                 nconf.set('card', data.id);
