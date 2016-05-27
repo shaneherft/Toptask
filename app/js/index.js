@@ -79,10 +79,11 @@ jQuery(document).ready(function ($) {
     var $loading;
     var cardsInList;
     var cardTimer;
+    var welcomeMessage = "Welcome to Toptask, have a productive day!"
 
     var today = new Date();
-    today.setHours(0,0,0,0);
-    console.log(today);
+
+    var dayOfWeek = today.getDay();
     var dd = today.getDate();
     var mm = today.getMonth()+1; //January is 0!
     var yyyy = today.getFullYear();
@@ -106,25 +107,23 @@ jQuery(document).ready(function ($) {
           welcomeMessage = welcomeMessage + ".";
         }
 
-        else {
-          welcomeMessage = "Welcome to Toptask, have a productive day!"
-        }
+        // else {
+        //   welcomeMessage = "Welcome to Toptask, have a productive day!"
+        // }
 
         $welcome = $("<div>")
             .addClass('welcome')
             .text(welcomeMessage)
             .appendTo("#welcome-message");
 
-        if (welcomeMessage.length > 36) {
+        if (welcomeMessage.length > 44) {
           ipcRenderer.send('set-size', 349, 84);
           $('.welcome').css({'font-size':14});
-          $('.login-spacer').css({'height': 48});
 
         }
-        else if (welcomeMessage.length > 60) {
+        else if (welcomeMessage.length > 66) {
           ipcRenderer.send('set-size', 349, 82);
           $('.welcome').css({'font-size':12}, {'line-height':16});
-          $('.login-spacer').css({'height': 46});
 
         }
         else if (welcomeMessage.length < 20) {
@@ -155,6 +154,7 @@ jQuery(document).ready(function ($) {
         nconf.save()
 
         $("#welcome-message").empty();
+        welcomeMessage = "";
         ipcRenderer.send('load-size');
         $loading = $("<div>")
             .addClass('loading')
@@ -162,7 +162,20 @@ jQuery(document).ready(function ($) {
             .appendTo("#welcome-message");
 
         var setDate = function() {
-          storage.set('date', {date: today}, function (error) {
+
+          Date.prototype.getNextWeekMonday = function() {
+            var d = new Date(this.getTime());
+            var diff = d.getDate() - d.getDay() + 1;
+            if (d.getDay() == 0)
+                diff -= 7;
+            diff += 7; // ugly hack to get next monday instead of current one
+            return new Date(d.setDate(diff));
+          };
+
+          var nextMonday = today.getNextWeekMonday();
+          nextMonday.setHours(0,0,0,0);
+
+          storage.set('date', {date: nextMonday}, function (error) {
               if (error) throw error;
           });
         };
@@ -180,9 +193,9 @@ jQuery(document).ready(function ($) {
             if (error) throw error;
             var storedDate = new Date(data.date);
 
-            if (storedDate < today) {
-              Trello.put('/cards/' + logCard, {name: 'Daily Progress - ' + logDate});
-              Trello.put("cards/" + logCard + "/idList", {value: ttSettings.tids.completeList})
+            if (today > storedDate) {
+              Trello.put('/cards/' + logCard, {name: 'Weekly Progress - ' + 'ending ' + logDate});
+              // Trello.put("cards/" + logCard + "/idList", {value: ttSettings.tids.completeList});
 
               var creationSuccess = function(data) {
                 nconf.set('card', data.id);
@@ -191,7 +204,7 @@ jQuery(document).ready(function ($) {
               };
 
               var newCard = {
-                name: 'Daily Progress',
+                name: 'Weekly Progress',
                 idLabels: '55a35d27fb396fe706fb7b1e',
                 idList: ttSettings.tids.list,
                 pos: 'bottom'
@@ -815,7 +828,7 @@ jQuery(document).ready(function ($) {
             if (data.time) {
                 totalTime += data.time;
             }
-            storage.set(keyId, {type: keyType, name: keyName, time: totalTime}, (error)=> {
+            storage.set(keyId, {type: keyType, name: keyName, time: totalTime, day: dayOfWeek}, (error)=> {
                 if (error) throw error;
                 // console.log(keyId + " " + keyName + " " + totalTime);
                 callback(null, totalTime); // success
@@ -830,7 +843,7 @@ jQuery(document).ready(function ($) {
 
         var totalTime = time;
 
-        storage.set(keyId, {type: keyType, name: keyName, time: totalTime}, (error)=> {
+        storage.set(keyId, {type: keyType, name: keyName, time: totalTime, day: dayOfWeek}, (error)=> {
             if (error) throw error;
             console.log(keyId + " " + keyName + " " + totalTime);
             callback(null, totalTime); // success
@@ -847,6 +860,20 @@ jQuery(document).ready(function ($) {
 
         var tdata = {card: [], label: []};
         var totalStored = [];
+        var totalStoredDay = [];
+        var sundayDisplay = "#DAILY#\n\n\n\n";
+        var trelloTime = "";
+
+        var filterByDay = function(data) {
+          return data.day === i;
+          }
+
+        var hoursAndMinutes = function(seconds) {
+          var _hours = Math.floor(seconds / 3600);
+          var _minutes = Math.floor((seconds - (_hours * 3600)) / 60);
+          return (_hours > 0 ? (_hours > 1 ? _hours + " hours "  : _hours + " hour ") : "") + (_minutes > 0 ? (_minutes > 1 ? _minutes + " minutes " : _minute + " minute") : "");
+        }
+
 
         storage.keys((err, keys)=> {
             // console.debug('logTime storage.keys', err, keys);
@@ -862,22 +889,47 @@ jQuery(document).ready(function ($) {
                   totalStored.push(data.time);
                 }
 
+                if (data['type'] == 'card' && data['day']) {
+                  totalStoredDay.push({day: data.day, time: data.time});
+                }
+
                 if (data['type'] == 'card' && data['time'] > 60 || data['type'] == 'label' && data['time'] > 60 ) {
                     // console.debug('tdata', [tdata, data['type'], tdata[data['type']]]);
                     tdata[data['type']].push(data);
-
                 }
                 return cb(null, 1);
             }), (err, result) => {
                 if (!err) {
                     // var _grabTime = (acc, cur)=>acc += cur.name + ' - ' + Math.floor(cur.time / 60) + ' minute(s)\n';
-                    var _grabTime = (acc, cur)=>acc += cur.name + ' - ' + Math.floor(cur.time / 60) + (Math.floor(cur.time / 60) > 1 ? ' minutes\n' : ' minute\n' );
-                    var cardtime = tdata.card.reduce(_grabTime, '');
-                    var labeltime = tdata.label.reduce(_grabTime, '');
-                    var printStored = totalStored.reduce( (a,b) => a + b, 0 );
-                    console.log(printStored/3600);
+                    for ( i = 6; i > -1; i-- ) {
+                      var daysOfWeek = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
+                      var filteredCardData = tdata.card.filter(filterByDay);
+                      var filteredTime = totalStoredDay.filter(filterByDay);
+                      var filteredTotalDay = filteredTime.map(function(a) {return a.time;});
+                      var dayOfWeek = "**" + daysOfWeek[i] + "**";
 
-                    var trelloTime = "**TASKS:**\n" + "\n" + cardtime + "\n\n**LABELS:**\n" + "\n" + labeltime + "\n\n**TOTAL TIME:**\n" + "\n" + ( Math.floor(printStored / 3600) < 1 ? '' : Math.floor(printStored / 3600) + " hours and ") +  Math.floor(printStored / 60) + (Math.floor(printStored / 60) > 1 ? " minutes\n": " minute\n") ;
+                      if (filteredCardData.length > 0) {
+                        var _grabTime = (acc, cur)=>acc += ">" + cur.name + ' - ' + Math.floor(cur.time / 60) + (Math.floor(cur.time / 60) > 1 ? ' minutes\n' : ' minute\n' );
+                        var cardtime = filteredCardData.reduce(_grabTime, '');
+                        var labeltime = tdata.label.reduce(_grabTime, '');
+                        var printStored = filteredTotalDay.reduce( (a,b) => a + b, 0 );
+
+                        if (i === 0 && filteredCardData.length > 0) {
+                          sundayDisplay += dayOfWeek + "\n\n*TASKS:*\n\n\n\n" + cardtime + "\n--------\n" + "\n*TIME SPENT:*\n" + "\n" + ">" + hoursAndMinutes(printStored) + "\n\n\n\n--------\n";
+                        }
+                        else {
+                          trelloTime += dayOfWeek + "\n\n*TASKS:*\n\n\n\n" + cardtime + "\n--------\n" + "\n*TIME SPENT:*\n" + "\n" + ">" + hoursAndMinutes(printStored) + "\n\n\n\n--------\n";
+                        }
+                      }
+                    };
+
+                    var timeThisWeek = totalStored.reduce( (a,b) => a + b, 0 );
+                    console.log(timeThisWeek);
+                    console.log(hoursAndMinutes(timeThisWeek));
+
+                    trelloTime = sundayDisplay + trelloTime;
+
+                    trelloTime += "\n\n#WEEKLY#\n\n\n\n" + "*LABELS*\n\n" +  labeltime + "\n--------\n" + "*TOTAL TIME SPENT*\n\n" + hoursAndMinutes(timeThisWeek) + "\n--------\n" + "----------";
                     // console.debug('trelloTime', {trelloTime, cardtime, labeltime});
                     Trello.put('/cards/' + logCard + '/desc', {value: trelloTime})
                         .always((o, e, d)=>callback(e, d));
