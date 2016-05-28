@@ -35,31 +35,9 @@ var T = new Twit({
   timeout_ms:           60*1000,  // optional HTTP request timeout to apply to all requests.
 })
 
-// var tids_shane = {
-//     list: '55d26f54726fb67f022db618',
-//     card: '56f660d3c3887f343909d4c9',
-//     completeList: "5403bf2888d0ac13dcc52c4a",
-// };
-
-// var data = JSON.stringify(tids_shane);
-//
-// fs.writeFile('./configuration.json', data, function (err) {
-//  if (err) {
-//    console.log('There has been an error saving your configuration data.');
-//    console.log(err.message);
-//    return;
-//  }
-//  console.log('Configuration saved successfully.')
-// });
-
-// nconf.use('file', { file: './configuration.json' });
 nconf.use('file', { file: __dirname + '/configuration.json' });
-// ('file://' + __dirname + '/index.html')
-  nconf.load();
-  // nconf.set('name', 'Avian');
-  // nconf.set('dessert:name', 'Ice Cream');
-  // nconf.set('dessert:flavor', 'chocolate');
 
+  nconf.load();
   var logCard = nconf.get('card');
   console.log(logCard);
 
@@ -70,7 +48,6 @@ nconf.use('file', { file: __dirname + '/configuration.json' });
     }
     console.log('Configuration saved successfully.');
   });
-
 
 jQuery(document).ready(function ($) {
     //do jQuery stuff when DOM is ready
@@ -87,6 +64,8 @@ jQuery(document).ready(function ($) {
     var dd = today.getDate();
     var mm = today.getMonth()+1; //January is 0!
     var yyyy = today.getFullYear();
+    var daysOfWeek = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
+    var dayCounter = dayOfWeek;
 
     if(dd<10) {
       dd='0'+dd
@@ -211,19 +190,14 @@ jQuery(document).ready(function ($) {
               };
 
               Trello.post('/cards/', newCard, creationSuccess);
-
               callbackClear(setDate, clearStorage);
-
             }
 
             else {
               callbackSet(setDate);
             }
-
           });
-
         };
-
         checkDate(setDate, clearStorage);
         getList();
     };
@@ -238,9 +212,6 @@ jQuery(document).ready(function ($) {
 
         Trello.members.get("me", (member)=> {
 
-            // Trello.get("members/me/boards", (boards)=> {
-            //   Trello.get("boards/52a964092424e6632f0d6921/lists", (lists)=> {
-            //     Trello.get("lists/55d26f54726fb67f022db618/cards", (cards)=> {
             Trello.get("lists/" + ttSettings.tids.list + "/cards", (cards)=> { //
                 // console.debug(cards);
                 cardsInList = [];
@@ -256,7 +227,6 @@ jQuery(document).ready(function ($) {
                 $.each(cards, function (ix, card) {
 
                     cardsInList.push(card.id);
-
                     var cardNumber = $listOutput.children().length;
                     $listOutput.append('<div class="cardContainer" id="cardNumber' + $listOutput.children().length + '"></div>');
 
@@ -265,7 +235,6 @@ jQuery(document).ready(function ($) {
                 });
 
                 console.log(cardsInList);
-
                 ipcRenderer.send('set-size', 269, 30 + $listOutput.outerHeight());
                 $('#welcome-loading').hide();
 
@@ -462,6 +431,15 @@ jQuery(document).ready(function ($) {
         var timeHasBeenAdjusted = false;
         var startTime = 0;
 
+        var timeDisplayOff = function () {
+
+            $(".time-display").toggleClass("time-adjust");
+            $('#time-switch').empty();
+            $(".time-display > h1").show();
+            $(".icon-buttons").show();
+
+        };
+
         $(".toggle").show();
 
         $(".toggle").click(function (event) {
@@ -507,7 +485,7 @@ jQuery(document).ready(function ($) {
                   }, []);
                   // console.debug('back labelTimeFuncs', labelTimeFuncs);
                   var flow = [
-                      (callback)=> saveNewCardTime(currentCard.id, currentCard.name, secondsTimer, callback),
+                      (callback)=> saveNewCardTime(currentCard.id + dayCounter, currentCard.name, secondsTimer, callback),
                   ].concat(labelTimeFuncs, [
                       (callback)=> {
                           clearTime();
@@ -524,7 +502,7 @@ jQuery(document).ready(function ($) {
                   }, []);
                   // console.debug('back labelTimeFuncs', labelTimeFuncs);
                   var flow = [
-                      (callback)=> saveCardTime(currentCard.id, currentCard.name, secondsTimer, callback),
+                      (callback)=> saveCardTime(currentCard.id + dayCounter, currentCard.name, secondsTimer, callback),
                   ].concat(labelTimeFuncs, [
                       (callback)=> {
                           clearTime();
@@ -546,21 +524,12 @@ jQuery(document).ready(function ($) {
                 ipcRenderer.send('load-size');
                 $('#welcome-loading').show();
                 var nextCardId = cardsInList[cardsInList.indexOf(currentCard.id) + 1];
-                // console.debug({currentCard, cardsInList});
 
-                // var labelTimeFuncs = currentCard.labels.reduce((accu, label)=> {
-                //     accu.push((callback)=>saveLabelTime(label.id, label.name, secondsTimer, callback));
-                //     return accu;
-                // }, []);
-                // // console.debug('tick labelTimeFuncs', labelTimeFuncs);
-                // var flow = [
-                //     (callback)=> completeCard(currentCard.id, callback),
-                //     (callback)=> saveCardTime(currentCard.id, currentCard.name, secondsTimer, callback),
-                // ].concat(labelTimeFuncs);
                 if ($timedisplay === true) {
-                  $(".time-display").toggleClass("time-adjust");
-                  $('#time-switch').empty();
-                  $(".time-display > h1").show();
+                  // $(".time-display").toggleClass("time-adjust");
+                  // $('#time-switch').empty();
+                  // $(".time-display > h1").show();
+                  timeSwitch();
                 }
 
                 if (timeHasBeenAdjusted) {
@@ -570,17 +539,12 @@ jQuery(document).ready(function ($) {
                       console.log(startTime);
                       return accu
                   }, []);
-                  // console.debug('back labelTimeFuncs', labelTimeFuncs);
+
                   var flow = [
                       (callback)=> completeCard(currentCard.id, callback),
                       (callback)=> saveNewCardTime(currentCard.id, currentCard.name, secondsTimer, callback),
                   ].concat(labelTimeFuncs);
-                  // , [
-                  //     (callback)=> {
-                  //         clearTime();
-                  //         logTime(callback);
-                  //     }
-                  // ]);
+
                   timeHasBeenAdjusted = false;
                 }
 
@@ -589,17 +553,12 @@ jQuery(document).ready(function ($) {
                       accu.push(callback=>saveLabelTime(label.id, label.name, secondsTimer, callback));
                       return accu
                   }, []);
-                  // console.debug('back labelTimeFuncs', labelTimeFuncs);
+
                   var flow = [
                       (callback)=> completeCard(currentCard.id, callback),
                       (callback)=> saveCardTime(currentCard.id, currentCard.name, secondsTimer, callback),
                   ].concat(labelTimeFuncs);
-                  // , [
-                  //     (callback)=> {
-                  //         clearTime();
-                  //         logTime(callback);
-                  //     }
-                  // ]);
+
                 }
                 // https://github.com/caolan/async#seriestasks-callback
                 async.series(flow, (err, results)=> {
@@ -683,7 +642,7 @@ jQuery(document).ready(function ($) {
         timer();
         cardTimer();
 
-        var h1 = document.getElementsByTagName('h1')[0],
+        var h1 = document.getElementById('time'),
             stop = document.getElementById('stop')
             h1.textContent = "00:00";
             seconds = 0, minutes = 0, hours = 0,
@@ -691,7 +650,7 @@ jQuery(document).ready(function ($) {
 
         var secondsTimer = 0;
 
-        storage.get(currentCard.id, function (error, data) {
+        storage.get(currentCard.id + dayOfWeek, function (error, data) {
             if (error) throw error;
             if (data.time) {
                 timeDisplay(data.time);
@@ -715,40 +674,77 @@ jQuery(document).ready(function ($) {
 
           $timedisplay = $(".time-display").hasClass("time-adjust");
 
-            var timeInput = function () {
-              var inputHours = parseInt(document.getElementById("input-hours").value);
-              var inputMinutes = parseInt(document.getElementById("input-minutes").value);
-              if (inputHours != hours || inputMinutes != minutes) {
-                timeHasBeenAdjusted = true;
-              }
-              hours = inputHours;
-              minutes = inputMinutes;
-              seconds = ((hours * 60) + minutes) * 60;
-              secondsTimer = seconds;
-            };
+          var cardDailyTime;
 
-            if ($timedisplay === true) {
-              console.log("time-adjust turned on");
-              clearTimeout(t);
-              $(".time-display > h1").hide();
-              $('<form id="time-input" onsubmit="return false"><input class="input-time blink" id="input-hours" max="99" value=' + (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ' type="number"/><p id="colon" class="input-time blink">:</p><input class="input-time blink" id="input-minutes" value=' + (minutes ? (minutes > 9 ? (minutes > 59 ? (minutes % 60) : minutes) : "0" + minutes) : "00") + ' max="59" type="number"/></form>')
-              .appendTo('#time-switch');
-              $('#time-input')
-                .unbind('click')
-                .click(event => {
+          var getTimeOnCard = function () {
+
+            storage.get(currentCard.id + dayCounter, function (error, data) {
+                if (error) throw error;
+                cardDailyTime = data.time;
+            });
+
+          };
+
+          var timeInput = function () {
+            var inputHours = parseInt(document.getElementById("input-hours").value);
+            var inputMinutes = parseInt(document.getElementById("input-minutes").value);
+            if (inputHours != hours || inputMinutes != minutes) {
+              timeHasBeenAdjusted = true;
+            }
+            hours = inputHours;
+            minutes = inputMinutes;
+            seconds = ((hours * 60) + minutes) * 60;
+            secondsTimer = seconds;
+          };
+
+          if ($timedisplay === true) {
+            console.log("time-adjust turned on");
+            dayCounter = dayOfWeek;
+            clearTimeout(t);
+            $(".time-display > h1").hide();
+            $("#icon-buttons").hide();
+            $('<a href="#" id="day" class="input-time">' + daysOfWeek[dayCounter].substring(0,3) + '<div class="select"></div></a>').appendTo('#time-switch');
+            $('<form id="time-input" onsubmit="return false"><input class="input-time blink" id="input-hours" max="99" value=' + (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ' type="number"/><p id="colon" class="input-time blink">:</p><input class="input-time blink" id="input-minutes" value=' + (minutes ? (minutes > 9 ? (minutes > 59 ? (minutes % 60) : minutes) : "0" + minutes) : "00") + ' max="59" type="number"/></form>')
+            .appendTo('#time-switch');
+            $('#time-input')
+              .unbind('click')
+              .click(event => {
+              event.stopPropagation()
+            });
+            $('#day')
+              .unbind('click')
+              .click(event => {
                 event.stopPropagation()
-              });
+                //SAVE WHATS CURRENTLY IN THERE.
+                // INCREMENT COUNTER.
+                // GET NEXT TIME.
+                getTimeOnCard();
+                dayCounter = (dayCounter + 1) % daysOfWeek.length;
+                // dayCounter = (dayCounter + 1) % daysOfWeek.length;
+                console.log(daysOfWeek[dayCounter] + "time is " + cardDailyTime);
+                if (cardDailyTime > 0) {
+                  minutes = Math.floor(cardDailyTime / 60);
+                  hours = Math.floor(cardDailyTime / 3600);
+                  $('#input-hours').val(hours ? (hours > 9 ? hours : "0" + hours) : "00");
+                  $('#input-minutes').val(minutes ? (minutes > 9 ? (minutes > 59 ? (minutes % 60) : minutes) : "0" + minutes) : "00");
+                }
+                else {
+                  $('#input-hours').val("00");
+                  $('#input-minutes').val("00");
+                }
+                $('#day').html(daysOfWeek[dayCounter].substring(0,3) + '<div class="select"></div>');
+            });
+          }
 
-            }
-
-            else {
-              console.log("time-adjust turned off");
-              timeInput();
-              $('#time-switch').empty();
-              $(".time-display > h1").show();
-              h1.textContent = (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ":" + (minutes ? (minutes > 9 ? (minutes > 59 ? (minutes % 60) : minutes) : "0" + minutes) : "00");
-              timer();
-            }
+          else {
+            console.log("time-adjust turned off");
+            timeInput();
+            $('#time-switch').empty();
+            $("#icon-buttons").show();
+            $(".time-display > h1").show();
+            h1.textContent = (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ":" + (minutes ? (minutes > 9 ? (minutes > 59 ? (minutes % 60) : minutes) : "0" + minutes) : "00");
+            timer();
+          }
         };
 
         var clearTime = function() {
@@ -771,25 +767,24 @@ jQuery(document).ready(function ($) {
         };
 
         function add() {
-            seconds++;
-            secondsTimer++;
-            if (seconds >= 60) {
-                seconds = 0;
-                minutes++;
-                if (minutes >= 60) {
-                    minutes = 0;
-                    hours++;
-                }
-            }
+          seconds++;
+          secondsTimer++;
+          if (seconds >= 60) {
+              seconds = 0;
+              minutes++;
+              if (minutes >= 60) {
+                  minutes = 0;
+                  hours++;
+              }
+          }
 
-            h1.textContent = (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ":" + (minutes ? (minutes > 9 ? (minutes > 59 ? (minutes % 60) : minutes) : "0" + minutes) : "00");
-            timer();
+          h1.textContent = (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ":" + (minutes ? (minutes > 9 ? (minutes > 59 ? (minutes % 60) : minutes) : "0" + minutes) : "00");
+          timer();
         }
 
         function timer() {
             t = setTimeout(add, 1000);
         }
-
     };
 
 
@@ -798,28 +793,19 @@ jQuery(document).ready(function ($) {
     var cardSelected = function (selectedCard, cardNumber) {
 
         var $cardNumber = $('#cardNumber' + cardNumber);
-
         $('#card').empty();
         $cardNumber.empty();
-        // console.log(selected)
-
         Trello.get("cards/" + selectedCard, function (card) {
-
             cardDisplay(card, cardNumber);
             cardAction(card, cardNumber);
             ipcRenderer.send('set-size', 269, 15 + $cardNumber.outerHeight() );
-            // $('#welcome-loading').hide();
-
         });
-
     };
 
 // SAVES TIME SPENT ON CARD
 
     var saveTime = function (keyType, keyId, keyName, time, callback) {
-
         // console.debug('saveTime', arguments);
-
         var totalTime = time;
 
         storage.get(keyId, function (error, data) {
@@ -830,20 +816,16 @@ jQuery(document).ready(function ($) {
             }
             storage.set(keyId, {type: keyType, name: keyName, time: totalTime, day: dayOfWeek}, (error)=> {
                 if (error) throw error;
-                // console.log(keyId + " " + keyName + " " + totalTime);
                 callback(null, totalTime); // success
             });
         });
-
     };
 
     var saveNewTime = function (keyType, keyId, keyName, time, callback) {
-
         // console.debug('saveTime', arguments);
-
         var totalTime = time;
 
-        storage.set(keyId, {type: keyType, name: keyName, time: totalTime, day: dayOfWeek}, (error)=> {
+        storage.set(keyId, {type: keyType, name: keyName, time: totalTime, day: dayCounter}, (error)=> {
             if (error) throw error;
             console.log(keyId + " " + keyName + " " + totalTime);
             callback(null, totalTime); // success
@@ -861,30 +843,24 @@ jQuery(document).ready(function ($) {
         var tdata = {card: [], label: []};
         var totalStored = [];
         var totalStoredDay = [];
-        var sundayDisplay = "#DAILY#\n\n\n\n";
-        var trelloTime = "";
+        var trelloTime = "#DAILY#\n\n\n\n";
 
         var filterByDay = function(data) {
-          return data.day === i;
-          }
+            return data.day == i;
+        }
 
         var hoursAndMinutes = function(seconds) {
           var _hours = Math.floor(seconds / 3600);
           var _minutes = Math.floor((seconds - (_hours * 3600)) / 60);
-          return (_hours > 0 ? (_hours > 1 ? _hours + " hours "  : _hours + " hour ") : "") + (_minutes > 0 ? (_minutes > 1 ? _minutes + " minutes " : _minute + " minute") : "");
+          return (_hours > 0 ? (_hours > 1 ? _hours + " hours "  : _hours + " hour ") : "") + (_minutes > 0 ? (_minutes > 1 ? _minutes + " minutes " : _minutes + " minute") : "");
         }
 
-
         storage.keys((err, keys)=> {
-            // console.debug('logTime storage.keys', err, keys);
-            // storage.keys returns irelevant data - ... "authStatus", "Cache", "Cookies", "Cookies-journal", "Local Storage", "Preferences"]
-            // you need to rethink what you store and how you query relevant data
-            // because here you need only card ids, but getting also label ids + irrelevant data above
-
             // https://github.com/caolan/async
             async.mapSeries(keys, (name, cb)=> storage.get(name, (error, data)=> {
                 // console.debug('logTime data', error, data);
                 // if (error) return cb(error);
+                console.log(data);
                 if (data['type'] == 'card') {
                   totalStored.push(data.time);
                 }
@@ -901,8 +877,8 @@ jQuery(document).ready(function ($) {
             }), (err, result) => {
                 if (!err) {
                     // var _grabTime = (acc, cur)=>acc += cur.name + ' - ' + Math.floor(cur.time / 60) + ' minute(s)\n';
-                    for ( i = 6; i > -1; i-- ) {
-                      var daysOfWeek = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
+                    for ( i = 6; i > -2; i-- ) {
+
                       var filteredCardData = tdata.card.filter(filterByDay);
                       var filteredTime = totalStoredDay.filter(filterByDay);
                       var filteredTotalDay = filteredTime.map(function(a) {return a.time;});
@@ -914,12 +890,13 @@ jQuery(document).ready(function ($) {
                         var labeltime = tdata.label.reduce(_grabTime, '');
                         var printStored = filteredTotalDay.reduce( (a,b) => a + b, 0 );
 
-                        if (i === 0 && filteredCardData.length > 0) {
-                          sundayDisplay += dayOfWeek + "\n\n*TASKS:*\n\n\n\n" + cardtime + "\n--------\n" + "\n*TIME SPENT:*\n" + "\n" + ">" + hoursAndMinutes(printStored) + "\n\n\n\n--------\n";
+                        if (i == 0 && filteredCardData.length > 0) {
+                            console.log(filteredCardData);
+                            var sundayTime = filteredCardData.map(function(a) {return a.time;});
+                            printStored = sundayTime.reduce( (a,b) => a + b, 0 );
+                            console.log(sundayTime);
                         }
-                        else {
-                          trelloTime += dayOfWeek + "\n\n*TASKS:*\n\n\n\n" + cardtime + "\n--------\n" + "\n*TIME SPENT:*\n" + "\n" + ">" + hoursAndMinutes(printStored) + "\n\n\n\n--------\n";
-                        }
+                        trelloTime += dayOfWeek + "\n\n*TASKS:*\n\n\n\n" + cardtime + "\n--------\n" + "\n*TIME SPENT:*\n" + "\n" + ">" + hoursAndMinutes(printStored) + "\n\n\n\n--------\n";
                       }
                     };
 
@@ -927,7 +904,7 @@ jQuery(document).ready(function ($) {
                     console.log(timeThisWeek);
                     console.log(hoursAndMinutes(timeThisWeek));
 
-                    trelloTime = sundayDisplay + trelloTime;
+                    // trelloTime = sundayDisplay + trelloTime;
 
                     trelloTime += "\n\n#WEEKLY#\n\n\n\n" + "*LABELS*\n\n" +  labeltime + "\n--------\n" + "*TOTAL TIME SPENT*\n\n" + hoursAndMinutes(timeThisWeek) + "\n--------\n" + "----------";
                     // console.debug('trelloTime', {trelloTime, cardtime, labeltime});
@@ -1000,7 +977,6 @@ jQuery(document).ready(function ($) {
             if (error) throw error;
         });
     };
-
 
     $("#disconnect").click(logout);
 

@@ -307,9 +307,13 @@ span {
 
 .icons {
   display: none;
-  float: right;
   margin: 12px 12px auto;
   z-index: 9999;
+}
+
+#icon-buttons {
+  display: inline-block;
+  /*float: right;*/
 }
 
 .icon-background {
@@ -364,19 +368,30 @@ span {
   -webkit-app-region: drag;
 }
 
+.select {
+  display: inline-block;
+  width: 15px;
+  height: 14px;
+  margin: 0 5px 0 5px;
+  background-image: url('../images/select.png');
+  background-position: 50% 100%;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+
 .timer {
   display: inline-block;
   width: 28px;
   height: 32px;
-  margin-right: 2px;
   float: right;
   background-image: url('../images/timer.png');
   background-repeat: no-repeat;
   background-position: center;
   cursor: pointer;
+  margin-right: 5px;
 }
 
-.time {
+.time-unit {
   display: inline-block;
   color: white;
   font-family: "Brandon Text";
@@ -392,6 +407,7 @@ span {
   display: inline-block;
   background-color: rgba(0, 0, 0, 0.70);
   vertical-align: middle;
+  float: right;
   width: 88px;
   height: 32px;
   border-radius: 20px;
@@ -402,13 +418,15 @@ span {
 #time-switch {
   display: inline-block;
   position: absolute;
-  left: 7px;
+  right: 35px;
   top: -9px;
 }
 
 .time-display.time-adjust {
   box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.15);
   background-color: #EF9B59;
+  width: 152px;
+  float: right;
 }
 
 .input-time {
@@ -419,6 +437,17 @@ span {
   font-weight: 400;
   border: none;
   background: none;
+}
+
+#day {
+  display: inline-block;
+  vertical-align: middle;
+  margin-bottom: 3px;
+}
+
+#time-input {
+  display: inline-block;
+  /*margin-right: 5px;*/
 }
 
 #input-minutes {
