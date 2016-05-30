@@ -482,7 +482,7 @@ jQuery(document).ready(function ($) {
 
                 // getList();
                 var labelTimeFuncs = currentCard.labels.reduce((accu, label)=> {
-                    accu.push(callback=>saveLabelTime(label.id + dayOfWeek, label.name + " " + dayOfWeek, secondsTimer - timeAdjustment, callback));
+                    accu.push(callback=>saveLabelTime(label.id + dayOfWeek, label.name, secondsTimer - timeAdjustment, callback));
                     return accu
                 }, []);
                 // console.debug('back labelTimeFuncs', labelTimeFuncs);
@@ -514,7 +514,7 @@ jQuery(document).ready(function ($) {
                 }
 
                 var labelTimeFuncs = currentCard.labels.reduce((accu, label)=> {
-                    accu.push(callback=>saveLabelTime(label.id + dayOfWeek, label.name + " " + dayOfWeek, secondsTimer - timeAdjustment, callback));
+                    accu.push(callback=>saveLabelTime(label.id + dayOfWeek, label.name, secondsTimer - timeAdjustment, callback));
                     return accu
                 }, []);
 
@@ -550,7 +550,7 @@ jQuery(document).ready(function ($) {
             }
 
             var labelTimeFuncs = currentCard.labels.reduce((accu, label)=> {
-                accu.push(callback=>saveLabelTime(label.id + dayOfWeek, label.name + " " + dayOfWeek, secondsTimer - timeAdjustment, callback));
+                accu.push(callback=>saveLabelTime(label.id + dayOfWeek, label.name, secondsTimer - timeAdjustment, callback));
                 return accu
             }, []);
             // console.debug('back labelTimeFuncs', labelTimeFuncs);
@@ -690,7 +690,7 @@ jQuery(document).ready(function ($) {
               }
 
               var labelTimeFuncs = currentCard.labels.reduce((accu, label)=> {
-                  accu.push(callback=>saveLabelTime(label.id + dayCounter, label.name + " " + dayCounter, labelTimer, callback));
+                  accu.push(callback=>saveLabelTime(label.id + dayCounter, label.name, labelTimer, callback));
                   return accu
               }, []);
               // console.debug('back labelTimeFuncs', labelTimeFuncs);
@@ -856,6 +856,7 @@ jQuery(document).ready(function ($) {
                     for ( i = 6; i > -2; i-- ) {
 
                       var filteredCardData = tdata.card.filter(filterByDay);
+                      var filteredLabelData = tdata.label.filter(filterByDay);
                       var filteredTime = totalStoredDay.filter(filterByDay);
                       var filteredTotalDay = filteredTime.map(function(a) {return a.time;});
                       var dayOfWeek = "**" + daysOfWeek[i] + "**";
@@ -864,21 +865,22 @@ jQuery(document).ready(function ($) {
                       if (filteredCardData.length > 0) {
                         var _grabTime = (acc, cur)=>acc += ">" + cur.name + ' - ' + Math.floor(cur.time / 60) + (Math.floor(cur.time / 60) > 1 ? ' minutes\n' : ' minute\n' );
                         var cardtime = filteredCardData.reduce(_grabTime, '');
-                        var labeltime = tdata.label.reduce(_grabTime, '');
-                        console.log(labeltime);
+                        // var labeltime = tdata.label.reduce(_grabTime, '');
+                        var labeltime = filteredLabelData.reduce(_grabTime, '');
                         var printStored = filteredTotalDay.reduce( (a,b) => a + b, 0 );
 
                         if (i == 0 && filteredCardData.length > 0) {
                             var sundayTime = filteredCardData.map(function(a) {return a.time;});
                             printStored = sundayTime.reduce( (a,b) => a + b, 0 );
                         }
-                        trelloTime += dayOfWeek + "\n\n*TASKS:*\n\n\n\n" + cardtime + "\n--------\n" + "\n*TIME SPENT:*\n" + "\n" + ">" + hoursAndMinutes(printStored) + "\n\n\n\n--------\n";
+                        trelloTime += dayOfWeek + "\n\n*TASKS:*\n\n\n\n" + cardtime + "\n--------\n" + "*LABELS*\n\n" +  labeltime + "\n--------\n" + "\n*TIME SPENT:*\n" + "\n" + ">" + hoursAndMinutes(printStored) + "\n\n\n\n--------\n";
                       }
                     };
 
                     var timeThisWeek = totalStored.reduce( (a,b) => a + b, 0 );
 
-                    trelloTime += "\n\n#WEEKLY#\n\n\n\n" + "*LABELS*\n\n" +  labeltime + "\n--------\n" + "*TOTAL TIME SPENT*\n\n" + hoursAndMinutes(timeThisWeek) + "\n--------\n" + "----------";
+                    // trelloTime += "\n\n#WEEKLY#\n\n\n\n" + "*LABELS*\n\n" +  labeltime + "\n--------\n" + "*TOTAL WEEKLY TIME*\n\n" + hoursAndMinutes(timeThisWeek) + "\n--------\n" + "----------";
+                    trelloTime += "\n\n#WEEKLY#\n\n\n\n" + "*TIME SPENT*\n\n" + hoursAndMinutes(timeThisWeek) + "\n--------\n" + "----------";
                     // console.debug('trelloTime', {trelloTime, cardtime, labeltime});
                     Trello.put('/cards/' + logCard + '/desc', {value: trelloTime})
                         .always((o, e, d)=>callback(e, d));
