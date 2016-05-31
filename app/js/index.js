@@ -412,12 +412,13 @@ jQuery(document).ready(function ($) {
         }
 
         $cardNumber.click(function () {
+            $('#welcome-loading').show();
             $(this).siblings().remove();
             ipcRenderer.send('set-size', 269, 15 + $('#listOutput').outerHeight());
             cardAction(displayCard, cardNumber);
         });
 
-        $('#welcome-loading').hide();
+
 
     };
 
@@ -469,17 +470,15 @@ jQuery(document).ready(function ($) {
                 $('#welcome-loading').show();
                 $('#listOutput').empty();
 
-                if ($timedisplay === true) {
-                  $(".time-display").toggleClass("time-adjust");
-                  $('#time-switch').empty();
-                  $(".time-display > h1").show();
-                }
-
                 if (timeHasBeenAdjusted === true) {
                   var timeAdjustment = timeOnCard;
                   timeHasBeenAdjusted = false;
                 }
+                else {
+                  timeAdjustment = 0;
+                }
 
+                console.log("Time count is " + secondsTimer + " and " + "Time being adjusted is " + secondsTimer - timeAdjustment);
                 // getList();
                 var labelTimeFuncs = currentCard.labels.reduce((accu, label)=> {
                     accu.push(callback=>saveLabelTime(label.id + dayOfWeek, label.name, secondsTimer - timeAdjustment, callback));
@@ -487,7 +486,7 @@ jQuery(document).ready(function ($) {
                 }, []);
                 // console.debug('back labelTimeFuncs', labelTimeFuncs);
                 var flow = [
-                    (callback)=> saveNewCardTime(currentCard.id + dayOfWeek, currentCard.name, secondsTimer, callback),
+                    (callback)=> saveCardTime(currentCard.id + dayOfWeek, currentCard.name, secondsTimer - timeAdjustment, callback),
                 ].concat(labelTimeFuncs, [
                     (callback)=> {
                         clearTime();
@@ -512,6 +511,9 @@ jQuery(document).ready(function ($) {
                   var timeAdjustment = timeOnCard;
                   timeHasBeenAdjusted = false;
                 }
+                else {
+                  timeAdjustment = 0;
+                }
 
                 var labelTimeFuncs = currentCard.labels.reduce((accu, label)=> {
                     accu.push(callback=>saveLabelTime(label.id + dayOfWeek, label.name, secondsTimer - timeAdjustment, callback));
@@ -520,7 +522,7 @@ jQuery(document).ready(function ($) {
 
                 var flow = [
                     (callback)=> completeCard(currentCard.id, callback),
-                    (callback)=> saveNewCardTime(currentCard.id + dayOfWeek, currentCard.name, secondsTimer, callback),
+                    (callback)=> saveCardTime(currentCard.id + dayOfWeek, currentCard.name, secondsTimer, callback),
                 ].concat(labelTimeFuncs);
                 // https://github.com/caolan/async#seriestasks-callback
                 async.series(flow, (err, results)=> {
@@ -548,6 +550,9 @@ jQuery(document).ready(function ($) {
               var timeAdjustment = timeOnCard;
               timeHasBeenAdjusted = false;
             }
+            else {
+              timeAdjustment = 0;
+            }
 
             var labelTimeFuncs = currentCard.labels.reduce((accu, label)=> {
                 accu.push(callback=>saveLabelTime(label.id + dayOfWeek, label.name, secondsTimer - timeAdjustment, callback));
@@ -555,7 +560,7 @@ jQuery(document).ready(function ($) {
             }, []);
             // console.debug('back labelTimeFuncs', labelTimeFuncs);
             var flow = [
-                (callback)=> saveNewCardTime(currentCard.id + dayOfWeek, currentCard.name, secondsTimer, callback),
+                (callback)=> saveCardTime(currentCard.id + dayOfWeek, currentCard.name, secondsTimer, callback),
             ].concat(labelTimeFuncs, [
                 (callback)=> {
                     clearTime();
@@ -760,6 +765,8 @@ jQuery(document).ready(function ($) {
         function timer() {
             t = setTimeout(add, 1000);
         }
+
+        $('#welcome-loading').hide();
     };
 
 
