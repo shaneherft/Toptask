@@ -25,13 +25,14 @@
   },
   "homepage": "https://github.com/atom/electron-quick-start#readme",
   "devDependencies": {
-    "cross-env": "^1.0.7",
-    "electron-prebuilt": "*"
+    "cross-env": "^1.0.8",
+    "electron-prebuilt": "^1.2.2"
   },
   "dependencies": {
     "async": "latest",
     "bootstrap": "^3.3.6",
     "electron-json-storage": "^2.0.0",
-    "nconf": "^0.8.4"
+    "nconf": "^0.8.4",
+    "twit": "^2.2.4"
   }
 }
