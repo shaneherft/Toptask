@@ -23,12 +23,12 @@ var trayMenuTemplate = [
         label: 'Toptask',
         enabled: false
     },
-    // {
-    //     label: 'Settings',
-    //     click: function() {
-    //       createSettingsWindow();
-    //     }
-    // },
+    {
+        label: 'Settings',
+        click: function() {
+          createSettingsWindow();
+        }
+    },
     {
         label: 'Clear Storage',
         click: function() {
@@ -56,23 +56,6 @@ var __DEV__ = (process.env['NODE_ENV'] === 'development');
 
 var dialog = require('electron').dialog;
 var Twit = require('twit');
-
-// var T = new Twit({
-//   consumer_key:         'Smxc5So9dx0pSzZ25oj1ahwNP',
-//   consumer_secret:      'nehOKVEn3CcaKkxXUarDImf8PoQlOtEkWJIbnYWtnT9u2M8TgQ',
-//   access_token:         '23528255-YmkZONLCSP77hHICezQzrNNWGBip2rgH6aStOUNxp',
-//   access_token_secret:  'QqQNSGetxO8C48fp7TGCTnGucuzaqUYYG5zF4FSGSTDPp',
-//   timeout_ms:           60*1000,  // optional HTTP request timeout to apply to all requests.
-// })
-
-// T.getAuth()
-//
-// T.get('statuses/user_timeline', { user_id: '4615983616', count: 1 }, function (err, data, response) {
-//   var rawTweet = data[0].text;
-//   var parseIndex = rawTweet.indexOf("via");
-//   var parseTweet = rawTweet.slice(0, parseIndex - 2);
-//   console.log(parseTweet);
-// })
 
 console.log(`NODE_ENV=[${process.env['NODE_ENV']}]`);
 
@@ -168,25 +151,27 @@ function createTrelloWindow(cardLink) {
 
 }
 
-// function createSettingsWindow() {
-//
-//     if (settingsWindow) {
-//         return;
-//     }
-//
-//     settingsWindow = new BrowserWindow({
-//         frame: false,
-//         height: 200,
-//         resizable: false,
-//         width: 200
-//     });
-//
-//     settingsWindow.loadURL('file://' + __dirname + '/settings.html');
-//
-//     settingsWindow.on('closed', function () {
-//         settingsWindow = null;
-//     });
-// };
+function createSettingsWindow(rightAligned) {
+
+    if (settingsWindow) {
+        return;
+    }
+
+    settingsWindow = new BrowserWindow({
+        frame: false,
+        height: 425,
+        resizable: false,
+        width: 269,
+        x: rightAligned - 20,
+        y: 80
+    });
+
+    settingsWindow.loadURL('file://' + __dirname + '/app/settings.html');
+
+    settingsWindow.on('closed', function () {
+        settingsWindow = null;
+    });
+};
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -240,9 +225,14 @@ ipcMain.on('trello-open', function(event, cardUrl) {
 });
 
 
-// ipcMain.on('close-settings-window', function () {
-//         settingsWindow.close();
-// });
+ipcMain.on('close-settings-window', function () {
+  settingsWindow.close();
+  mainWindow.webContents.send('new-settings');
+});
+
+ipcMain.on('open-settings-window', function () {
+  createSettingsWindow();
+});
 
 
 // ipcMain.on('set-global-shortcuts', function () {

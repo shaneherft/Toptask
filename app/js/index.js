@@ -39,7 +39,11 @@ nconf.use('file', { file: __dirname + '/configuration.json' });
 
   nconf.load();
   var logCard = nconf.get('card');
+  var currentList = nconf.get('list');
+  var completeList = nconf.get('completeList');
+
   console.log(logCard);
+  console.log(currentList);
 
   nconf.save(function (err) {
     if (err) {
@@ -47,6 +51,10 @@ nconf.use('file', { file: __dirname + '/configuration.json' });
       return;
     }
     console.log('Configuration saved successfully.');
+  });
+
+  ipcRenderer.on('new-settings', function () {
+      location.reload();
   });
 
 jQuery(document).ready(function ($) {
@@ -66,6 +74,10 @@ jQuery(document).ready(function ($) {
     var yyyy = today.getFullYear();
     var daysOfWeek = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
     var dayCounter = dayOfWeek;
+
+    if (currentList == null) {
+      ipcRenderer.send('open-settings-window');
+    }
 
     if(dd<10) {
       dd='0'+dd
@@ -95,7 +107,7 @@ jQuery(document).ready(function ($) {
             .text(welcomeMessage)
             .appendTo("#welcome-message");
 
-        if (welcomeMessage.length > 44) {
+        if (welcomeMessage.length > 50) {
           ipcRenderer.send('set-size', 349, 84);
           $('.welcome').css({'font-size':14});
 
@@ -172,23 +184,28 @@ jQuery(document).ready(function ($) {
             if (error) throw error;
             var storedDate = new Date(data.date);
 
+            var creationSuccess = function(data) {
+              nconf.set('card', data.id);
+              nconf.save()
+              logCard = data.id;
+            };
+
+            var newCard = {
+              name: 'Weekly Progress',
+              idLabels: '55a35d27fb396fe706fb7b1e',
+              idList: currentList,
+              pos: 'bottom'
+            };
+
             if (today > storedDate) {
               Trello.put('/cards/' + logCard, {name: 'Weekly Progress - ' + 'ending ' + logDate});
               // Trello.put("cards/" + logCard + "/idList", {value: ttSettings.tids.completeList});
+              Trello.post('/cards/', newCard, creationSuccess);
+              callbackClear(setDate, clearStorage);
+            }
 
-              var creationSuccess = function(data) {
-                nconf.set('card', data.id);
-                nconf.save()
-                logCard = data.id;
-              };
-
-              var newCard = {
-                name: 'Weekly Progress',
-                idLabels: '55a35d27fb396fe706fb7b1e',
-                idList: ttSettings.tids.list,
-                pos: 'bottom'
-              };
-
+            else if (logCard == null) {
+              console.log("Nothing here folks");
               Trello.post('/cards/', newCard, creationSuccess);
               callbackClear(setDate, clearStorage);
             }
@@ -212,7 +229,7 @@ jQuery(document).ready(function ($) {
 
         Trello.members.get("me", (member)=> {
 
-            Trello.get("lists/" + ttSettings.tids.list + "/cards", (cards)=> { //
+            Trello.get("lists/" + currentList + "/cards", (cards)=> { //
                 // console.debug(cards);
                 cardsInList = [];
 
@@ -573,7 +590,7 @@ jQuery(document).ready(function ($) {
         });
 
         var completeCard = function (cardId, callback) {
-            Trello.put("cards/" + cardId + "/idList", {value: ttSettings.tids.completeList})
+            Trello.put("cards/" + cardId + "/idList", {value: completeList})
                 .then(d=>callback(null, d))
                 .fail(e=>callback(e));
         };

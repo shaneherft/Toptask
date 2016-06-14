@@ -1,37 +1,61 @@
-
 const ipcRenderer = require('electron').ipcRenderer;
-var configuration = require('../configuration.js');
+var fs = require('fs');
+var nconf = require('nconf');
 
-var close = document.querySelector('.close');
+window.$ = window.jQuery = require('../lib/jquery-2.2.1');
+
+// console.log(__dirname + '../configuration.json');
+
+nconf.use('file', { file: __dirname + '/../configuration.json' });
+
+nconf.load();
+
+nconf.save(function (err) {
+  if (err) {
+    console.error(err.message);
+    return;
+  }
+  console.log('Configuration saved successfully.');
+});
+
+
+var list = nconf.get('list');
+var completeList = nconf.get('completeList');
+var updatedList;
+var updatedCompleteList;
+
+var close = document.querySelector('#close-button');
+
 close.addEventListener('click', function (e) {
     ipcRenderer.send('close-settings-window');
 });
 
+if (list) {
+$('#list-id').attr('placeholder', list);
+};
 
-var modifierCheckboxes = document.querySelectorAll('.global-shortcut');
+if (completeList) {
+$('#complete-id').attr('placeholder', completeList);
+};
 
-for (var i = 0; i < modifierCheckboxes.length; i++) {
-    var shortcutKeys = configuration.readSettings('shortcutKeys');
-    var modifierKey = modifierCheckboxes[i].attributes['data-modifier-key'].value;
-    modifierCheckboxes[i].checked = shortcutKeys.indexOf(modifierKey) !== -1;
+$('#list-id-submit')
+  .unbind('click')
+  .click(event => {
+    event.stopPropagation()
+    updatedList = $('#list-id').val();
+    nconf.set('list', updatedList);
+    nconf.save();
+    $('#list-id-submit').text('Saved');
+    list = nconf.get('list');
+    console.log(list);
+});
 
-    modifierCheckboxes[i].addEventListener('click', function (e) {
-       bindModifierCheckboxes(e);
-   });
-}
-
-function bindModifierCheckboxes(e) {
-    var shortcutKeys = configuration.readSettings('shortcutKeys');
-    var modifierKey = e.target.attributes['data-modifier-key'].value;
-
-    if (shortcutKeys.indexOf(modifierKey) !== -1) {
-        var shortcutKeyIndex = shortcutKeys.indexOf(modifierKey);
-        shortcutKeys.splice(shortcutKeyIndex, 1);
-    }
-    else {
-        shortcutKeys.push(modifierKey);
-    }
-
-    configuration.saveSettings('shortcutKeys', shortcutKeys);
-    ipcRenderer.send('set-global-shortcuts');
-}
+$('#complete-id-submit')
+  .unbind('click')
+  .click(event => {
+    event.stopPropagation()
+    updatedCompleteList = $('#complete-id').val();
+    nconf.set('completeList', updatedCompleteList);
+    nconf.save();
+    $('#complete-id-submit').text('Saved');
+});
