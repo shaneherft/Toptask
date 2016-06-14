@@ -3,14 +3,16 @@ var electron = require('electron'),
   app = electron.app,
   BrowserWindow = electron.BrowserWindow;
 
+const {Menu, Tray} = require('electron');
+
 const storage = require('electron-json-storage');
 
 const ipcMain = require('electron').ipcMain;
 
-var Tray = require('tray');
-var Menu = require('menu');
+// var Tray = require('tray');
+// var Menu = require('menu');
 var path = require('path');
-var globalShortcut = require('global-shortcut');
+// var globalShortcut = require('global-shortcut');
 var configuration = require('./configuration');
 var trayIcon = null;
 var settingsWindow = null;
