@@ -226,13 +226,18 @@ jQuery(document).ready(function ($) {
         $('#cardOutput').empty();
         $('#listOutput').empty();
         $('.toggle').hide();
+        var selectedList;
 
         Trello.members.get("me", (member)=> {
+
+            Trello.get("lists/" + currentList, (list)=> {
+              var activeList = list;
+              selectedList = activeList.name;
+            });
 
             Trello.get("lists/" + currentList + "/cards", (cards)=> { //
                 // console.debug(cards);
                 cardsInList = [];
-
                 var $listOutput = $("#listOutput");
                 var listName = "PRIORITY";
                 var $list = $("<div class='listName'>" + listName + "</div>")
@@ -495,7 +500,7 @@ jQuery(document).ready(function ($) {
                   timeAdjustment = 0;
                 }
 
-                console.log("Time count is " + secondsTimer + " and " + "Time being adjusted is " + secondsTimer - timeAdjustment);
+                // console.log("Time count is " + secondsTimer + " and " + "Time being adjusted is " + secondsTimer - timeAdjustment);
                 // getList();
                 var labelTimeFuncs = currentCard.labels.reduce((accu, label)=> {
                     accu.push(callback=>saveLabelTime(label.id + dayOfWeek, label.name, secondsTimer - timeAdjustment, callback));
@@ -735,9 +740,10 @@ jQuery(document).ready(function ($) {
                 $('#time-switch').empty();
                 $("#icon-buttons").show();
                 $(".time-display > h1").show();
+                console.log(minutes);
                 h1.textContent = (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ":" + (minutes ? (minutes > 9 ? (minutes > 59 ? (minutes % 60) : minutes) : "0" + minutes) : "00");
+                seconds = 0;
                 timer();
-
               });
 
             });
@@ -823,7 +829,7 @@ jQuery(document).ready(function ($) {
     var saveNewTime = function (keyType, keyId, keyName, time, callback) {
         // console.debug('saveTime', arguments);
         var totalTime = time;
-        console.log(time);
+        // console.log(time);
 
         storage.set(keyId, {type: keyType, name: keyName, time: totalTime, day: dayCounter}, (error)=> {
             if (error) throw error;
@@ -858,7 +864,7 @@ jQuery(document).ready(function ($) {
         storage.keys((err, keys)=> {
             // https://github.com/caolan/async
             async.mapSeries(keys, (name, cb)=> storage.get(name, (error, data)=> {
-                // console.debug('logTime data', error, data);
+                console.debug('logTime data', error, data);
                 // if (error) return cb(error);
                 if (data['type'] == 'card') {
                   totalStored.push(data.time);
