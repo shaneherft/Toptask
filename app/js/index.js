@@ -41,9 +41,7 @@ nconf.use('file', { file: __dirname + '/configuration.json' });
   var logCard = nconf.get('card');
   var currentList = nconf.get('list');
   var completeList = nconf.get('completeList');
-
-  console.log(logCard);
-  console.log(currentList);
+  var currentBoard = nconf.get('board');
 
   nconf.save(function (err) {
     if (err) {
@@ -56,6 +54,7 @@ nconf.use('file', { file: __dirname + '/configuration.json' });
   ipcRenderer.on('new-settings', function () {
       location.reload();
   });
+
 
 jQuery(document).ready(function ($) {
     //do jQuery stuff when DOM is ready
@@ -76,7 +75,7 @@ jQuery(document).ready(function ($) {
     var dayCounter = dayOfWeek;
 
     if (currentList == null) {
-      ipcRenderer.send('open-settings-window');
+      listSelector();
     }
 
     if(dd<10) {
@@ -87,8 +86,28 @@ jQuery(document).ready(function ($) {
       mm='0'+mm
     }
 
+    var loadCheck = function () {
+
+      return new Promise( function (resolve, reject) {
+
+        for ( i = 0; i < 6; i++ ) {
+          if (navigator.onLine) {
+            console.log("triggered");
+            return resolve(true);
+          }
+          else if (i === 5) {
+            reject("No Internet Connection");
+          }
+          else {
+            console.log("No Internets!");
+          }
+        };
+
+      });
+    };
+
     var logDate = (dd === 1 ? dd : dd - 1) +'/'+ mm +'/'+yyyy;
-      // T.getAuth()
+
       T.get('statuses/user_timeline', { user_id: '4615983616', count: 1 }, function (err, data, response) {
 
         if (data) {
@@ -98,28 +117,16 @@ jQuery(document).ready(function ($) {
           welcomeMessage = welcomeMessage + ".";
         }
 
-        // else {
-        //   welcomeMessage = "Welcome to Toptask, have a productive day!"
-        // }
+        else {
+          welcomeMessage = "Welcome to Toptask, have a productive day!"
+        }
 
         $welcome = $("<div>")
             .addClass('welcome')
             .text(welcomeMessage)
             .appendTo("#welcome-message");
 
-        if (welcomeMessage.length > 50) {
-          ipcRenderer.send('set-size', 349, 84);
-          $('.welcome').css({'font-size':14});
-
-        }
-        else if (welcomeMessage.length > 66) {
-          ipcRenderer.send('set-size', 349, 82);
-          $('.welcome').css({'font-size':12}, {'line-height':16});
-
-        }
-        else if (welcomeMessage.length < 20) {
-          $('.welcome').css({'top':24});
-        }
+        ipcRenderer.send('set-size', 349, 30 + $welcome.outerHeight());
 
       });
 
@@ -154,19 +161,21 @@ jQuery(document).ready(function ($) {
 
         var setDate = function() {
 
-          Date.prototype.getNextWeekMonday = function() {
+          Date.prototype.getNextWeekSunday = function() {
             var d = new Date(this.getTime());
-            var diff = d.getDate() - d.getDay() + 1;
-            if (d.getDay() == 0)
-                diff -= 7;
-            diff += 7; // ugly hack to get next monday instead of current one
+            var diff = d.getDate() - d.getDay();
+            // if (d.getDay() == 0) {
+              diff += 7;
+            // }
             return new Date(d.setDate(diff));
           };
 
-          var nextMonday = today.getNextWeekMonday();
-          nextMonday.setHours(0,0,0,0);
+          var nextSunday = today.getNextWeekSunday();
+          nextSunday.setHours(0,0,0,0);
 
-          storage.set('date', {date: nextMonday}, function (error) {
+          console.log(nextSunday);
+
+          storage.set('date', {date: nextSunday}, function (error) {
               if (error) throw error;
           });
         };
@@ -199,13 +208,11 @@ jQuery(document).ready(function ($) {
 
             if (today > storedDate) {
               Trello.put('/cards/' + logCard, {name: 'Weekly Progress - ' + 'ending ' + logDate});
-              // Trello.put("cards/" + logCard + "/idList", {value: ttSettings.tids.completeList});
               Trello.post('/cards/', newCard, creationSuccess);
               callbackClear(setDate, clearStorage);
             }
 
             else if (logCard == null) {
-              console.log("Nothing here folks");
               Trello.post('/cards/', newCard, creationSuccess);
               callbackClear(setDate, clearStorage);
             }
@@ -228,12 +235,14 @@ jQuery(document).ready(function ($) {
         $('.toggle').hide();
         var selectedList;
 
+        currentList = nconf.get('list');
+
         Trello.members.get("me", (member)=> {
 
-            Trello.get("lists/" + currentList, (list)=> {
-              var activeList = list;
-              selectedList = activeList.name;
-            });
+            // Trello.get("lists/" + currentList, (list)=> {
+            //   var activeList = list;
+            //   selectedList = activeList.name;
+            // });
 
             Trello.get("lists/" + currentList + "/cards", (cards)=> { //
                 // console.debug(cards);
@@ -244,6 +253,21 @@ jQuery(document).ready(function ($) {
                     .appendTo("#listOutput");
 
                 $("<div class='listDrag'></div>").appendTo("#listOutput");
+                $("<div class='listSelect'></div>").appendTo("#listOutput");
+
+                $(".listSelect")
+                    .click(function () {
+                      ipcRenderer.send('load-size');
+                      $('#welcome-loading').show();
+                      loadCheck().then(function() {
+                        	listSelector();
+                        }).catch(function() {
+                        	$('.loading')
+                            .css('left','83px')
+                            .text('No internet connection');
+                        })
+
+                    });
 
                 $.each(cards, function (ix, card) {
 
@@ -740,7 +764,6 @@ jQuery(document).ready(function ($) {
                 $('#time-switch').empty();
                 $("#icon-buttons").show();
                 $(".time-display > h1").show();
-                console.log(minutes);
                 h1.textContent = (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ":" + (minutes ? (minutes > 9 ? (minutes > 59 ? (minutes % 60) : minutes) : "0" + minutes) : "00");
                 seconds = 0;
                 timer();
@@ -807,6 +830,79 @@ jQuery(document).ready(function ($) {
         });
     };
 
+// SHOWS BOARDS AND LISTS THAT A USER WANTS TO SELECT & MOVES THE WEEKLY PROGRESS CARD TO THAT LIST
+
+var listSelector = function () {
+
+  var $listOutput = $("#listOutput");
+  $('.cardContainer').remove();
+
+  var chooseList = function (boardId) {
+
+    var newCompleteList = {
+      name: "TOPTASK COMPLETED",
+      idBoard: boardId,
+      pos: "top"
+    }
+
+    var creationSuccess = function(data) {
+      nconf.set('completeList', data.id);
+      nconf.save()
+      completeList = data.id;
+    };
+
+    Trello.get("boards/" + boardId + "/lists", (lists)=> {
+
+      $.each(lists, function (ix, list) {
+
+          $('#' + boardId +'').append('<div class="board-list" id="' + list.id + '">' + list.name + '</div>');
+
+          $('#' + list.id +'')
+              .click(function () {
+                Trello.put("cards/" + logCard, {idList: list.id, idBoard: boardId});
+                if (completeList == null) {
+                  Trello.post("lists/", newCompleteList, creationSuccess);
+                }
+                else {
+                  var checkInt = parseInt(boardId);
+                  console.log(checkInt);
+                  Trello.put("lists/" + completeList + "/idBoard", {value: boardId, pos: 1});
+                }
+                nconf.set('list', list.id);
+                nconf.set('board', boardId);
+                nconf.save();
+                getList();
+              });
+      });
+    });
+  };
+
+  Trello.members.get("me/boards", (boards)=> {
+
+    $('.board').remove();
+
+    $.each(boards, function (ix, board) {
+
+        if (board.closed === false ) {
+
+          $listOutput.append('<div class="board" id="' + board.id + '">' + board.name + '</div>');
+
+          $('#' + board.id +'')
+              .click(function () {
+                $('.board-list').remove();
+                chooseList(board.id);
+              });
+        }
+    });
+
+    ipcRenderer.send('set-size', 269, 30 + $listOutput.outerHeight());
+    $('#welcome-loading').hide();
+
+  });
+
+};
+
+
 // SAVES TIME SPENT ON CARD
 
     var saveTime = function (keyType, keyId, keyName, time, callback) {
@@ -850,6 +946,28 @@ jQuery(document).ready(function ($) {
         var totalStored = [];
         var totalStoredDay = [];
         var trelloTime = "#DAILY#\n\n\n\n";
+        var mergedLabels = [];
+
+        var mergeLabels = function (array) {
+
+          array.forEach(function(value) {
+            var existing = mergedLabels.filter(function(v, i) {
+                return v.name == value.name;
+            });
+            if(existing.length) {
+                var existingIndex = mergedLabels.indexOf(existing[0]);
+                mergedLabels[existingIndex].value = mergedLabels[existingIndex].value.concat(value.value);
+            }
+            else {
+                if(typeof value.value == 'string')
+                    value.value = [value.value];
+                mergedLabels.push(value);
+            }
+          });
+
+          console.log(mergedLabels)
+
+        };
 
         var filterByDay = function(data) {
             return data.day == i;
@@ -864,7 +982,7 @@ jQuery(document).ready(function ($) {
         storage.keys((err, keys)=> {
             // https://github.com/caolan/async
             async.mapSeries(keys, (name, cb)=> storage.get(name, (error, data)=> {
-                console.debug('logTime data', error, data);
+                // console.debug('logTime data', error, data);
                 // if (error) return cb(error);
                 if (data['type'] == 'card') {
                   totalStored.push(data.time);
@@ -891,11 +1009,10 @@ jQuery(document).ready(function ($) {
                       var filteredTotalDay = filteredTime.map(function(a) {return a.time;});
                       var dayOfWeek = "**" + daysOfWeek[i] + "**";
 
-
                       if (filteredCardData.length > 0) {
                         var _grabTime = (acc, cur)=>acc += ">" + cur.name + ' - ' + Math.floor(cur.time / 60) + (Math.floor(cur.time / 60) > 1 ? ' minutes\n' : ' minute\n' );
                         var cardtime = filteredCardData.reduce(_grabTime, '');
-                        // var labeltime = tdata.label.reduce(_grabTime, '');
+                        // var allLabelTime = tdata.label.reduce(_grabTime, '');
                         var labeltime = filteredLabelData.reduce(_grabTime, '');
                         var printStored = filteredTotalDay.reduce( (a,b) => a + b, 0 );
 
@@ -907,10 +1024,12 @@ jQuery(document).ready(function ($) {
                       }
                     };
 
+                    mergeLabels(tdata.label);
+
                     var timeThisWeek = totalStored.reduce( (a,b) => a + b, 0 );
 
                     // trelloTime += "\n\n#WEEKLY#\n\n\n\n" + "*LABELS*\n\n" +  labeltime + "\n--------\n" + "*TOTAL WEEKLY TIME*\n\n" + hoursAndMinutes(timeThisWeek) + "\n--------\n" + "----------";
-                    trelloTime += "\n\n#WEEKLY#\n\n\n\n" + "*TIME SPENT*\n\n" + hoursAndMinutes(timeThisWeek) + "\n--------\n" + "----------";
+                    trelloTime += "\n\n#WEEKLY#\n\n\n\n" + "*TOTAL TIME SPENT*\n\n" + hoursAndMinutes(timeThisWeek) + "\n--------\n" + "----------";
                     // console.debug('trelloTime', {trelloTime, cardtime, labeltime});
                     Trello.put('/cards/' + logCard + '/desc', {value: trelloTime})
                         .always((o, e, d)=>callback(e, d));

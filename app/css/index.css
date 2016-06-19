@@ -35,12 +35,12 @@
 
 font-face {
     font-family: 'Brandon Text';
-    src: url('hvd_fonts_-_brandontext-medium-webfont.eot');
-    src: url('hvd_fonts_-_brandontext-medium-webfont.eot?#iefix') format('embedded-opentype'),
-         url('hvd_fonts_-_brandontext-medium-webfont.woff2') format('woff2'),
-         url('hvd_fonts_-_brandontext-medium-webfont.woff') format('woff'),
-         url('hvd_fonts_-_brandontext-medium-webfont.ttf') format('truetype'),
-         url('hvd_fonts_-_brandontext-medium-webfont.svg#brandon_textmedium') format('svg');
+    src: url('../fonts/hvd_fonts_-_brandontext-medium-webfont.eot');
+    src: url('../fonts/hvd_fonts_-_brandontext-medium-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/hvd_fonts_-_brandontext-medium-webfont.woff2') format('woff2'),
+         url('../fonts/hvd_fonts_-_brandontext-medium-webfont.woff') format('woff'),
+         url('../fonts/hvd_fonts_-_brandontext-medium-webfont.ttf') format('truetype'),
+         url('../fonts/hvd_fonts_-_brandontext-medium-webfont.svg#brandon_textmedium') format('svg');
     font-weight: normal;
     font-style: normal;
 
@@ -230,6 +230,30 @@ span {
   background-repeat: no-repeat;
   cursor: move;
   -webkit-app-region: drag;
+}
+
+.listSelect {
+  display: inline-block;
+  float: right;
+  line-height: 15px;
+  width: 30px;
+  height: 15px;
+  background-image: url('../images/list-select.png');
+  background-position: right;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+
+.board, .board-list {
+  font-family: 'HelveticaNeueBold', Arial, sans-serif;
+  color: #4d4d4d;
+  cursor: pointer;
+}
+
+.board-list {
+  margin-left: 20px;
+  font-size: 16px;
+  text-decoration: underline;
 }
 
 .cardName {

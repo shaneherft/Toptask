@@ -1,0 +1,83 @@
+body {
+  background-color: #C83B3B;
+}
+
+.settings-info {
+  margin: 30px 20px 30px 20px;
+}
+
+#close-button {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  float: right;
+  width: 15px;
+  height: 15px;
+  background-image: url('../images/close.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+
+
+.spacer {
+  color: white;
+  border-radius: 1px;
+}
+
+h1 {
+  color: #ffffff;
+  font-family: "Brandon Text";
+  font-size: 16px;
+  line-height: 20px;
+  font-weight: 400;
+}
+
+p {
+  color: #ffffff;
+  font-family: "Brandon Text";
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.settings-input {
+  border: none;
+  background-color: #C83B3B;
+  font-family: "Brandon Text";
+  font-size: 14px !important;
+  line-height: 16px;
+  width: 110px;
+  margin-right: 27px;
+  color: #ffffff;
+  border-bottom: 1px solid #ffffff;
+}
+
+.settings-button {
+  display: inline-block;
+  font-family: "Brandon Text";
+  background-color: #EF9B59;
+  font-size: 14px !important;
+  width: 70px;
+  padding: 5px 0 5px 0;
+  line-height: 18px;
+  border-radius: 100px;
+  color: #ffffff;
+  box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.15);
+  border: none;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.settings-button:hover {
+  background-color: #FEE785;
+  color: #A42127;
+}
+
+.settings-button:focus {
+  outline: none;
+}
+
+::-webkit-input-placeholder {
+   color: white;
+   opacity: 0.5;
+}
