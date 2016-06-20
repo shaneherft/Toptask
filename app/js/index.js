@@ -2,6 +2,7 @@ const ipcRenderer = require('electron').ipcRenderer;
 const remote = require('electron').remote;
 const storage = require('electron-json-storage');
 var async = require('async');
+var _ = require('lodash');
 
 window.$ = window.jQuery = require('./lib/jquery-2.2.1');
 
@@ -945,28 +946,29 @@ var listSelector = function () {
         var tdata = {card: [], label: []};
         var totalStored = [];
         var totalStoredDay = [];
+        var totalLabelTime = [];
         var trelloTime = "#DAILY#\n\n\n\n";
-        var mergedLabels = [];
 
-        var mergeLabels = function (array) {
+        var mergeLabelNames = function (arr) {
 
-          array.forEach(function(value) {
-            var existing = mergedLabels.filter(function(v, i) {
-                return v.name == value.name;
+            var labelNames = {};
+            var labelNamesCount= {};
+
+            arr.forEach( function(e) {
+
+              if (!labelNames[e.name]) {
+
+                  labelNames[e.name] = 0
+                  labelNamesCount[e.name] = 0
+              }
+
+              labelNames[e.name] += e.time
+              labelNamesCount[e.name]++
             });
-            if(existing.length) {
-                var existingIndex = mergedLabels.indexOf(existing[0]);
-                mergedLabels[existingIndex].value = mergedLabels[existingIndex].value.concat(value.value);
-            }
-            else {
-                if(typeof value.value == 'string')
-                    value.value = [value.value];
-                mergedLabels.push(value);
-            }
-          });
 
-          console.log(mergedLabels)
-
+            for (var name in labelNames) {
+              totalLabelTime.push({name : name, time : labelNames[name]})
+            };
         };
 
         var filterByDay = function(data) {
@@ -1012,7 +1014,6 @@ var listSelector = function () {
                       if (filteredCardData.length > 0) {
                         var _grabTime = (acc, cur)=>acc += ">" + cur.name + ' - ' + Math.floor(cur.time / 60) + (Math.floor(cur.time / 60) > 1 ? ' minutes\n' : ' minute\n' );
                         var cardtime = filteredCardData.reduce(_grabTime, '');
-                        // var allLabelTime = tdata.label.reduce(_grabTime, '');
                         var labeltime = filteredLabelData.reduce(_grabTime, '');
                         var printStored = filteredTotalDay.reduce( (a,b) => a + b, 0 );
 
@@ -1024,12 +1025,13 @@ var listSelector = function () {
                       }
                     };
 
-                    mergeLabels(tdata.label);
+                    mergeLabelNames(tdata.label);
+                    totalLabelTime = totalLabelTime.reduce(_grabTime, '');
 
                     var timeThisWeek = totalStored.reduce( (a,b) => a + b, 0 );
 
                     // trelloTime += "\n\n#WEEKLY#\n\n\n\n" + "*LABELS*\n\n" +  labeltime + "\n--------\n" + "*TOTAL WEEKLY TIME*\n\n" + hoursAndMinutes(timeThisWeek) + "\n--------\n" + "----------";
-                    trelloTime += "\n\n#WEEKLY#\n\n\n\n" + "*TOTAL TIME SPENT*\n\n" + hoursAndMinutes(timeThisWeek) + "\n--------\n" + "----------";
+                    trelloTime += "\n\n#WEEKLY#\n\n\n\n" + "*LABELS*\n\n" +  totalLabelTime + "\n--------\n" + "*TOTAL TIME SPENT*\n\n" + hoursAndMinutes(timeThisWeek) + "\n--------\n" + "----------";
                     // console.debug('trelloTime', {trelloTime, cardtime, labeltime});
                     Trello.put('/cards/' + logCard + '/desc', {value: trelloTime})
                         .always((o, e, d)=>callback(e, d));
