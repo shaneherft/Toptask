@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Toptask Settings</title>
+    <link rel="stylesheet" type="text/css" href="css/settings.css">
+</head>
+<body>
+
+<a href="#" id="close-button"></a>
+
+<div class="settings-info">
+  <h1>TopTask lets you focus on individual Trello cards and tracks your time on them</h1>
+  <hr class="spacer"></hr>
+  <p>Input the list ID that you'd like TopTask to display here:</p>
+  <form class="list-form">
+      <input type="text" id="list-id" class="settings-input" placeholder="No list ID supplied">
+      <button type="submit" id="list-id-submit" onclick="return false;" class="settings-button">Submit</button>
+  </form>
+
+  <p>Input the list ID you'd like TopTask to move completed tasks to here:</p>
+  <form class="complete-form">
+      <input type="text" id="complete-id" class="settings-input" placeholder="No list ID supplied">
+      <button type="submit" id="complete-id-submit" onclick="return false;" class="settings-button">Submit</button>
+  </form>
+
+  <p>Each week, TopTask resets your time on Monday and creates a new time tracking card called "Weekly Progress"</p>
+</div>
+</body>
+<!-- <script type="text/javascript" src="../lib/jquery-2.2.1.js"></script> -->
+<script type="text/javascript" src="js/settings.js"></script>
+</html>

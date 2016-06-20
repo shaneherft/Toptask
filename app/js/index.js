@@ -134,14 +134,14 @@ jQuery(document).ready(function ($) {
     $("#connectLink").click(function doAuth() {
         Trello.authorize({
             type: 'popup',
-            name: "Toptask",
+            name: "TopTask",
             scope: {
                 read: true,
                 write: true
             },
             expiration: 'never',
             success: onAuthorize,
-            error: (err)=> console.debug('Trello error', err),
+            error: (err)=> console.debug('Trello error', err)
         });
     });
 
