@@ -1,0 +1,593 @@
+@font-face {
+  font-family: 'Helvetica Neue';
+  src: url('../fonts/helveticaneue-roman-webfont.eot');
+  src: url('../fonts/helveticaneue-roman-webfont.eot?#iefix') format('embedded-opentype'),
+  url('../fonts/helveticaneue-roman-webfont.woff2') format('woff2'),
+  url('../fonts/helveticaneue-roman-webfont.woff') format('woff'),
+  url('../fonts/helveticaneue-roman-webfont.ttf') format('truetype'),
+  url('../fonts/helveticaneue-roman-webfont.svg#helvetica_neueregular') format('svg');
+  font-weight: normal;
+  font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'HelveticaNeueBold';
+    src: url('../fonts/HelveticaNeueBold.eot');
+    src: url('../fonts/HelveticaNeueBold.eot') format('embedded-opentype'),
+         url('../fonts/HelveticaNeueBold.woff2') format('woff2'),
+         url('../fonts/HelveticaNeueBold.woff') format('woff'),
+         url('../fonts/HelveticaNeueBold.ttf') format('truetype'),
+         url('../fonts/HelveticaNeueBold.svg#HelveticaNeueBold') format('svg');
+}
+
+
+@font-face {
+    font-family: 'tticons';
+    src: url('../fonts/tticons.eot');
+    src: url('../fonts/tticons.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/tticons.woff') format('woff'),
+         url('../fonts/tticons.ttf') format('truetype'),
+         url('../fonts/tticons.svg#webfontregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+font-face {
+    font-family: 'Brandon Text';
+    src: url('../fonts/hvd_fonts_-_brandontext-medium-webfont.eot');
+    src: url('../fonts/hvd_fonts_-_brandontext-medium-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/hvd_fonts_-_brandontext-medium-webfont.woff2') format('woff2'),
+         url('../fonts/hvd_fonts_-_brandontext-medium-webfont.woff') format('woff'),
+         url('../fonts/hvd_fonts_-_brandontext-medium-webfont.ttf') format('truetype'),
+         url('../fonts/hvd_fonts_-_brandontext-medium-webfont.svg#brandon_textmedium') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+.icon-lg, .icon-sm { color: #999; display: inline-block; font-family: "tticons"; -webkit-font-smoothing: antialiased; /* For more detail on this property, see Tim Van Damme's blog post. */ font-style: normal; font-weight: normal; line-height: 1; } .icon-sm { height: 18px; font-size: 12px; line-height: 18px; width: 18px; } .icon-lg { height: 30px; font-size: 20px; line-height: 30px; width: 30px; }
+.icon-org:before { content: "\f000"; } .icon-member:before { content: "\f001"; } .icon-board:before { content: "\f002"; } .icon-comment:before {content: "\e910";} .icon-attachment:before {content: "\f010";} .icon-description:before {content: "\e911";} .icon-checklist:before {content: "\e90d";}
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+body {
+  background-color: #e2e4e6;
+  /*background-image: radial-gradient(50% 69%, #E8A3A3 0%, rgba(245,245,245,0.10) 0%, rgba(226,228,230,0.10) 0%, rgba(200,58,58,0.10) 70%);*/
+  /*background-repeat: no-repeat;*/
+
+}
+
+a {
+  clear: both;
+  display: block;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: #4d4d4d;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 18px;
+  margin: 0px 0 0px;
+  overflow: hidden;
+  text-decoration: none;
+  word-wrap: break-word;
+  -webkit-user-select: none;
+  /*-webkit-font-smoothing: subpixel-antialiased;*/
+}
+
+span {
+  font-family: 'Helvetica Neue', arial, sans-serif;
+  font-size: 9pt;
+  color: #8c8c8c;
+}
+
+/*.toptask {
+  position: relative;
+}*/
+
+/*.container {
+  position: relative;
+}*/
+
+#loggedout {
+}
+
+#loggedin {
+  display: none;
+  position: relative;
+}
+
+.login {
+  text-align: center;
+  display: inline-block;
+}
+
+#welcome-loading {
+  position: fixed;
+  background-color: #C83B3B;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 100%;
+  display: block;
+  text-decoration: none;
+  z-index: 9997;
+  outline: none;
+}
+
+.logo {
+  position: absolute;
+  top: 19px;
+  left: 20px;
+  background-image: url('../images/tt-logo.png');
+  background-repeat:no-repeat;
+  height: 30px;
+  width: 33px;
+
+}
+
+.login-spacer {
+  position: absolute;
+  top: 19px;
+  left: 73px;
+  height: 30px;
+  width: 1px;
+  border-radius: 2px;
+  opacity: 0.2;
+  background-color: #ffffff;
+}
+
+.login-button {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  font-family: "Brandon Text";
+  background-color: #EF9B59;
+  width: 70px;
+  padding: 7px 0 7px 0;
+  line-height: 18px;
+  border-radius: 100px;
+  color: #ffffff;
+  font-size: 16px;
+  box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.15);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.login-button:hover {
+  background-color: #FEE785;
+  color: #A42127;
+}
+
+
+.loading {
+  position: absolute;
+  color: #ffffff;
+  font-family: "Brandon Text";
+  font-size: 16px;
+  line-height: 20px;
+  left: 129px;
+  top: 23px;
+}
+
+.welcome {
+  position: absolute;
+  top: 14px;
+  left: 94px;
+  color: #ffffff;
+  font-family: "Brandon Text";
+  font-size: 16px;
+  line-height: 18px;
+  width: 155px;
+}
+
+.loading:after {
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: bottom;
+  -webkit-animation: ellipsis steps(4,end) 900ms infinite;
+  animation: ellipsis steps(4,end) 900ms infinite;
+  content: "\2026"; /* ascii code for the ellipsis character */
+  width: 0px;
+}
+
+@keyframes ellipsis {
+  to {
+    width: 15px;
+  }
+}
+
+@-webkit-keyframes ellipsis {
+  to {
+    width: 15px;
+  }
+}
+
+.listName {
+  display: inline-block;
+  font-family: 'HelveticaNeueBold', Arial, sans-serif;
+  font-size: 15px;
+  line-height: 18px;
+  color: #4d4d4d;
+  margin-bottom: 8px;
+}
+
+.listDrag {
+  display: inline-block;
+  float: right;
+  line-height: 15px;
+  width: 30px;
+  height: 15px;
+  background-image: url('../images/drag-small.png');
+  background-position: right;
+  background-repeat: no-repeat;
+  cursor: move;
+  -webkit-app-region: drag;
+}
+
+.listSelect {
+  display: inline-block;
+  float: right;
+  line-height: 15px;
+  width: 30px;
+  height: 15px;
+  background-image: url('../images/list-select.png');
+  background-position: right;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+
+.board, .board-list {
+  font-family: 'HelveticaNeueBold', Arial, sans-serif;
+  color: #4d4d4d;
+  cursor: pointer;
+}
+
+.board-list {
+  margin-left: 20px;
+  font-size: 16px;
+  text-decoration: underline;
+}
+
+.cardName {
+  margin-top: 15px;
+}
+
+
+.cardContainer {
+  background-color: #fff;
+  padding: 8px 8px 8px 8px;
+  margin-bottom: 5px;
+  border-bottom: 1px solid #ccc;
+  border-radius: 3px;
+  cursor: pointer;
+  max-width: 250px;
+  min-height: 20px;
+  position: relative;
+  z-index: 0;
+}
+
+.overlay {
+  position:absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  background-color: rgba(0, 0, 0, 0.30);
+  border-radius: 3px;
+}
+
+.cardLabel {
+  display: inline-block;
+  float: left;
+  background-color: #cccccc;
+  display: block;
+  height: 8px;
+  margin: 0px 4px 4px 0;
+  width: 42px;
+  line-height: 75pt;
+  border-radius: 3px;
+}
+
+
+.badge {
+  margin: 4px 0px 10px 0px;
+  font-family: 'Helvetica Neue', arial, sans-serif;
+  font-size: 9pt;
+  font-weight: 500;
+  color: #8c8c8c;
+}
+
+.badge-spacer {
+  margin: 6px 0 0 6px;
+  /*margin-left: 8px;
+  margin-right: 0px;*/
+}
+
+.badge-text {
+  margin-right: 5px;
+}
+
+.toggle {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 100%;
+  display: block;
+  text-decoration: none;
+  z-index: 9997;
+  outline: none;
+  cursor: pointer;
+}
+
+.icons {
+  display: none;
+  margin: 12px 12px auto;
+  z-index: 9999;
+}
+
+#icon-buttons {
+  display: inline-block;
+  /*float: right;*/
+}
+
+.icon-background {
+  display: inline-block;
+  background-color: rgba(0, 0, 0, 0.30);
+  vertical-align: middle;
+  width: 32px;
+  height: 32px;
+  border-radius: 100%;
+  margin: 0px 1.5px 0px 1.5px;
+}
+
+.icon-background:hover {
+  background-color: rgba(0, 0, 0, 0.70);
+  /*background-color: #C83B3B;*/
+}
+
+.tick {
+  width: 32px;
+  height: 32px;
+  background-image: url('../images/tick.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+
+.trello {
+  width: 32px;
+  height: 32px;
+  background-image: url('../images/trello.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+
+.back {
+  width: 32px;
+  height: 28px;
+  background-image: url('../images/back.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+
+.drag {
+  width: 32px;
+  height: 32px;
+  background-image: url('../images/drag.png');
+    background-position: center;
+  background-repeat: no-repeat;
+  cursor: move;
+  -webkit-app-region: drag;
+}
+
+.select {
+  display: inline-block;
+  width: 15px;
+  height: 14px;
+  margin: 0 5px 0 5px;
+  background-image: url('../images/select.png');
+  background-position: 50% 100%;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+
+.timer {
+  display: inline-block;
+  width: 28px;
+  height: 32px;
+  float: right;
+  background-image: url('../images/timer.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  cursor: pointer;
+  margin-right: 5px;
+}
+
+.time-unit {
+  display: inline-block;
+  color: white;
+  font-family: "Brandon Text";
+  line-height: 14px;
+  font-size: 15px;
+  font-weight: 400;
+  margin-left: 10px;
+  /*width: 32px*/
+}
+
+.time-display {
+  position: relative;
+  display: inline-block;
+  background-color: rgba(0, 0, 0, 0.70);
+  vertical-align: middle;
+  float: right;
+  width: 88px;
+  height: 32px;
+  border-radius: 20px;
+  margin: 0px 0px 0px 0px;
+  cursor: default;
+}
+
+#time-switch {
+  display: inline-block;
+  position: absolute;
+  right: 35px;
+  top: -9px;
+}
+
+.time-display.time-adjust {
+  box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.15);
+  background-color: #EF9B59;
+  width: 152px;
+  float: right;
+}
+
+.input-time {
+  display: inline-block;
+  color: white;
+  font-family: "Brandon Text";
+  font-size: 15px;
+  font-weight: 400;
+  border: none;
+  background: none;
+}
+
+#day {
+  display: inline-block;
+  vertical-align: middle;
+  margin-bottom: 3px;
+}
+
+#time-input {
+  display: inline-block;
+  /*margin-right: 5px;*/
+}
+
+#input-minutes {
+  width: 19px;
+}
+
+#input-hours {
+  width: 19px;
+}
+
+#color {
+  margin-bottom: 1px;
+}
+
+/*#input-button {
+  border: none;
+  box-shadow: none;
+  background-color: #EF9B59;
+  width: 30px;
+  height: 32px;
+}*/
+
+/*#cardOutput {
+  margin-bottom: -3px !important;
+}*/
+
+#connectLink {
+  cursor: pointer;
+}
+
+/*body.default {
+    transform: scale(1);
+    -webkit-transform: scale(1);
+    -webkit-transform-origin: 0 0;
+    -moz-transform: scale(1);
+    -moz-transform-origin: 0 0;
+    -o-transform: scale(1);
+    -o-transform-origin: 0 0;
+    -ms-transform: scale(1);
+    -ms-transform-origin: 0 0;
+}
+body.pulse {
+    transform: scale(1.05);
+    -webkit-transform: scale(1.05);
+    -webkit-transform-origin: 0 0;
+    -moz-transform: scale(1.05);
+    -moz-transform-origin: 0 0;
+    -o-transform: scale(1.05);
+    -o-transform-origin: 0 0;
+    -ms-transform: scale(1.05);
+    -ms-transform-origin: 0 0;
+}
+
+body.pulse-wide {
+    transform: scale(1.2);
+    -webkit-transform: scale(1.2);
+    -webkit-transform-origin: 0 0;
+    -moz-transform: scale(1.2);
+    -moz-transform-origin: 0 0;
+    -o-transform: scale(1.2);
+    -o-transform-origin: 0 0;
+    -ms-transform: scale(1.2);
+    -ms-transform-origin: 0 0;
+}*/
+
+.pulse {
+	animation-name: pulse_animation;
+	animation-duration: 1000ms;
+	transform-origin:50% 50%;
+	animation-iteration-count: 2;
+	animation-timing-function: linear;
+  /*backface-visibility: hidden;*/
+}
+
+@keyframes pulse_animation {
+	0% { transform: scale(1); }
+	30% { transform: scale(1.04); }
+	40% { transform: scale(1.08); }
+	50% { transform: scale(1.04); }
+	60% { transform: scale(1); }
+	70% { transform: scale(1.04); }
+	80% { transform: scale(1.08); }
+	100% { transform: scale(1); }
+}
+
+.blink {
+    -webkit-animation-name: blinker;
+    -webkit-animation-duration: 1s;
+    -webkit-animation-timing-function: linear;
+    -webkit-animation-iteration-count: infinite;
+
+    -moz-animation-name: blinker;
+    -moz-animation-duration: 1s;
+    -moz-animation-timing-function: linear;
+    -moz-animation-iteration-count: infinite;
+
+    animation-name: blinker;
+    animation-duration: 1s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+@-moz-keyframes blinker {
+    0% { opacity: 1.0; }
+    50% { opacity: 0.0; }
+    100% { opacity: 1.0; }
+}
+
+@-webkit-keyframes blinker {
+    0% { opacity: 1.0; }
+    50% { opacity: 0.0; }
+    100% { opacity: 1.0; }
+}
+
+@keyframes blinker {
+    0% { opacity: 1.0; }
+    50% { opacity: 0.0; }
+    100% { opacity: 1.0; }
+}
