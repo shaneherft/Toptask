@@ -26,6 +26,7 @@
   "homepage": "https://github.com/atom/electron-quick-start#readme",
   "devDependencies": {
     "cross-env": "^1.0.8",
+    "electron-compilers": "^3.1.6",
     "electron-prebuilt": "^1.2.2"
   },
   "dependencies": {
