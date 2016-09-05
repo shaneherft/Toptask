@@ -255,6 +255,7 @@ jQuery(document).ready(function ($) {
 
                 $("<div class='listDrag'></div>").appendTo("#listOutput");
                 $("<div class='listSelect'></div>").appendTo("#listOutput");
+                $("<div class='listHide'></div>").appendTo("#listOutput");
 
                 $(".listSelect")
                     .click(function () {
@@ -269,6 +270,17 @@ jQuery(document).ready(function ($) {
                         })
 
                     });
+
+                $(".listHide")
+                    .click(function () {
+                      if ($(window).height() != 34) {  
+                        ipcRenderer.send('set-size', 269, 34);
+                      }
+                      else {
+                        ipcRenderer.send('set-size', 269, 30 + $listOutput.outerHeight());
+                      }   
+                    });
+                   
 
                 $.each(cards, function (ix, card) {
 
