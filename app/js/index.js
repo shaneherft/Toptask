@@ -260,7 +260,10 @@ jQuery(document).ready(function ($) {
                 $("<div class='listDrag'></div>").appendTo("#listOutput");
                 $("<div class='listSelect'></div>").appendTo("#listOutput");
                 $("<div class='listHide'></div>").appendTo("#listOutput");
+<<<<<<< HEAD
 
+=======
+>>>>>>> 56554d78f07ce01be4f0a14b5dba835c7c01e6db
 
                 $(".listSelect")
                     .click(function () {
@@ -278,16 +281,14 @@ jQuery(document).ready(function ($) {
 
                 $(".listHide")
                     .click(function () {
-                        var checkSize = $(window).height();
-                        if (checkSize > 30) {
-                            ipcRenderer.send('set-size', 269, 30);
-                        }
-                        else {
-                            ipcRenderer.send('set-size', 269, 30 + $listOutput.outerHeight());
-                        }
-
+                      if ($(window).height() != 34) {  
+                        ipcRenderer.send('set-size', 269, 34);
+                      }
+                      else {
+                        ipcRenderer.send('set-size', 269, 30 + $listOutput.outerHeight());
+                      }   
                     });
-
+                   
                 $.each(cards, function (ix, card) {
 
                     cardsInList.push(card.id);
