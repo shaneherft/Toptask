@@ -260,10 +260,6 @@ jQuery(document).ready(function ($) {
                 $("<div class='listDrag'></div>").appendTo("#listOutput");
                 $("<div class='listSelect'></div>").appendTo("#listOutput");
                 $("<div class='listHide'></div>").appendTo("#listOutput");
-<<<<<<< HEAD
-
-=======
->>>>>>> 56554d78f07ce01be4f0a14b5dba835c7c01e6db
 
                 $(".listSelect")
                     .click(function () {
