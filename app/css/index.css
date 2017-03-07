@@ -225,7 +225,7 @@ span {
   line-height: 15px;
   width: 30px;
   height: 15px;
-  background-image: url('../images/drag-small.png');
+  background-image: url('../images/drag-small.svg');
   background-position: right;
   background-repeat: no-repeat;
   cursor: move;
@@ -238,7 +238,7 @@ span {
   line-height: 15px;
   width: 30px;
   height: 15px;
-  background-image: url('../images/list-hide.png');
+  background-image: url('../images/list-hide.svg');
   background-position: right;
   background-repeat: no-repeat;
   cursor: pointer;
@@ -250,7 +250,7 @@ span {
   line-height: 15px;
   width: 30px;
   height: 15px;
-  background-image: url('../images/list-select.png');
+  background-image: url('../images/list-select.svg');
   background-position: right;
   background-repeat: no-repeat;
   cursor: pointer;
