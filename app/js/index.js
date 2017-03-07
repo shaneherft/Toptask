@@ -3,6 +3,7 @@ const remote = require('electron').remote;
 const storage = require('electron-json-storage');
 var async = require('async');
 var _ = require('lodash');
+require('events').EventEmitter.prototype._maxListeners = 100;
 
 window.$ = window.jQuery = require('./lib/jquery-2.2.1');
 
@@ -109,27 +110,34 @@ jQuery(document).ready(function ($) {
 
     var logDate = (dd === 1 ? dd : dd - 1) +'/'+ mm +'/'+yyyy;
 
-      T.get('statuses/user_timeline', { user_id: '4615983616', count: 1 }, function (err, data, response) {
+      // T.get('statuses/user_timeline', { user_id: '4615983616', count: 1 }, function (err, data, response) {
 
-        if (data) {
-          var rawTweet = data[0].text;
-          var parseIndex = rawTweet.indexOf("via");
-          welcomeMessage = rawTweet.slice(0, parseIndex - 2);
-          welcomeMessage = welcomeMessage + ".";
-        }
+      //   if (data) {
+      //     var rawTweet = data[0].text;
+      //     var parseIndex = rawTweet.indexOf("via");
+      //     welcomeMessage = rawTweet.slice(0, parseIndex - 2);
+      //     welcomeMessage = welcomeMessage + ".";
+      //   }
 
-        else {
-          welcomeMessage = "Welcome to Toptask, have a productive day!"
-        }
+      //   else {
+      //     welcomeMessage = "Welcome to Toptask, have a productive day!"
+      //   }
 
-        $welcome = $("<div>")
+      //   $welcome = $("<div>")
+      //       .addClass('welcome')
+      //       .text(welcomeMessage)
+      //       .appendTo("#welcome-message");
+
+      //   ipcRenderer.send('set-size', 349, 30 + $welcome.outerHeight());
+
+      // });
+
+    $welcome = $("<div>")
             .addClass('welcome')
             .text(welcomeMessage)
             .appendTo("#welcome-message");
 
-        ipcRenderer.send('set-size', 349, 30 + $welcome.outerHeight());
-
-      });
+    ipcRenderer.send('set-size', 349, 30 + $welcome.outerHeight());
 
     $("#connectLink").click(function doAuth() {
         Trello.authorize({
@@ -200,9 +208,10 @@ jQuery(document).ready(function ($) {
               logCard = data.id;
             };
 
+            console.log(logCard);
+
             var newCard = {
               name: 'Weekly Progress',
-              // idLabels: '55a35d27fb396fe706fb7b1e',
               idList: currentList,
               pos: 'bottom'
             };
@@ -240,11 +249,6 @@ jQuery(document).ready(function ($) {
 
         Trello.members.get("me", (member)=> {
 
-            // Trello.get("lists/" + currentList, (list)=> {
-            //   var activeList = list;
-            //   selectedList = activeList.name;
-            // });
-
             Trello.get("lists/" + currentList + "/cards", (cards)=> { //
                 // console.debug(cards);
                 cardsInList = [];
@@ -252,9 +256,11 @@ jQuery(document).ready(function ($) {
                 var listName = "PRIORITY";
                 var $list = $("<div class='listName'>" + listName + "</div>")
                     .appendTo("#listOutput");
-
+         
                 $("<div class='listDrag'></div>").appendTo("#listOutput");
                 $("<div class='listSelect'></div>").appendTo("#listOutput");
+                $("<div class='listHide'></div>").appendTo("#listOutput");
+
 
                 $(".listSelect")
                     .click(function () {
@@ -267,6 +273,18 @@ jQuery(document).ready(function ($) {
                             .css('left','83px')
                             .text('No internet connection');
                         })
+
+                    });
+
+                $(".listHide")
+                    .click(function () {
+                        var checkSize = $(window).height();
+                        if (checkSize > 30) {
+                            ipcRenderer.send('set-size', 269, 30);
+                        }
+                        else {
+                            ipcRenderer.send('set-size', 269, 30 + $listOutput.outerHeight());
+                        }
 
                     });
 
@@ -291,7 +309,8 @@ jQuery(document).ready(function ($) {
 
     var cardDisplay = function (displayCard, cardNumber) {
 
-        ipcRenderer.removeAllListeners();
+        // ipcRenderer.removeAllListeners();
+        ipcRenderer.removeAllListeners('trello-open');
 
         var $cardNumber = $('#cardNumber' + cardNumber);
 
@@ -456,6 +475,29 @@ jQuery(document).ready(function ($) {
                 .addClass("badge-text")
                 .text(displayCard.badges.checkItemsChecked + "/" + displayCard.badges.checkItems)
                 .appendTo($cardNumber);
+        }
+
+        if (displayCard.idMembers.length > 0) {
+            if (displayCard.idMembers[0] === "57fb51091908929d916d7118") {
+                 $('<span>')
+                .addClass("card-time-5")
+                .appendTo($cardNumber);
+            }
+            else if (displayCard.idMembers[0] === "57fae1493496abc78796a2b5") {
+                 $('<span>')
+                .addClass("card-time-15")
+                .appendTo($cardNumber);
+            }
+            else if (displayCard.idMembers[0] === "57fb569e94980fc7c97aad05") {
+                 $('<span>')
+                .addClass("card-time-30")
+                .appendTo($cardNumber);
+            }
+            else if (displayCard.idMembers[0] === "57fb6e096c294f46595b3869") {
+                 $('<span>')
+                .addClass("card-time-60")
+                .appendTo($cardNumber);
+            }
         }
 
         $cardNumber.click(function () {
@@ -907,7 +949,7 @@ var listSelector = function () {
 // SAVES TIME SPENT ON CARD
 
     var saveTime = function (keyType, keyId, keyName, time, callback) {
-        // console.debug('saveTime', arguments);
+        console.debug('saveTime', arguments);
         var totalTime = time;
 
         storage.get(keyId, function (error, data) {
@@ -924,7 +966,7 @@ var listSelector = function () {
     };
 
     var saveNewTime = function (keyType, keyId, keyName, time, callback) {
-        // console.debug('saveTime', arguments);
+        console.debug('saveTime', arguments);
         var totalTime = time;
         // console.log(time);
 
@@ -984,8 +1026,8 @@ var listSelector = function () {
         storage.keys((err, keys)=> {
             // https://github.com/caolan/async
             async.mapSeries(keys, (name, cb)=> storage.get(name, (error, data)=> {
-                // console.debug('logTime data', error, data);
-                // if (error) return cb(error);
+                console.debug('logTime data', error, data);
+                if (error) return cb(error);
                 if (data['type'] == 'card') {
                   totalStored.push(data.time);
                 }
@@ -995,7 +1037,7 @@ var listSelector = function () {
                 }
 
                 if (data['type'] == 'card' && data['time'] > 60 || data['type'] == 'label' && data['time'] > 60 ) {
-                    // console.debug('tdata', [tdata, data['type'], tdata[data['type']]]);
+                    console.debug('tdata', [tdata, data['type'], tdata[data['type']]]);
                     tdata[data['type']].push(data);
                 }
                 return cb(null, 1);
@@ -1026,13 +1068,14 @@ var listSelector = function () {
                     };
 
                     mergeLabelNames(tdata.label);
+                    console.log(totalLabelTime);
                     totalLabelTime = totalLabelTime.reduce(_grabTime, '');
 
                     var timeThisWeek = totalStored.reduce( (a,b) => a + b, 0 );
 
                     // trelloTime += "\n\n#WEEKLY#\n\n\n\n" + "*LABELS*\n\n" +  labeltime + "\n--------\n" + "*TOTAL WEEKLY TIME*\n\n" + hoursAndMinutes(timeThisWeek) + "\n--------\n" + "----------";
                     trelloTime += "\n\n#WEEKLY#\n\n\n\n" + "*LABELS*\n\n" +  totalLabelTime + "\n--------\n" + "*TOTAL TIME SPENT*\n\n" + hoursAndMinutes(timeThisWeek) + "\n--------\n" + "----------";
-                    // console.debug('trelloTime', {trelloTime, cardtime, labeltime});
+                    console.debug('trelloTime', {trelloTime, cardtime, labeltime});
                     Trello.put('/cards/' + logCard + '/desc', {value: trelloTime})
                         .always((o, e, d)=>callback(e, d));
                 } else {

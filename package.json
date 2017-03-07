@@ -6,7 +6,8 @@
   "scripts": {
     "start": "electron --js-flags='--es_staging' main.js",
     "dev": "cross-env NODE_ENV=development DEBUG=*,-babel electron --js-flags='--es_staging' ./",
-    "prod": "cross-env NODE_ENV=production electron --js-flags='--es_staging' ./"
+    "prod": "cross-env NODE_ENV=production electron --js-flags='--es_staging' ./",
+    "package": "electron-packager . Toptask --platform=darwin --arch=x64"
   },
   "repository": {
     "type": "git",
@@ -33,6 +34,7 @@
     "async": "latest",
     "bootstrap": "^3.3.6",
     "electron-json-storage": "^2.0.0",
+    "electron-packager": "^8.1.0",
     "lodash": "^4.13.1",
     "nconf": "^0.8.4",
     "twit": "^2.2.4"

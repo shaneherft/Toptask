@@ -232,6 +232,18 @@ span {
   -webkit-app-region: drag;
 }
 
+.listHide {
+  display: inline-block;
+  float: right;
+  line-height: 15px;
+  width: 30px;
+  height: 15px;
+  background-image: url('../images/list-hide.png');
+  background-position: right;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+
 .listSelect {
   display: inline-block;
   float: right;
@@ -258,8 +270,13 @@ span {
 
 .cardName {
   margin-top: 15px;
+  z-index: 100;
 }
 
+.cards {
+  position: relative;
+  z-index: 500;
+}
 
 .cardContainer {
   background-color: #fff;
@@ -280,7 +297,7 @@ span {
   height: 100%;
   top: 0;
   left: 0;
-  z-index: 10;
+  z-index: 1000;
   background-color: rgba(0, 0, 0, 0.30);
   border-radius: 3px;
 }
@@ -297,6 +314,54 @@ span {
   border-radius: 3px;
 }
 
+.card-time-5 {
+  position: absolute;
+  z-index: 0;
+  width: 30px;
+  height: 30px;
+  right: 8px;
+  top: 8px;
+  background-color: red;
+  border-radius: 3px;
+  background-image: url('../images/5.png');
+  background-repeat: no-repeat;
+}
+
+.card-time-15 {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  right: 8px;
+  top: 8px;
+  background-color: red;
+  border-radius: 3px;
+  background-image: url('../images/15.png');
+  background-repeat: no-repeat;
+}
+
+.card-time-30 {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  right: 8px;
+  top: 8px;
+  background-color: red;
+  border-radius: 3px;
+  background-image: url('../images/30.png');
+  background-repeat: no-repeat;
+}
+
+.card-time-60 {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  right: 8px;
+  top: 8px;
+  background-color: red;
+  border-radius: 3px;
+  background-image: url('../images/60.png');
+  background-repeat: no-repeat;
+}
 
 .badge {
   margin: 4px 0px 10px 0px;

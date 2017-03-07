@@ -1,4 +1,4 @@
-// 56d3cfa85a5a2b3b755b1cd6
+// USE CONFIGURATION.JSON
 
 var trelloConfig = {
     "version": 1,
@@ -8,11 +8,15 @@ var trelloConfig = {
     "key": "b9ba7c2037190da4db4bc8ee0d643164"
 };
 
+// USE CONFIGURATION.JSON
+
 var tids_shane = {
     list: '55d26f54726fb67f022db618',
-    card: '56f660d3c3887f343909d4c9',
+    card: '57f2e303e8060208472c26d9',
     completeList: "5403bf2888d0ac13dcc52c4a",
 };
+
+// USE CONFIGURATION.JSON
 
 var tids_sv = {
     board: "56d311c0995b66c2c22ac80d",
